@@ -12,8 +12,9 @@ import java.io.Writer;
 
 public class FormatterState {
 
-    public static final char SPACE = ' ';
     public static final int INLINE_VALUE = -1;
+    public static final char NEWLINE = '\n';
+    public static final char SPACE = ' ';
 
     private static final int INDENT_SIZE = 4;
 
@@ -87,7 +88,7 @@ public class FormatterState {
         if (level == INLINE_VALUE) {
             writer.write(SPACE);
         } else {
-            writer.write(System.lineSeparator());
+            writer.write(NEWLINE);
         }
     }
 
