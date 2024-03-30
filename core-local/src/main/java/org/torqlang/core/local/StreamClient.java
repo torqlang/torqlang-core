@@ -86,6 +86,9 @@ public class StreamClient implements StreamClientInit, StreamClientResponse {
 
         @Override
         public final void send(Envelope envelope) {
+            if (!envelope.isResponse()) {
+                throw new IllegalArgumentException("Not a response");
+            }
             mailbox.add(envelope);
             if (envelope.message() instanceof CompleteRec completeRec) {
                 if (completeRec.label() == Eof.SINGLETON) {

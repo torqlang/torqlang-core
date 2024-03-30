@@ -86,6 +86,22 @@ public final class LocalTarget {
     }
 
     /*
+     * expr | null-ident | same-flags | new-scope
+     *
+     * This method is used by binary and unary expressions to create intermediate results that bind to new synthetic
+     * identifiers. Subsequently, the intermediate identifiers are used as arguments in binary or unary expressions.
+     *   - visitAndExpr
+     *   - visitOrExpr
+     *   - visitProductExpr
+     *   - visitRelationalExpr
+     *   - visitSumExpr
+     *   - visitUnaryExpr
+     */
+    public LocalTarget asExprTargetWithNewScope() {
+        return new LocalTarget(LocalTargetType.EXPR, null, jumpFlags, new LexicalScope());
+    }
+
+    /*
      * expr | ident | same-flags | new-scope
      *
      * This method is used by Lang statements that may be an Expr or Sntc:
@@ -105,20 +121,8 @@ public final class LocalTarget {
         return new LocalTarget(LocalTargetType.EXPR, exprIdent, jumpFlags, new LexicalScope());
     }
 
-    /*
-     * expr | null-ident | same-flags | new-scope
-     *
-     * This method is used by binary and unary expressions to create intermediate results that bind to new synthetic
-     * identifiers. Subsequently, the intermediate identifiers are used as arguments in binary or unary expressions.
-     *   - visitAndExpr
-     *   - visitOrExpr
-     *   - visitProductExpr
-     *   - visitRelationalExpr
-     *   - visitSumExpr
-     *   - visitUnaryExpr
-     */
-    public LocalTarget asExprTargetWithNoOfferedIdentAndNewScope() {
-        return new LocalTarget(LocalTargetType.EXPR, null, jumpFlags, new LexicalScope());
+    public LocalTarget asExprTargetWithSameScope() {
+        return new LocalTarget(LocalTargetType.EXPR, null, jumpFlags, scope);
     }
 
     /*

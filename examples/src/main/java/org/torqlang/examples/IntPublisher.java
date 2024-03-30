@@ -22,19 +22,19 @@ import static org.torqlang.core.local.ActorSystem.createAddress;
 public final class IntPublisher {
 
     public static final String SOURCE = """
-        actor IntPublisher(first, last) in
+        actor IntPublisher(first, last, incr) in
             import system[ArrayList, Cell, respond]
             var next_int = Cell.new(first)
             ask 'request'#{'count': n} in
                 func calculate_to() in
-                    var to = @next_int + (n - 1)
+                    var to = @next_int + (n - 1) * incr
                     if to < last then to else last end
                 end
                 var response = ArrayList.new()
                 var to = calculate_to()
                 while @next_int <= to do
                     response.add(@next_int)
-                    next_int := @next_int + 1
+                    next_int := @next_int + incr
                 end
                 respond(response.to_tuple())
                 if @next_int <= last then
@@ -53,7 +53,7 @@ public final class IntPublisher {
     public static void perform() throws Exception {
         ActorRef actorRef = actorBuilder()
             .setAddress(createAddress(SimpleMath.class.getName()))
-            .setArgs(List.of(Int32.of(10), Int32.of(20)))
+            .setArgs(List.of(Int32.of(10), Int32.of(20), Int32.I32_1))
             .setSource(SOURCE)
             .spawn();
         CompleteRec m = Rec.completeRecBuilder()

@@ -372,7 +372,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         }
         Stmt arg2Stmt = rightTarget.build();
 
-        LocalTarget leftTarget = target.asExprTargetWithNoOfferedIdentAndNewScope();
+        LocalTarget leftTarget = target.asExprTargetWithNewScope();
         CompleteOrIdent arg1Bool = lang.arg1.accept(this, leftTarget);
         BindStmt arg1False = BindStmt.create(exprIdent, Bool.FALSE, lang.arg1);
         leftTarget.addStmt(new IfElseStmt(arg1Bool, arg2Stmt, arg1False, lang));
@@ -385,7 +385,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     @Override
     public final CompleteOrIdent visitApplyLang(ApplyLang lang, LocalTarget target) throws Exception {
         Ident exprIdent = target.isExprTarget() ? acceptOfferedIdentOrNextSystemVarIdent(target) : null;
-        LocalTarget childTarget = target.asExprTargetWithNoOfferedIdentAndNewScope();
+        LocalTarget childTarget = target.asExprTargetWithNewScope();
         CompleteOrIdent proc = lang.proc.accept(this, childTarget);
         List<CompleteOrIdent> ys = new ArrayList<>();
         for (SntcOrExpr arg : lang.args) {
@@ -506,7 +506,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     @Override
     public final CompleteOrIdent visitDotSelectExpr(DotSelectExpr lang, LocalTarget target) throws Exception {
         Ident exprIdent = acceptOfferedIdentOrNextSystemVarIdent(target);
-        LocalTarget childTarget = target.asExprTargetWithNoOfferedIdentAndNewScope();
+        LocalTarget childTarget = target.asExprTargetWithNewScope();
         CompleteOrIdent rec = lang.recExpr.accept(this, childTarget);
         FeatureOrIdent feature;
         if (lang.featureExpr instanceof IdentAsExpr identAsExpr) {
@@ -874,7 +874,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         }
         Stmt arg2Stmt = rightTarget.build();
 
-        LocalTarget leftTarget = target.asExprTargetWithNoOfferedIdentAndNewScope();
+        LocalTarget leftTarget = target.asExprTargetWithNewScope();
         CompleteOrIdent arg1Bool = lang.arg1.accept(this, leftTarget);
         BindStmt arg1True = BindStmt.create(exprIdent, Bool.TRUE, lang.arg1);
         leftTarget.addStmt(new IfElseStmt(arg1Bool, arg1True, arg2Stmt, lang));
@@ -903,7 +903,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     @Override
     public final CompleteOrIdent visitProductExpr(ProductExpr lang, LocalTarget target) throws Exception {
         Ident exprIdent = acceptOfferedIdentOrNextSystemVarIdent(target);
-        LocalTarget childTarget = target.asExprTargetWithNoOfferedIdentAndNewScope();
+        LocalTarget childTarget = target.asExprTargetWithNewScope();
         CompleteOrIdent arg1 = lang.arg1.accept(this, childTarget);
         CompleteOrIdent arg2 = lang.arg2.accept(this, childTarget);
         Stmt productStmt;
@@ -925,12 +925,12 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     @Override
     public final CompleteOrIdent visitRecExpr(RecExpr lang, LocalTarget target) throws Exception {
         Ident exprIdent = acceptOfferedIdentOrNextSystemVarIdent(target);
-        LocalTarget childTarget = target.asExprTargetWithNoOfferedIdentAndNewScope();
+        LocalTarget childTarget = target.asExprTargetWithNewScope();
         CompleteRec completeRec = lang.checkComplete();
         if (completeRec != null) {
             childTarget.addStmt(BindStmt.create(exprIdent, completeRec, lang));
         } else {
-            LocalTarget recTarget = childTarget.asExprTargetWithNoOfferedIdentAndNewScope();
+            LocalTarget recTarget = childTarget.asExprTargetWithNewScope();
             LiteralOrIdent label;
             if (lang.label() == null) {
                 label = Rec.DEFAULT_LABEL;
@@ -959,7 +959,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     @Override
     public final CompleteOrIdent visitRelationalExpr(RelationalExpr lang, LocalTarget target) throws Exception {
         Ident exprIdent = acceptOfferedIdentOrNextSystemVarIdent(target);
-        LocalTarget childTarget = target.asExprTargetWithNoOfferedIdentAndNewScope();
+        LocalTarget childTarget = target.asExprTargetWithNewScope();
         CompleteOrIdent arg1 = lang.arg1.accept(this, childTarget);
         CompleteOrIdent arg2 = lang.arg2.accept(this, childTarget);
         Stmt relStmt;
@@ -1007,7 +1007,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         throws Exception
     {
         Ident exprIdent = target.isExprTarget() ? acceptOfferedIdentOrNextSystemVarIdent(target) : null;
-        LocalTarget childTarget = target.asExprTargetWithNoOfferedIdentAndNewScope();
+        LocalTarget childTarget = target.asExprTargetWithNewScope();
         CompleteOrIdent rec = null;
         List<FeatureOrIdent> path = new ArrayList<>();
         SelectExpr selectExpr = lang.selectExpr;
@@ -1050,7 +1050,8 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         if (!(leftSide instanceof Ident leftSideIdent)) {
             throw new NotIdentError(lang.leftSide);
         }
-        CompleteOrIdent rightSide = lang.rightSide.accept(this, childTarget);
+        LocalTarget rightSideTarget = childTarget.asExprTargetWithSameScope();
+        CompleteOrIdent rightSide = lang.rightSide.accept(this, rightSideTarget);
         childTarget.addStmt(new SetCellValueStmt(leftSideIdent, rightSide, lang));
         target.addStmt(childTarget.build());
         return null;
@@ -1065,7 +1066,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     @Override
     public final CompleteOrIdent visitSpawnExpr(SpawnExpr lang, LocalTarget target) throws Exception {
         Ident exprIdent = target.isExprTarget() ? acceptOfferedIdentOrNextSystemVarIdent(target) : null;
-        LocalTarget childTarget = target.asExprTargetWithNoOfferedIdentAndNewScope();
+        LocalTarget childTarget = target.asExprTargetWithNewScope();
         List<CompleteOrIdent> ys = new ArrayList<>();
         for (SntcOrExpr arg : lang.args) {
             ys.add(arg.accept(this, childTarget));
@@ -1096,7 +1097,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     @Override
     public final CompleteOrIdent visitSumExpr(SumExpr lang, LocalTarget target) throws Exception {
         Ident exprIdent = acceptOfferedIdentOrNextSystemVarIdent(target);
-        LocalTarget childTarget = target.asExprTargetWithNoOfferedIdentAndNewScope();
+        LocalTarget childTarget = target.asExprTargetWithNewScope();
         CompleteOrIdent arg1 = lang.arg1.accept(this, childTarget);
         CompleteOrIdent arg2 = lang.arg2.accept(this, childTarget);
         Stmt sumStmt;
@@ -1201,12 +1202,12 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     @Override
     public final CompleteOrIdent visitTupleExpr(TupleExpr lang, LocalTarget target) throws Exception {
         Ident exprIdent = acceptOfferedIdentOrNextSystemVarIdent(target);
-        LocalTarget childTarget = target.asExprTargetWithNoOfferedIdentAndNewScope();
+        LocalTarget childTarget = target.asExprTargetWithNewScope();
         CompleteTuple completeTuple = lang.checkComplete();
         if (completeTuple != null) {
             childTarget.addStmt(BindStmt.create(exprIdent, completeTuple, lang));
         } else {
-            LocalTarget recTarget = childTarget.asExprTargetWithNoOfferedIdentAndNewScope();
+            LocalTarget recTarget = childTarget.asExprTargetWithNewScope();
             LiteralOrIdent label;
             if (lang.label() == null) {
                 label = Rec.DEFAULT_LABEL;
@@ -1239,7 +1240,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     @Override
     public final CompleteOrIdent visitUnaryExpr(UnaryExpr lang, LocalTarget target) throws Exception {
         Ident exprIdent = acceptOfferedIdentOrNextSystemVarIdent(target);
-        LocalTarget childTarget = target.asExprTargetWithNoOfferedIdentAndNewScope();
+        LocalTarget childTarget = target.asExprTargetWithNewScope();
         CompleteOrIdent arg = lang.arg.accept(this, childTarget);
         Stmt unaryStmt;
         if (lang.oper == UnaryOper.NOT) {
