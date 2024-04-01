@@ -4,9 +4,9 @@ grammar torqlang;
 //   PARSER RULES   //
 //******************//
 
-program: sntc_or_expr EOF;
+program: stmt_or_expr EOF;
 
-sntc_or_expr: meta? assign ';'*;
+stmt_or_expr: meta? assign ';'*;
 
 meta: 'meta' '#' (meta_rec | meta_tuple);
 
@@ -41,7 +41,7 @@ unary: select_or_apply | (negate_or_not unary)+;
 
 negate_or_not: '-' | '!';
 
-select_or_apply: access (('.' access) | ('[' sntc_or_expr ']') |
+select_or_apply: access (('.' access) | ('[' stmt_or_expr ']') |
                  ('(' arg_list? ')'))*;
 
 access: '@' access | construct;
@@ -53,61 +53,61 @@ keyword: act | actor | begin | 'break' | case | 'continue' |
          throw | return | 'self' | 'skip' | spawn | try | var |
          while;
 
-act: 'act' sntc_or_expr+ 'end';
+act: 'act' stmt_or_expr+ 'end';
 
 actor: 'actor' ident? '(' pat_list? ')' 'in'
-       (sntc_or_expr | message_handler)+ 'end';
+       (stmt_or_expr | message_handler)+ 'end';
 
 message_handler: tell_handler | ask_handler;
 
 tell_handler: 'tell' pat
-              'in' sntc_or_expr+ 'end';
+              'in' stmt_or_expr+ 'end';
 
 ask_handler: 'ask' pat return_type_anno?
-             'in' sntc_or_expr+ 'end';
+             'in' stmt_or_expr+ 'end';
 
-begin: 'begin' sntc_or_expr+ 'end';
+begin: 'begin' stmt_or_expr+ 'end';
 
-case: 'case' sntc_or_expr
-      ('of' pat ('if' sntc_or_expr)? 'then' sntc_or_expr+)+
-      ('else' sntc_or_expr+)? 'end';
+case: 'case' stmt_or_expr
+      ('of' pat ('if' stmt_or_expr)? 'then' stmt_or_expr+)+
+      ('else' stmt_or_expr+)? 'end';
 
-for: 'for' pat 'in' sntc_or_expr 'do' sntc_or_expr+ 'end';
+for: 'for' pat 'in' stmt_or_expr 'do' stmt_or_expr+ 'end';
 
 func: 'func' ident? '(' pat_list? ')' return_type_anno?
-      'in' sntc_or_expr+ 'end';
+      'in' stmt_or_expr+ 'end';
 
-group: '(' sntc_or_expr+ ')';
+group: '(' stmt_or_expr+ ')';
 
-if: 'if' sntc_or_expr 'then' sntc_or_expr+
-    ('elseif' sntc_or_expr 'then' sntc_or_expr+)*
-    ('else' sntc_or_expr+)? 'end';
+if: 'if' stmt_or_expr 'then' stmt_or_expr+
+    ('elseif' stmt_or_expr 'then' stmt_or_expr+)*
+    ('else' stmt_or_expr+)? 'end';
 
 // `import` is an ANTLR4 keyword, therefore we add an underscore
 import_: 'import' '(' arg_list ')';
 
 local: 'local' var_decl (',' var_decl)*
-       'in' sntc_or_expr+ 'end';
+       'in' stmt_or_expr+ 'end';
 
-var_decl: pat ('=' sntc_or_expr)?;
+var_decl: pat ('=' stmt_or_expr)?;
 
 proc: 'proc' ident? '(' pat_list? ')'
-      'in' sntc_or_expr+ 'end';
+      'in' stmt_or_expr+ 'end';
 
-throw: 'throw' sntc_or_expr;
+throw: 'throw' stmt_or_expr;
 
-return: 'return' sntc_or_expr?;
+return: 'return' stmt_or_expr?;
 
 spawn: 'spawn' '(' arg_list ')';
 
-try: 'try' sntc_or_expr+ ('catch' pat 'then' sntc_or_expr+)*
-     ('finally' sntc_or_expr+)? 'end';
+try: 'try' stmt_or_expr+ ('catch' pat 'then' stmt_or_expr+)*
+     ('finally' stmt_or_expr+)? 'end';
 
 var: 'var' var_decl (',' var_decl)*;
 
-while: 'while' sntc_or_expr 'do' sntc_or_expr+ 'end';
+while: 'while' stmt_or_expr 'do' stmt_or_expr+ 'end';
 
-arg_list: sntc_or_expr (',' sntc_or_expr)*;
+arg_list: stmt_or_expr (',' stmt_or_expr)*;
 
 pat_list: pat (',' pat)*;
 
@@ -136,7 +136,7 @@ rec_value: '{' (field_value (',' field_value)*)? '}';
 
 tuple_value: '[' (value (',' pat)*)? ']';
 
-field_value: (feat_value ':')? sntc_or_expr;
+field_value: (feat_value ':')? stmt_or_expr;
 
 feat_value: ident | bool | INT_LITERAL | STR_LITERAL |
             'eof' | 'nothing';

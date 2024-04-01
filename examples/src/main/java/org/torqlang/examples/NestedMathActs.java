@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.torqlang.core.local.ActorSystem.actorBuilder;
 import static org.torqlang.core.local.ActorSystem.createAddress;
+import static org.torqlang.examples.ExamplesTools.checkExpectedResponse;
 
 public final class NestedMathActs {
 
@@ -37,18 +38,18 @@ public final class NestedMathActs {
     }
 
     public static void perform() throws Exception {
+
         ActorRef actorRef = actorBuilder()
             .setAddress(createAddress(NestedMathActs.class.getName()))
             .setSource(SOURCE)
             .spawn();
-        Object expected = Int32.of(35);
+
         Object response = RequestClient.builder()
             .setAddress(createAddress("NestedMathClient"))
             .send(actorRef, Str.of("calculate"))
             .awaitResponse(100, TimeUnit.MILLISECONDS);
-        if (!response.equals(expected)) {
-            throw new IllegalStateException("Request failed: " + response);
-        }
+
+        checkExpectedResponse(Int32.of(35), response);
     }
 
 }

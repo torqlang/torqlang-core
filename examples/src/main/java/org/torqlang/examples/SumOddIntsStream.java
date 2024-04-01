@@ -8,7 +8,10 @@
 package org.torqlang.examples;
 
 import org.torqlang.core.actor.ActorRef;
-import org.torqlang.core.klvm.*;
+import org.torqlang.core.klvm.CompleteRec;
+import org.torqlang.core.klvm.Int32;
+import org.torqlang.core.klvm.Rec;
+import org.torqlang.core.klvm.Str;
 import org.torqlang.core.local.ModuleSystem;
 import org.torqlang.core.local.RequestClient;
 

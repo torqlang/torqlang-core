@@ -51,18 +51,22 @@ public final class IntPublisher {
     }
 
     public static void perform() throws Exception {
+
         ActorRef actorRef = actorBuilder()
             .setAddress(createAddress(SimpleMath.class.getName()))
             .setArgs(List.of(Int32.of(10), Int32.of(20), Int32.I32_1))
             .setSource(SOURCE)
             .spawn();
+
         CompleteRec m = Rec.completeRecBuilder()
             .setLabel(Str.of("request"))
             .addField(Str.of("count"), Int32.of(2)).build();
+
         Queue<Envelope> response = StreamClient.builder()
             .setAddress(createAddress("IntPublisherClient"))
             .send(actorRef, m)
             .awaitEof(100, TimeUnit.MILLISECONDS);
+
         if (response.size() != 2) {
             throw new IllegalStateException("Mailbox size is not 2");
         }

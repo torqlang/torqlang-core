@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.torqlang.core.local.ActorSystem.actorBuilder;
 import static org.torqlang.core.local.ActorSystem.createAddress;
+import static org.torqlang.examples.ExamplesTools.checkExpectedResponse;
 
 public class MergeIntStreams {
 
@@ -59,15 +60,19 @@ public class MergeIntStreams {
     }
 
     public static void perform() throws Exception {
+
         ModuleSystem.register("examples", ExamplesMod::moduleRec);
+
         ActorRef actorRef = actorBuilder()
             .setAddress(createAddress(MergeIntStreams.class.getName()))
             .setSource(SOURCE)
             .spawn();
+
         Object response = RequestClient.builder()
             .setAddress(createAddress("MergeIntStreamsClient"))
             .send(actorRef, Str.of("merge"))
             .awaitResponse(100, TimeUnit.MILLISECONDS);
+
         CompleteTuple expectedTuple = Rec.completeTupleBuilder()
             .addValue(Int32.of(1))
             .addValue(Int32.of(2))
@@ -80,9 +85,8 @@ public class MergeIntStreams {
             .addValue(Int32.of(9))
             .addValue(Int32.of(10))
             .build();
-        if (!response.equals(expectedTuple)) {
-            throw new IllegalStateException("Request failed: " + response);
-        }
+
+        checkExpectedResponse(expectedTuple, response);
     }
 
 }

@@ -8,7 +8,6 @@
 package org.torqlang.examples;
 
 import org.torqlang.core.actor.ActorRef;
-import org.torqlang.core.klvm.FailedValue;
 import org.torqlang.core.klvm.Int32;
 import org.torqlang.core.klvm.Str;
 import org.torqlang.core.local.RequestClient;
@@ -17,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.torqlang.core.local.ActorSystem.actorBuilder;
 import static org.torqlang.core.local.ActorSystem.createAddress;
+import static org.torqlang.examples.ExamplesTools.checkExpectedResponse;
 
 public final class SimpleMath {
 
@@ -39,21 +39,18 @@ public final class SimpleMath {
     }
 
     public static void perform() throws Exception {
+
         ActorRef actorRef = actorBuilder()
             .setAddress(createAddress(SimpleMath.class.getName()))
             .setSource(SOURCE)
             .spawn();
+
         Object response = RequestClient.builder()
             .setAddress(createAddress("SimpleMathClient"))
             .send(actorRef, Str.of("calculate"))
             .awaitResponse(100, TimeUnit.MILLISECONDS);
-        if (!response.equals(Int32.of(7))) {
-            String error = "Invalid response: " + response;
-            if (response instanceof FailedValue failedValue) {
-                error += "\n" + failedValue.toDetailsString();
-            }
-            throw new IllegalStateException(error);
-        }
+
+        checkExpectedResponse(Int32.of(7), response);
     }
 
 }

@@ -9,13 +9,13 @@ package org.torqlang.examples;
 
 import org.torqlang.core.actor.ActorRef;
 import org.torqlang.core.klvm.Dec128;
-import org.torqlang.core.klvm.FailedValue;
 import org.torqlang.core.local.RequestClient;
 
 import java.util.concurrent.TimeUnit;
 
 import static org.torqlang.core.local.ActorSystem.actorBuilder;
 import static org.torqlang.core.local.ActorSystem.createAddress;
+import static org.torqlang.examples.ExamplesTools.checkExpectedResponse;
 
 public class Factorial {
 
@@ -39,21 +39,18 @@ public class Factorial {
     }
 
     public static void perform() throws Exception {
+
         ActorRef actorRef = actorBuilder()
             .setAddress(createAddress(Factorial.class.getName()))
             .setSource(SOURCE)
             .spawn();
+
         Object response = RequestClient.builder()
             .setAddress(createAddress("FactorialClient"))
             .send(actorRef, Dec128.of(10))
             .awaitResponse(100, TimeUnit.MILLISECONDS);
-        if (!response.equals(Dec128.of(3628800))) {
-            String error = "Invalid response: " + response;
-            if (response instanceof FailedValue failedValue) {
-                error += "\n" + failedValue.toDetailsString();
-            }
-            throw new IllegalStateException(error);
-        }
+
+        checkExpectedResponse(Dec128.of(3628800), response);
     }
 
 }
