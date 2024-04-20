@@ -144,6 +144,10 @@ public interface Value extends ValueOrIdent, ValueOrVar, ValueOrVarSet, ValueOrI
         throw new CannotCompleteError(this);
     }
 
+    default Value checkNotFailedValue() {
+        return this;
+    }
+
     default int compareValueTo(Value right) {
         throw new UnsupportedOperationException("compareValueTo not supported");
     }

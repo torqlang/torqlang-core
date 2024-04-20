@@ -10,9 +10,6 @@ package org.torqlang.core.local;
 import org.torqlang.core.actor.ActorRef;
 import org.torqlang.core.actor.Address;
 import org.torqlang.core.actor.Envelope;
-import org.torqlang.core.klvm.CompleteRec;
-import org.torqlang.core.klvm.PartialField;
-import org.torqlang.core.klvm.Rec;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -23,22 +20,6 @@ public final class ActorSystem {
 
     private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
     private static final ExecutorService COMPUTATION_EXECUTOR = Executors.newFixedThreadPool(Math.max(4, AVAILABLE_PROCESSORS));
-
-    public static ActorBuilderInit actorBuilder() {
-        return new ActorBuilder();
-    }
-
-    public static CompleteRec compileActorForImport(String source) throws Exception {
-        Rec actorRec = ActorSystem.actorBuilder()
-            .setSource(source)
-            .createActorRec()
-            .actorRec();
-        actorRec.checkDetermined();
-        PartialField actorField = (PartialField) actorRec.fieldAt(0);
-        return Rec.completeRecBuilder()
-            .addField(actorField.feature, actorField.value.checkComplete())
-            .build();
-    }
 
     public static Executor computationExecutor() {
         return COMPUTATION_EXECUTOR;

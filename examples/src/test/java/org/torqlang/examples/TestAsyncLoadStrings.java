@@ -9,11 +9,11 @@ package org.torqlang.examples;
 
 import org.junit.Test;
 
-public class TestSimpleMath {
+public class TestAsyncLoadStrings {
 
     @Test
     public void test() throws Exception {
-        SimpleMath.perform();
+        AsyncLoadStrings.perform();
     }
 
 }

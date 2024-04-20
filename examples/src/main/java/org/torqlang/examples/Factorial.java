@@ -9,15 +9,14 @@ package org.torqlang.examples;
 
 import org.torqlang.core.actor.ActorRef;
 import org.torqlang.core.klvm.Dec128;
+import org.torqlang.core.local.Actor;
 import org.torqlang.core.local.RequestClient;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.torqlang.core.local.ActorSystem.actorBuilder;
-import static org.torqlang.core.local.ActorSystem.createAddress;
 import static org.torqlang.examples.ExamplesTools.checkExpectedResponse;
 
-public class Factorial {
+public final class Factorial {
 
     public static final String SOURCE = """
         actor Factorial() in
@@ -28,7 +27,7 @@ public class Factorial {
                 end
                 fact_cps(x, 1m)
             end
-            ask x in
+            handle ask x in
                 fact(x)
             end
         end""";
@@ -40,15 +39,11 @@ public class Factorial {
 
     public static void perform() throws Exception {
 
-        ActorRef actorRef = actorBuilder()
-            .setAddress(createAddress(Factorial.class.getName()))
-            .setSource(SOURCE)
-            .spawn();
+        ActorRef actorRef = Actor.builder()
+            .spawn(SOURCE);
 
         Object response = RequestClient.builder()
-            .setAddress(createAddress("FactorialClient"))
-            .send(actorRef, Dec128.of(10))
-            .awaitResponse(100, TimeUnit.MILLISECONDS);
+            .sendAndAwaitResponse(actorRef, Dec128.of(10), 100, TimeUnit.MILLISECONDS);
 
         checkExpectedResponse(Dec128.of(3628800), response);
     }

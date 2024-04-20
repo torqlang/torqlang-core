@@ -15,7 +15,6 @@ import org.torqlang.core.klvm.Str;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
-import static org.torqlang.core.local.ActorSystem.actorBuilder;
 import static org.torqlang.core.local.ActorSystem.createAddress;
 
 public class TestAskSingleAct {
@@ -24,39 +23,48 @@ public class TestAskSingleAct {
     public void test() throws Exception {
         String source = """
             actor SingleAct() in
-                ask 'perform' in
+                handle ask 'perform' in
                     act 1 end
                 end
             end""";
-        ActorBuilderGenerated g = actorBuilder()
+        ActorBuilderGenerated g = Actor.builder()
             .setAddress(createAddress(getClass().getName() + "Actor"))
             .setSource(source)
             .generate();
         String expected = """
-            local $actor_cfg_ctor in
-                $create_actor_cfg_ctor(proc ($r) in // free vars: $act, $respond
-                    $create_proc(proc ($m) in // free vars: $act, $respond
-                        local $else in
-                            $create_proc(proc () in // free vars: $m
-                                local $v0 in
-                                    $create_rec('error'#{'name': 'org.torqlang.core.lang.NotHandledError', 'message': $m}, $v0)
-                                    throw $v0
-                                end
-                            end, $else)
-                            case $m of 'perform' then
-                                local $v1 in
-                                    $act
-                                        $bind(1, $v1)
+            local $actor_cfgtr in
+                $create_actor_cfgtr(proc ($r) in // free vars: $act, $respond
+                    local $v0, $v3 in
+                        $create_proc(proc ($m) in // free vars: $act, $respond
+                            local $else in
+                                $create_proc(proc () in // free vars: $m
+                                    local $v1 in
+                                        $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': $m}, $v1)
+                                        throw $v1
                                     end
-                                    $respond($v1)
+                                end, $else)
+                                case $m of 'perform' then
+                                    local $v2 in
+                                        $act
+                                            $bind(1, $v2)
+                                        end
+                                        $respond($v2)
+                                    end
+                                else
+                                    $else()
                                 end
-                            else
-                                $else()
                             end
-                        end
-                    end, $r)
-                end, $actor_cfg_ctor)
-                $create_rec('SingleAct'#{'cfg': $actor_cfg_ctor}, SingleAct)
+                        end, $v0)
+                        $create_proc(proc ($m) in
+                            local $v4 in
+                                $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': $m}, $v4)
+                                throw $v4
+                            end
+                        end, $v3)
+                        $create_tuple('handlers'#[$v0, $v3], $r)
+                    end
+                end, $actor_cfgtr)
+                $create_rec('SingleAct'#{'cfg': $actor_cfgtr}, SingleAct)
             end""";
         assertEquals(expected, g.createActorRecStmt().toString());
         ActorRef actorRef = g.spawn();

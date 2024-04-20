@@ -171,14 +171,15 @@ public final class Var implements LiteralOrVar {
     @Override
     public final Value resolveValue() throws WaitVarException {
         if (valueOrVarSet instanceof Value thisValue) {
-            return thisValue;
+            return thisValue.checkNotFailedValue();
         }
         throw new WaitVarException(this);
     }
 
     @Override
     public final ValueOrVar resolveValueOrVar() {
-        return (valueOrVarSet instanceof Value thisValue) ? thisValue : this;
+        return (valueOrVarSet instanceof Value thisValue) ?
+            thisValue.checkNotFailedValue() : this;
     }
 
     public final void setBindCallback(BindCallback bindCallback) {

@@ -19,10 +19,13 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.torqlang.core.local.ActorSystem.createRequest;
 
 public class StreamClient implements StreamClientInit, StreamClientResponse {
+    private static final AtomicInteger nextClientId = new AtomicInteger(0);
+
     private Address address;
     private StreamClientActor streamClientActor;
     private Queue<Envelope> mailbox;
@@ -54,7 +57,7 @@ public class StreamClient implements StreamClientInit, StreamClientResponse {
     public StreamClientResponse send(ActorRef actorRef, Complete message) {
         if (streamClientActor == null) {
             if (address == null) {
-                throw new IllegalStateException("Null address");
+                address = ActorSystem.createAddress("anonymous-stream-client-" + nextClientId.getAndIncrement());
             }
             eofLatch = new CountDownLatch(1);
             streamClientActor = new StreamClientActor();
@@ -67,6 +70,14 @@ public class StreamClient implements StreamClientInit, StreamClientResponse {
         mailbox = new ConcurrentLinkedQueue<>();
         actorRef.send(createRequest(message, streamClientActor, Nothing.SINGLETON));
         return this;
+    }
+
+    @Override
+    public final Queue<Envelope> sendAndAwaitEof(ActorRef actorRef, Complete message, long timeout, TimeUnit unit)
+        throws Exception
+    {
+        send(actorRef, message);
+        return awaitEof(timeout, unit);
     }
 
     @Override

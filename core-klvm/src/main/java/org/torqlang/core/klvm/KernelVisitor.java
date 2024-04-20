@@ -13,7 +13,7 @@ public interface KernelVisitor<T, R> {
 
     R visitActorCfg(ActorCfg kernel, T state) throws Exception;
 
-    R visitActorCfgCtor(ActorCfgCtor kernel, T state) throws Exception;
+    R visitActorCfgtr(ActorCfgtr kernel, T state) throws Exception;
 
     R visitAddStmt(AddStmt kernel, T state) throws Exception;
 
@@ -39,7 +39,7 @@ public interface KernelVisitor<T, R> {
 
     R visitClosure(Closure kernel, T state) throws Exception;
 
-    R visitCreateActorCfgCtorStmt(CreateActorCfgCtorStmt kernel, T state) throws Exception;
+    R visitCreateActorCfgtrStmt(CreateActorCfgtrStmt kernel, T state) throws Exception;
 
     R visitCreateProcStmt(CreateProcStmt kernel, T state) throws Exception;
 

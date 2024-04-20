@@ -14,11 +14,11 @@ import org.torqlang.core.util.SourceSpan;
 import java.util.Objects;
 import java.util.Set;
 
-/**
+/*
  * Any attempt to use a FailedValue throws an exception, including testing if it is bound (resolving). This ensures
  * that all possible executions that consume failed values as input will fail. Because accessing a FailedValue throws
  * an exception, programmers can isolate and compensate for component failures. [CTM p. 328]
- * <pre>
+ *
  * The general contract for handling a FailedValue:
  *     When an unhandled error (including native errors) is caught by an actor:
  *         Create a new FailedValue
@@ -40,9 +40,8 @@ import java.util.Set;
  *         Bind the FailedValue to the response target, which will throw
  *         a FailedValueError when the target is touched
  *     When a FailedValue is touched, throw a FailedValueError
- * </pre>
  */
-public class FailedValue implements Value, Complete {
+public final class FailedValue implements Value, Complete {
 
     private static final String CAUSED_BY_COLON = "Caused by:";
     private static final String FAILED_VALUE_ERROR_COLON = "FailedValue error:";
@@ -64,6 +63,10 @@ public class FailedValue implements Value, Complete {
         this.stack = stack;
         this.torqCause = torqCause;
         this.nativeCause = nativeCause;
+    }
+
+    public static FailedValue create(String owner, Throwable throwable) {
+        return create(owner, null, throwable);
     }
 
     public static FailedValue create(String owner, Stack stack, Throwable throwable) {
@@ -155,6 +158,11 @@ public class FailedValue implements Value, Complete {
 
     @Override
     public final ValueOrResolvedPtn caseRecOfThis(Rec rec, Env env) {
+        throw new FailedValueError(this);
+    }
+
+    @Override
+    public final Value checkNotFailedValue() {
         throw new FailedValueError(this);
     }
 

@@ -14,7 +14,7 @@ import java.util.Set;
 
 import static org.torqlang.core.util.ListTools.nullSafeCopyOf;
 
-public class SelectAndApplyStmt extends AbstractStmt {
+public final class SelectAndApplyStmt extends AbstractStmt {
 
     public final CompleteOrIdent rec;
     public final List<FeatureOrIdent> path;
@@ -47,11 +47,11 @@ public class SelectAndApplyStmt extends AbstractStmt {
 
     @Override
     public final void compute(Env env, Machine machine) throws WaitException {
-        ValueOrVar selectedValue = rec.resolveValue(env);
+        Value selectedValue = rec.resolveValue(env);
         for (FeatureOrIdent f : path) {
-            Feature featureRes = (Feature) f.resolveValue(env);
             Composite composite = (Composite) selectedValue;
-            selectedValue = composite.select(featureRes);
+            Feature featureRes = (Feature) f.resolveValue(env);
+            selectedValue = composite.select(featureRes).resolveValue();
         }
         Proc p = (Proc) selectedValue;
         p.apply(args, env, machine);

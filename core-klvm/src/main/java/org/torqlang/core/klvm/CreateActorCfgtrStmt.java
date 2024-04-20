@@ -9,9 +9,9 @@ package org.torqlang.core.klvm;
 
 import org.torqlang.core.util.SourceSpan;
 
-public final class CreateActorCfgCtorStmt extends AbstractCreateProcStmt {
+public final class CreateActorCfgtrStmt extends AbstractCreateProcStmt {
 
-    public CreateActorCfgCtorStmt(Ident x, ProcDef procDef, SourceSpan sourceSpan) {
+    public CreateActorCfgtrStmt(Ident x, ProcDef procDef, SourceSpan sourceSpan) {
         super(x, procDef, sourceSpan);
     }
 
@@ -19,15 +19,15 @@ public final class CreateActorCfgCtorStmt extends AbstractCreateProcStmt {
     public final <T, R> R accept(KernelVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitCreateActorCfgCtorStmt(this, state);
+        return visitor.visitCreateActorCfgtrStmt(this, state);
     }
 
     @Override
     public final void compute(Env env, Machine machine) throws WaitException {
-        Closure handlerCtor = computeClosure(env);
-        ActorCfgCtor actorCfgCtor = new ActorCfgCtor(handlerCtor);
+        Closure handlersCtor = computeClosure(env);
+        ActorCfgtr actorCfgtr = new ActorCfgtr(handlersCtor);
         ValueOrVar identRes = x.resolveValueOrVar(env);
-        identRes.bindToValue(actorCfgCtor, null);
+        identRes.bindToValue(actorCfgtr, null);
     }
 
 }

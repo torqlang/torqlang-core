@@ -7,14 +7,14 @@
 
 package org.torqlang.core.klvm;
 
-public class CompleteActorCfgCtor extends ActorCfgCtor implements Complete {
+public final class CompleteActorCfgtr extends ActorCfgtr implements Complete {
 
-    public CompleteActorCfgCtor(Closure handlerCtor) {
-        super(handlerCtor);
+    public CompleteActorCfgtr(Closure handlersCtor) {
+        super(handlersCtor);
     }
 
     @Override
-    public final CompleteActorCfgCtor checkComplete() {
+    public final CompleteActorCfgtr checkComplete() {
         return this;
     }
 

@@ -18,20 +18,20 @@ public class TestParserActorSntc {
 
     @Test
     public void test() {
-        //                                      1         2         3         4         5         6
-        //                            012345678901234567890123456789012345678901234567890123456789012
-        Parser p = new Parser("actor MyActor() in ask 'get' in a end tell 'incr' in b end end");
+        //                                      1         2         3         4         5         6         7
+        //                            01234567890123456789012345678901234567890123456789012345678901234567890123456
+        Parser p = new Parser("actor MyActor() in handle ask 'get' in a end handle tell 'incr' in b end end");
         SntcOrExpr sox = p.parse();
         ActorSntc actorSntc = (ActorSntc) sox;
-        assertSourceSpan(actorSntc, 0, 62);
+        assertSourceSpan(actorSntc, 0, 76);
         assertEquals(Ident.create("MyActor"), actorSntc.name());
         // Test format
         String expectedFormat = """
             actor MyActor() in
-                ask 'get' in
+                handle ask 'get' in
                     a
                 end
-                tell 'incr' in
+                handle tell 'incr' in
                     b
                 end
             end""";
@@ -40,31 +40,30 @@ public class TestParserActorSntc {
         // Test initializer
         assertEquals(0, actorSntc.initializer().size());
         // Test handlers
-        assertEquals(2, actorSntc.handlers().size());
-        assertTrue(actorSntc.handlers().get(0) instanceof AskSntc);
-        assertSourceSpan(actorSntc.handlers().get(0), 19, 37);
-        assertTrue(actorSntc.handlers().get(1) instanceof TellSntc);
-        assertSourceSpan(actorSntc.handlers().get(1), 38, 58);
+        assertEquals(1, actorSntc.askHandlers().size());
+        assertEquals(1, actorSntc.tellHandlers().size());
+        assertSourceSpan(actorSntc.askHandlers().get(0), 19, 44);
+        assertSourceSpan(actorSntc.tellHandlers().get(0), 45, 72);
     }
 
     @Test
     public void testWithInitializer() {
-        //                                      1         2         3         4         5         6         7         8
-        //                            01234567890123456789012345678901234567890123456789012345678901234567890123456789012
-        Parser p = new Parser("actor MyActor() in var x = 0 var y = 1 ask 'get' in a end tell 'incr' in b end end");
+        //                                      1         2         3         4         5         6         7         8         9
+        //                            0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456
+        Parser p = new Parser("actor MyActor() in var x = 0 var y = 1 handle ask 'get' in a end handle tell 'incr' in b end end");
         SntcOrExpr sox = p.parse();
         ActorSntc actorSntc = (ActorSntc) sox;
-        assertSourceSpan(actorSntc, 0, 82);
+        assertSourceSpan(actorSntc, 0, 96);
         assertEquals(Ident.create("MyActor"), actorSntc.name());
         // Test format
         String expectedFormat = """
             actor MyActor() in
                 var x = 0
                 var y = 1
-                ask 'get' in
+                handle ask 'get' in
                     a
                 end
-                tell 'incr' in
+                handle tell 'incr' in
                     b
                 end
             end""";
@@ -75,26 +74,25 @@ public class TestParserActorSntc {
         assertTrue(actorSntc.initializer().get(0) instanceof VarSntc);
         assertTrue(actorSntc.initializer().get(1) instanceof VarSntc);
         // Test handlers
-        assertEquals(2, actorSntc.handlers().size());
-        assertTrue(actorSntc.handlers().get(0) instanceof AskSntc);
-        assertSourceSpan(actorSntc.handlers().get(0), 39, 57);
-        assertTrue(actorSntc.handlers().get(1) instanceof TellSntc);
-        assertSourceSpan(actorSntc.handlers().get(1), 58, 78);
+        assertEquals(1, actorSntc.askHandlers().size());
+        assertEquals(1, actorSntc.tellHandlers().size());
+        assertSourceSpan(actorSntc.askHandlers().get(0), 39, 64);
+        assertSourceSpan(actorSntc.tellHandlers().get(0), 65, 92);
     }
 
     @Test
     public void testWithRespondType() {
         //                                      1         2         3         4         5
-        //                            012345678901234567890123456789012345678901234567890
-        Parser p = new Parser("actor MyActor() in ask 'get' -> Int32 in a end end");
+        //                            0123456789012345678901234567890123456789012345678901234567
+        Parser p = new Parser("actor MyActor() in handle ask 'get' -> Int32 in a end end");
         SntcOrExpr sox = p.parse();
         ActorSntc actorSntc = (ActorSntc) sox;
-        assertSourceSpan(actorSntc, 0, 50);
+        assertSourceSpan(actorSntc, 0, 57);
         assertEquals(Ident.create("MyActor"), actorSntc.name());
         // Test format
         String expectedFormat = """
             actor MyActor() in
-                ask 'get' -> Int32 in
+                handle ask 'get' -> Int32 in
                     a
                 end
             end""";
@@ -103,9 +101,8 @@ public class TestParserActorSntc {
         // Test initializer
         assertEquals(0, actorSntc.initializer().size());
         // Test handlers
-        assertEquals(1, actorSntc.handlers().size());
-        assertTrue(actorSntc.handlers().get(0) instanceof AskSntc);
-        assertSourceSpan(actorSntc.handlers().get(0), 19, 46);
+        assertEquals(1, actorSntc.askHandlers().size());
+        assertSourceSpan(actorSntc.askHandlers().get(0), 19, 53);
     }
 
 }

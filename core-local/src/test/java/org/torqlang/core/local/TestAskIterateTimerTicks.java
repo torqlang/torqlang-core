@@ -16,7 +16,6 @@ import org.torqlang.core.klvm.Str;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
-import static org.torqlang.core.local.ActorSystem.actorBuilder;
 import static org.torqlang.core.local.ActorSystem.createAddress;
 
 public class TestAskIterateTimerTicks {
@@ -26,7 +25,7 @@ public class TestAskIterateTimerTicks {
         String source = """
             actor IterateTimerTicks() in
                 import system[Cell, Iter, Stream, Timer]
-                ask 'iterate' in
+                handle ask 'iterate' in
                     var tick_count = Cell.new(0)
                     var timer_stream = Stream.new(spawn(Timer.cfg(1, 'microseconds')),
                         'request'#{'ticks': 5})
@@ -36,47 +35,47 @@ public class TestAskIterateTimerTicks {
                     @tick_count
                 end
             end""";
-        ActorBuilderGenerated g = actorBuilder()
+        ActorBuilderGenerated g = Actor.builder()
             .setAddress(createAddress(getClass().getName() + "Actor"))
             .setSource(source)
             .generate();
         String expected = """
-            local $actor_cfg_ctor in
-                $create_actor_cfg_ctor(proc ($r) in // free vars: $import, $respond, $spawn
-                    local Cell, Iter, Stream, Timer in
+            local $actor_cfgtr in
+                $create_actor_cfgtr(proc ($r) in // free vars: $import, $respond, $spawn
+                    local Cell, Iter, Stream, Timer, $v0, $v9 in
                         $import('system', ['Cell', 'Iter', 'Stream', 'Timer'])
                         $create_proc(proc ($m) in // free vars: $respond, $spawn, Cell, Iter, Stream, Timer
                             local $else in
                                 $create_proc(proc () in // free vars: $m
-                                    local $v0 in
-                                        $create_rec('error'#{'name': 'org.torqlang.core.lang.NotHandledError', 'message': $m}, $v0)
-                                        throw $v0
+                                    local $v1 in
+                                        $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': $m}, $v1)
+                                        throw $v1
                                     end
                                 end, $else)
                                 case $m of 'iterate' then
-                                    local $v1, tick_count, timer_stream in
+                                    local $v2, tick_count, timer_stream in
                                         $select_apply(Cell, ['new'], 0, tick_count)
-                                        local $v2, $v4 in
-                                            local $v3 in
-                                                $select_apply(Timer, ['cfg'], 1, 'microseconds', $v3)
-                                                $spawn($v3, $v2)
+                                        local $v3, $v5 in
+                                            local $v4 in
+                                                $select_apply(Timer, ['cfg'], 1, 'microseconds', $v4)
+                                                $spawn($v4, $v3)
                                             end
-                                            $bind('request'#{'ticks': 5}, $v4)
-                                            $select_apply(Stream, ['new'], $v2, $v4, timer_stream)
+                                            $bind('request'#{'ticks': 5}, $v5)
+                                            $select_apply(Stream, ['new'], $v3, $v5, timer_stream)
                                         end
                                         local $iter, $for in
                                             $select_apply(Iter, ['new'], timer_stream, $iter)
                                             $create_proc(proc () in // free vars: $for, $iter, tick_count
-                                                local tick, $v5 in
+                                                local tick, $v6 in
                                                     $iter(tick)
-                                                    $ne(tick, eof, $v5)
-                                                    if $v5 then
-                                                        local $v6 in
-                                                            local $v7 in
-                                                                $get(tick_count, $v7)
-                                                                $add($v7, 1, $v6)
+                                                    $ne(tick, eof, $v6)
+                                                    if $v6 then
+                                                        local $v7 in
+                                                            local $v8 in
+                                                                $get(tick_count, $v8)
+                                                                $add($v8, 1, $v7)
                                                             end
-                                                            $set(tick_count, $v6)
+                                                            $set(tick_count, $v7)
                                                         end
                                                         $for()
                                                     end
@@ -84,17 +83,24 @@ public class TestAskIterateTimerTicks {
                                             end, $for)
                                             $for()
                                         end
-                                        $get(tick_count, $v1)
-                                        $respond($v1)
+                                        $get(tick_count, $v2)
+                                        $respond($v2)
                                     end
                                 else
                                     $else()
                                 end
                             end
-                        end, $r)
+                        end, $v0)
+                        $create_proc(proc ($m) in
+                            local $v10 in
+                                $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': $m}, $v10)
+                                throw $v10
+                            end
+                        end, $v9)
+                        $create_tuple('handlers'#[$v0, $v9], $r)
                     end
-                end, $actor_cfg_ctor)
-                $create_rec('IterateTimerTicks'#{'cfg': $actor_cfg_ctor}, IterateTimerTicks)
+                end, $actor_cfgtr)
+                $create_rec('IterateTimerTicks'#{'cfg': $actor_cfgtr}, IterateTimerTicks)
             end""";
         assertEquals(expected, g.createActorRecStmt().toString());
         ActorRef actorRef = g.spawn();

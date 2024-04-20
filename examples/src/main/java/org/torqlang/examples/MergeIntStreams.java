@@ -12,22 +12,21 @@ import org.torqlang.core.klvm.CompleteTuple;
 import org.torqlang.core.klvm.Int32;
 import org.torqlang.core.klvm.Rec;
 import org.torqlang.core.klvm.Str;
+import org.torqlang.core.local.Actor;
 import org.torqlang.core.local.ModuleSystem;
 import org.torqlang.core.local.RequestClient;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.torqlang.core.local.ActorSystem.actorBuilder;
-import static org.torqlang.core.local.ActorSystem.createAddress;
 import static org.torqlang.examples.ExamplesTools.checkExpectedResponse;
 
-public class MergeIntStreams {
+public final class MergeIntStreams {
 
     public static final String SOURCE = """
         actor MergeIntStreams() in
             import system[ArrayList, Cell, Iter, Stream]
             import examples.IntPublisher
-            ask 'merge' in
+            handle ask 'merge' in
                 var odd_iter = Iter.new(Stream.new(spawn(IntPublisher.cfg(1, 10, 2)), 'request'#{'count': 3})),
                     even_iter = Iter.new(Stream.new(spawn(IntPublisher.cfg(2, 10, 2)), 'request'#{'count': 2}))
                 var answer = ArrayList.new()
@@ -63,15 +62,11 @@ public class MergeIntStreams {
 
         ModuleSystem.register("examples", ExamplesMod::moduleRec);
 
-        ActorRef actorRef = actorBuilder()
-            .setAddress(createAddress(MergeIntStreams.class.getName()))
-            .setSource(SOURCE)
-            .spawn();
+        ActorRef actorRef = Actor.builder()
+            .spawn(SOURCE);
 
         Object response = RequestClient.builder()
-            .setAddress(createAddress("MergeIntStreamsClient"))
-            .send(actorRef, Str.of("merge"))
-            .awaitResponse(100, TimeUnit.MILLISECONDS);
+            .sendAndAwaitResponse(actorRef, Str.of("merge"), 100, TimeUnit.MILLISECONDS);
 
         CompleteTuple expectedTuple = Rec.completeTupleBuilder()
             .addValue(Int32.of(1))

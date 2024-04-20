@@ -66,6 +66,7 @@ public final class SymbolsAndKeywords {
     static final String FINALLY_VALUE = "finally";
     static final String FOR_VALUE = "for";
     static final String FUNC_VALUE = "func";
+    static final String HANDLE_VALUE = "handle";
     static final String IF_VALUE = "if";
     static final String IMPORT_VALUE = "import";
     static final String IN_VALUE = "in";
@@ -118,7 +119,9 @@ public final class SymbolsAndKeywords {
     }
 
     public static boolean isContextualKeyword(String source, int begin, int end) {
-        return substringEquals(source, begin, end, ASK_VALUE) || substringEquals(source, begin, end, TELL_VALUE);
+        return substringEquals(source, begin, end, HANDLE_VALUE) ||
+                substringEquals(source, begin, end, ASK_VALUE) ||
+                substringEquals(source, begin, end, TELL_VALUE);
     }
 
     public static boolean isKeyword(String source, int begin, int end) {

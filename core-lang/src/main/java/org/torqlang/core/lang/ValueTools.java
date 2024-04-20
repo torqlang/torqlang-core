@@ -9,15 +9,16 @@ package org.torqlang.core.lang;
 
 import org.torqlang.core.klvm.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class JsonTools {
+public class ValueTools {
 
     public static final String TORQLANG_COLON_LABEL_COLON = "torqlang:label:";
 
-    public static Object toJsonValue(Complete value) {
+    public static Object toNativeValue(Complete value) {
         return value.toNativeValue();
     }
 
@@ -26,6 +27,9 @@ public class JsonTools {
     }
 
     private static Complete toKernelValue(String label, Object value) {
+        if (value instanceof Complete) {
+            return (Complete) value;
+        }
         if (value instanceof String string) {
             return Str.of(string);
         }
@@ -47,6 +51,9 @@ public class JsonTools {
         if (value instanceof Double doubleValue) {
             return Flt64.of(doubleValue);
         }
+        if (value instanceof BigDecimal bigDecimal) {
+            return Dec128.of(bigDecimal);
+        }
         if (value instanceof Map<?, ?> m) {
             if (m.size() == 1) {
                 Map.Entry<?, ?> e = m.entrySet().iterator().next();
@@ -65,11 +72,12 @@ public class JsonTools {
             }
             List<CompleteField> fs = new ArrayList<>();
             for (Map.Entry<?, ?> e : m.entrySet()) {
-                if (!(e.getKey() instanceof String k)) {
-                    throw new IllegalArgumentException("JSON key must be a String: " + e.getKey());
+                Complete k = toKernelValue(e.getKey());
+                if (!(k instanceof Feature f)) {
+                    throw new IllegalArgumentException("Map key must be a Feature: " + e.getKey());
                 }
                 Complete v = toKernelValue(e.getValue());
-                fs.add(new CompleteField(Str.of(k), v));
+                fs.add(new CompleteField(f, v));
             }
             return CompleteRec.create(label != null ? Str.of(label) : null, fs);
         }

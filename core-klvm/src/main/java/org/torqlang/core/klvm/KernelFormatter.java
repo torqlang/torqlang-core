@@ -35,30 +35,30 @@ import java.util.*;
 public final class KernelFormatter implements KernelVisitor<FormatterState, Void> {
 
     public static final KernelFormatter SINGLETON = new KernelFormatter();
-    public static final String $ADD = "$add";
-    public static final String $BIND = "$bind";
-    public static final String $CREATE_ACTOR_CFG_CTOR = "$create_actor_cfg_ctor";
-    public static final String $CREATE_PROC = "$create_proc";
-    public static final String $CREATE_REC = "$create_rec";
-    public static final String $CREATE_TUPLE = "$create_tuple";
-    public static final String $DIV = "$div";
-    public static final String $EQ = "$eq";
-    public static final String $GE = "$ge";
-    public static final String $GET = "$get";
-    public static final String $GT = "$gt";
-    public static final String $JUMP_CATCH = "$jump_catch";
-    public static final String $JUMP_THROW = "$jump_throw";
-    public static final String $LE = "$le";
-    public static final String $LT = "$lt";
-    public static final String $MOD = "$mod";
-    public static final String $MULT = "$mult";
-    public static final String $NE = "$ne";
-    public static final String $NEGATE = "$negate(";
-    public static final String $NOT = "$not";
-    public static final String $SET = "$set";
-    public static final String $SUB = "$sub";
-    public static final String $SELECT = "$select";
-    public static final String $SELECT_APPLY = "$select_apply";
+    public static final String ADD = "$add";
+    public static final String BIND = "$bind";
+    public static final String CREATE_ACTOR_CFGTR = "$create_actor_cfgtr";
+    public static final String CREATE_PROC = "$create_proc";
+    public static final String CREATE_REC = "$create_rec";
+    public static final String CREATE_TUPLE = "$create_tuple";
+    public static final String DIV = "$div";
+    public static final String EQ = "$eq";
+    public static final String GE = "$ge";
+    public static final String GET = "$get";
+    public static final String GT = "$gt";
+    public static final String JUMP_CATCH = "$jump_catch";
+    public static final String JUMP_THROW = "$jump_throw";
+    public static final String LE = "$le";
+    public static final String LT = "$lt";
+    public static final String MOD = "$mod";
+    public static final String MULT = "$mult";
+    public static final String NE = "$ne";
+    public static final String NEGATE = "$negate";
+    public static final String NOT = "$not";
+    public static final String SET = "$set";
+    public static final String SUB = "$sub";
+    public static final String SELECT = "$select";
+    public static final String SELECT_APPLY = "$select_apply";
 
     public final String format(Kernel kernel) {
         try (StringWriter sw = new StringWriter()) {
@@ -83,7 +83,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     private void formatBindStmt(Kernel a, Kernel x, FormatterState state) throws Exception {
-        state.write($BIND);
+        state.write(BIND);
         state.write('(');
         a.accept(this, state.inline());
         state.write(", ");
@@ -118,18 +118,18 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
             arg.accept(this, state.inline());
             state.writeNewLineAndIndent();
         }
-        value.handlerCtor().accept(this, state);
+        value.handlersCtor().accept(this, state);
         return null;
     }
 
     @Override
-    public final Void visitActorCfgCtor(ActorCfgCtor value, FormatterState state) throws Exception {
-        return visitClosure(value.handlerCtor(), state);
+    public final Void visitActorCfgtr(ActorCfgtr value, FormatterState state) throws Exception {
+        return visitClosure(value.handlersCtor(), state);
     }
 
     @Override
     public final Void visitAddStmt(AddStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($ADD, stmt.a, stmt.b, stmt.x, state);
+        formatBinaryStmt(ADD, stmt.a, stmt.b, stmt.x, state);
         return null;
     }
 
@@ -241,8 +241,8 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public final Void visitCreateActorCfgCtorStmt(CreateActorCfgCtorStmt stmt, FormatterState state) throws Exception {
-        state.write($CREATE_ACTOR_CFG_CTOR);
+    public final Void visitCreateActorCfgtrStmt(CreateActorCfgtrStmt stmt, FormatterState state) throws Exception {
+        state.write(CREATE_ACTOR_CFGTR);
         state.write('(');
         visitProcDef(stmt.procDef, state);
         state.write(", ");
@@ -253,7 +253,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
 
     @Override
     public final Void visitCreateProcStmt(CreateProcStmt stmt, FormatterState state) throws Exception {
-        state.write($CREATE_PROC);
+        state.write(CREATE_PROC);
         state.write('(');
         visitProcDef(stmt.procDef, state);
         state.write(", ");
@@ -264,7 +264,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
 
     @Override
     public final Void visitCreateRecStmt(CreateRecStmt stmt, FormatterState state) throws Exception {
-        state.write($CREATE_REC);
+        state.write(CREATE_REC);
         state.write('(');
         stmt.recDef.accept(this, state.inline());
         state.write(", ");
@@ -275,7 +275,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
 
     @Override
     public final Void visitCreateTupleStmt(CreateTupleStmt stmt, FormatterState state) throws Exception {
-        state.write($CREATE_TUPLE);
+        state.write(CREATE_TUPLE);
         state.write('(');
         stmt.tupleDef.accept(this, state.inline());
         state.write(", ");
@@ -293,19 +293,19 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
 
     @Override
     public final Void visitDisentailsStmt(DisentailsStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($NE, stmt.a, stmt.b, stmt.x, state);
+        formatBinaryStmt(NE, stmt.a, stmt.b, stmt.x, state);
         return null;
     }
 
     @Override
     public final Void visitDivideStmt(DivideStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($DIV, stmt.a, stmt.b, stmt.x, state);
+        formatBinaryStmt(DIV, stmt.a, stmt.b, stmt.x, state);
         return null;
     }
 
     @Override
     public final Void visitEntailsStmt(EntailsStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($EQ, stmt.a, stmt.b, stmt.x, state);
+        formatBinaryStmt(EQ, stmt.a, stmt.b, stmt.x, state);
         return null;
     }
 
@@ -374,7 +374,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
 
     @Override
     public final Void visitGetCellValueStmt(GetCellValueStmt stmt, FormatterState state) throws Exception {
-        state.write($GET);
+        state.write(GET);
         state.write('(');
         stmt.cell.accept(this, state.inline());
         state.write(", ");
@@ -385,13 +385,13 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
 
     @Override
     public final Void visitGreaterThanOrEqualToStmt(GreaterThanOrEqualToStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($GE, stmt.a, stmt.b, stmt.x, state);
+        formatBinaryStmt(GE, stmt.a, stmt.b, stmt.x, state);
         return null;
     }
 
     @Override
     public final Void visitGreaterThanStmt(GreaterThanStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($GT, stmt.a, stmt.b, stmt.x, state);
+        formatBinaryStmt(GT, stmt.a, stmt.b, stmt.x, state);
         return null;
     }
 
@@ -467,7 +467,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
 
     @Override
     public Void visitJumpCatchStmt(JumpCatchStmt kernel, FormatterState state) throws Exception {
-        state.write($JUMP_CATCH);
+        state.write(JUMP_CATCH);
         state.write('(');
         state.write("" + kernel.id);
         state.write(')');
@@ -476,7 +476,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
 
     @Override
     public Void visitJumpThrowStmt(JumpThrowStmt kernel, FormatterState state) throws Exception {
-        state.write($JUMP_THROW);
+        state.write(JUMP_THROW);
         state.write('(');
         state.write("" + kernel.id);
         state.write(')');
@@ -485,13 +485,13 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
 
     @Override
     public final Void visitLessThanOrEqualToStmt(LessThanOrEqualToStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($LE, stmt.a, stmt.b, stmt.x, state);
+        formatBinaryStmt(LE, stmt.a, stmt.b, stmt.x, state);
         return null;
     }
 
     @Override
     public final Void visitLessThanStmt(LessThanStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($LT, stmt.a, stmt.b, stmt.x, state);
+        formatBinaryStmt(LT, stmt.a, stmt.b, stmt.x, state);
         return null;
     }
 
@@ -520,19 +520,20 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
 
     @Override
     public final Void visitModuloStmt(ModuloStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($MOD, stmt.a, stmt.b, stmt.x, state);
+        formatBinaryStmt(MOD, stmt.a, stmt.b, stmt.x, state);
         return null;
     }
 
     @Override
     public final Void visitMultiplyStmt(MultiplyStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($MULT, stmt.a, stmt.b, stmt.x, state);
+        formatBinaryStmt(MULT, stmt.a, stmt.b, stmt.x, state);
         return null;
     }
 
     @Override
     public final Void visitNegateStmt(NegateStmt stmt, FormatterState state) throws Exception {
-        state.write($NEGATE);
+        state.write(NEGATE);
+        state.write('(');
         stmt.a.accept(this, state.inline());
         state.write(", ");
         stmt.x.accept(this, state.inline());
@@ -542,7 +543,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
 
     @Override
     public final Void visitNotStmt(NotStmt stmt, FormatterState state) throws Exception {
-        state.write($NOT);
+        state.write(NOT);
         stmt.a.accept(this, state.inline());
         state.write(", ");
         stmt.x.accept(this, state.inline());
@@ -735,7 +736,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
 
     @Override
     public final Void visitSelectAndApplyStmt(SelectAndApplyStmt stmt, FormatterState state) throws Exception {
-        state.write($SELECT_APPLY);
+        state.write(SELECT_APPLY);
         state.write('(');
         stmt.rec.accept(this, state.inline());
         state.write(", [");
@@ -764,7 +765,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
 
     @Override
     public final Void visitSelectStmt(SelectStmt stmt, FormatterState state) throws Exception {
-        state.write($SELECT);
+        state.write(SELECT);
         state.write('(');
         stmt.rec.accept(this, state.inline());
         state.write(", ");
@@ -788,7 +789,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
 
     @Override
     public final Void visitSetCellValueStmt(SetCellValueStmt stmt, FormatterState state) throws Exception {
-        state.write($SET);
+        state.write(SET);
         state.write('(');
         stmt.cell.accept(this, state.inline());
         state.write(", ");
@@ -822,7 +823,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
 
     @Override
     public final Void visitSubtractStmt(SubtractStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($SUB, stmt.a, stmt.b, stmt.x, state);
+        formatBinaryStmt(SUB, stmt.a, stmt.b, stmt.x, state);
         return null;
     }
 

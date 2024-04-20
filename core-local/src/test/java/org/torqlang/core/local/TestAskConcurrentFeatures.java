@@ -16,7 +16,6 @@ import org.torqlang.core.klvm.Str;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
-import static org.torqlang.core.local.ActorSystem.actorBuilder;
 import static org.torqlang.core.local.ActorSystem.createAddress;
 
 public class TestAskConcurrentFeatures {
@@ -25,7 +24,7 @@ public class TestAskConcurrentFeatures {
     public void test01() throws Exception {
         String source = """
             actor ConcurrentFeatures() in
-                ask 'perform' in
+                handle ask 'perform' in
                     var f, v
                     var a = {f: v}
                     a = act {'one': 1} end
@@ -35,48 +34,57 @@ public class TestAskConcurrentFeatures {
                     a.one + b.one
                 end
             end""";
-        ActorBuilderGenerated g = actorBuilder()
+        ActorBuilderGenerated g = Actor.builder()
             .setAddress(createAddress(getClass().getName() + "Actor01"))
             .setSource(source)
             .generate();
         String expected = """
-            local $actor_cfg_ctor in
-                $create_actor_cfg_ctor(proc ($r) in // free vars: $act, $respond
-                    $create_proc(proc ($m) in // free vars: $act, $respond
-                        local $else in
-                            $create_proc(proc () in // free vars: $m
-                                local $v0 in
-                                    $create_rec('error'#{'name': 'org.torqlang.core.lang.NotHandledError', 'message': $m}, $v0)
-                                    throw $v0
+            local $actor_cfgtr in
+                $create_actor_cfgtr(proc ($r) in // free vars: $act, $respond
+                    local $v0, $v5 in
+                        $create_proc(proc ($m) in // free vars: $act, $respond
+                            local $else in
+                                $create_proc(proc () in // free vars: $m
+                                    local $v1 in
+                                        $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': $m}, $v1)
+                                        throw $v1
+                                    end
+                                end, $else)
+                                case $m of 'perform' then
+                                    local $v2, f, v, a, b in
+                                        $create_rec({f: v}, a)
+                                        $act
+                                            $bind({'one': 1}, a)
+                                        end
+                                        $create_rec({f: v}, b)
+                                        $act
+                                            $bind({'one': 1}, b)
+                                        end
+                                        $act
+                                            $bind('one', f)
+                                        end
+                                        local $v3, $v4 in
+                                            $select(a, 'one', $v3)
+                                            $select(b, 'one', $v4)
+                                            $add($v3, $v4, $v2)
+                                        end
+                                        $respond($v2)
+                                    end
+                                else
+                                    $else()
                                 end
-                            end, $else)
-                            case $m of 'perform' then
-                                local $v1, f, v, a, b in
-                                    $create_rec({f: v}, a)
-                                    $act
-                                        $bind({'one': 1}, a)
-                                    end
-                                    $create_rec({f: v}, b)
-                                    $act
-                                        $bind({'one': 1}, b)
-                                    end
-                                    $act
-                                        $bind('one', f)
-                                    end
-                                    local $v2, $v3 in
-                                        $select(a, 'one', $v2)
-                                        $select(b, 'one', $v3)
-                                        $add($v2, $v3, $v1)
-                                    end
-                                    $respond($v1)
-                                end
-                            else
-                                $else()
                             end
-                        end
-                    end, $r)
-                end, $actor_cfg_ctor)
-                $create_rec('ConcurrentFeatures'#{'cfg': $actor_cfg_ctor}, ConcurrentFeatures)
+                        end, $v0)
+                        $create_proc(proc ($m) in
+                            local $v6 in
+                                $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': $m}, $v6)
+                                throw $v6
+                            end
+                        end, $v5)
+                        $create_tuple('handlers'#[$v0, $v5], $r)
+                    end
+                end, $actor_cfgtr)
+                $create_rec('ConcurrentFeatures'#{'cfg': $actor_cfgtr}, ConcurrentFeatures)
             end""";
         assertEquals(expected, g.createActorRecStmt().toString());
         ActorRef actorRef = g.spawn();
@@ -101,7 +109,7 @@ public class TestAskConcurrentFeatures {
                         skip
                     end
                 end
-                ask 'perform' in
+                handle ask 'perform' in
                     var a, b, f, v
                     a = {f, v}
                     b = {v, f}
@@ -113,7 +121,7 @@ public class TestAskConcurrentFeatures {
             end""";
         String source = """
             actor ConcurrentFeatures() in
-                ask 'perform' in
+                handle ask 'perform' in
                     var a, b, f, v
                     a = {f, v}
                     b = {v, f}
@@ -123,7 +131,7 @@ public class TestAskConcurrentFeatures {
                     a.one + 1
                 end
             end""";
-        ActorBuilderGenerated g = actorBuilder()
+        ActorBuilderGenerated g = Actor.builder()
             .setAddress(createAddress(getClass().getName() + "Actor02"))
             .setSource(source)
             .generate();
@@ -142,7 +150,7 @@ public class TestAskConcurrentFeatures {
     public void test03() throws Exception {
         String source = """
             actor ConcurrentFeatures() in
-                ask 'perform' in
+                handle ask 'perform' in
                     var a, b, f, v
                     a = {f, v}
                     b = {v, f}
@@ -152,7 +160,7 @@ public class TestAskConcurrentFeatures {
                     a.one + 1
                 end
             end""";
-        ActorBuilderGenerated g = actorBuilder()
+        ActorBuilderGenerated g = Actor.builder()
             .setAddress(createAddress(getClass().getName() + "Actor03"))
             .setSource(source)
             .generate();

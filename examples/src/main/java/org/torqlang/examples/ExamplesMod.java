@@ -10,7 +10,7 @@ package org.torqlang.examples;
 import org.torqlang.core.klvm.CompleteRec;
 import org.torqlang.core.klvm.Rec;
 import org.torqlang.core.klvm.Str;
-import org.torqlang.core.local.ActorSystem;
+import org.torqlang.core.local.Actor;
 
 final class ExamplesMod {
 
@@ -19,7 +19,7 @@ final class ExamplesMod {
     private ExamplesMod() {
         try {
             moduleRec = Rec.completeRecBuilder()
-                .addField(Str.of("IntPublisher"), ActorSystem.compileActorForImport(IntPublisher.SOURCE))
+                .addField(Str.of("IntPublisher"), Actor.compileForImport(IntPublisher.SOURCE))
                 .build();
         } catch (Exception exc) {
             throw new IllegalStateException("IntPublisher actor record not created", exc);

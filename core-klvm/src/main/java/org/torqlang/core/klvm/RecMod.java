@@ -16,6 +16,7 @@ public final class RecMod {
 
     private static final ObjProcTable<RecCls> clsProcTable = ObjProcTable.<RecCls>builder()
         .addEntry(CommonFeatures.ASSIGN, RecMod::clsAssign)
+        .addEntry(CommonFeatures.SIZE, RecMod::clsSize)
         .build();
 
     /*
@@ -51,6 +52,17 @@ public final class RecMod {
         Rec assigned = builder.build();
         ValueOrVar target = ys.get(2).resolveValueOrVar(env);
         target.bindToValue(assigned, null);
+    }
+
+    static void clsSize(RecCls cls, List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
+        final int expectedArgCount = 2;
+        if (ys.size() != expectedArgCount) {
+            throw new InvalidArgCountError(expectedArgCount, ys, "Rec.size");
+        }
+        Rec rec0 = (Rec) ys.get(0).resolveValue(env);
+        rec0.checkDetermined();
+        ValueOrVar target = ys.get(1).resolveValueOrVar(env);
+        target.bindToValue(Int32.of(rec0.fieldCount()), null);
     }
 
     static final class RecCls implements CompleteObj {

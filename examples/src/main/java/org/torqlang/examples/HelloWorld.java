@@ -9,19 +9,18 @@ package org.torqlang.examples;
 
 import org.torqlang.core.actor.ActorRef;
 import org.torqlang.core.klvm.Str;
+import org.torqlang.core.local.Actor;
 import org.torqlang.core.local.RequestClient;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.torqlang.core.local.ActorSystem.actorBuilder;
-import static org.torqlang.core.local.ActorSystem.createAddress;
 import static org.torqlang.examples.ExamplesTools.checkExpectedResponse;
 
-public class HelloWorld {
+public final class HelloWorld {
 
     public static final String SOURCE = """
         actor HelloWorld() in
-            ask 'hello' in
+            handle ask 'hello' in
                 'Hello, World!'
             end
         end""";
@@ -33,15 +32,16 @@ public class HelloWorld {
 
     public static void perform() throws Exception {
 
-        ActorRef actorRef = actorBuilder()
-            .setAddress(createAddress(HelloWorld.class.getName()))
-            .setSource(SOURCE)
-            .spawn();
+        // Build and spawn HelloWorld. After spawning, `HelloWorld` is waiting to
+        // receive the 'hello' message. The spawn method returns an actorRef used
+        // subsequently to send the actor messages.
+        ActorRef actorRef = Actor.builder()
+            .spawn(SOURCE);
 
+        // Send the 'hello' message to the actor reference returned above. Wait a
+        // maximum of 100 milliseconds for a response.
         Object response = RequestClient.builder()
-            .setAddress(createAddress("HelloWorldClient"))
-            .send(actorRef, Str.of("hello"))
-            .awaitResponse(100, TimeUnit.MILLISECONDS);
+            .sendAndAwaitResponse(actorRef, Str.of("hello"), 100, TimeUnit.MILLISECONDS);
 
         checkExpectedResponse(Str.of("Hello, World!"), response);
     }

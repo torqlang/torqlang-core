@@ -20,7 +20,8 @@ public abstract class ActorLang extends AbstractLang implements SntcOrExpr {
     public final List<SntcOrExpr> body;
 
     private List<SntcOrExpr> initializer;
-    private List<HandlerSntc> handlers;
+    private List<AskSntc> askHandlers;
+    private List<TellSntc> tellHandlers;
 
     public ActorLang(List<Pat> formalArgs, List<SntcOrExpr> body, SourceSpan sourceSpan) {
         super(sourceSpan);
@@ -28,30 +29,37 @@ public abstract class ActorLang extends AbstractLang implements SntcOrExpr {
         this.body = nullSafeCopyOf(body);
     }
 
-    public final List<HandlerSntc> handlers() {
-        if (handlers != null) {
-            return handlers;
-        }
-        handlers = new ArrayList<>(body.size());
-        for (SntcOrExpr sox : body) {
-            if (sox instanceof HandlerSntc handlerSntc) {
-                handlers.add(handlerSntc);
-            }
-        }
-        return handlers;
+    public final List<? extends AskSntc> askHandlers() {
+        lazyLoad();
+        return askHandlers;
     }
 
-    public final List<SntcOrExpr> initializer() {
+    public final List<? extends SntcOrExpr> initializer() {
+        lazyLoad();
+        return initializer;
+    }
+
+    private void lazyLoad() {
         if (initializer != null) {
-            return initializer;
+            return;
         }
         initializer = new ArrayList<>(body.size());
+        askHandlers = new ArrayList<>(body.size());
+        tellHandlers = new ArrayList<>(body.size());
         for (SntcOrExpr sox : body) {
-            if (!(sox instanceof HandlerSntc)) {
+            if (sox instanceof AskSntc askHandler) {
+                askHandlers.add(askHandler);
+            } else if (sox instanceof TellSntc tellHandler) {
+                tellHandlers.add(tellHandler);
+            } else {
                 initializer.add(sox);
             }
         }
-        return initializer;
+    }
+
+    public final List<TellSntc> tellHandlers() {
+        lazyLoad();
+        return tellHandlers;
     }
 
 }

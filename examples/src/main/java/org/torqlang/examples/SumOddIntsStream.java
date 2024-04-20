@@ -12,12 +12,12 @@ import org.torqlang.core.klvm.CompleteRec;
 import org.torqlang.core.klvm.Int32;
 import org.torqlang.core.klvm.Rec;
 import org.torqlang.core.klvm.Str;
+import org.torqlang.core.local.Actor;
 import org.torqlang.core.local.ModuleSystem;
 import org.torqlang.core.local.RequestClient;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.torqlang.core.local.ActorSystem.actorBuilder;
 import static org.torqlang.core.local.ActorSystem.createAddress;
 
 public final class SumOddIntsStream {
@@ -26,7 +26,7 @@ public final class SumOddIntsStream {
         actor SumOddIntsStream() in
             import system[Cell, Iter, Stream]
             import examples.IntPublisher
-            ask 'sum'#{'first': first, 'last': last} in
+            handle ask 'sum'#{'first': first, 'last': last} in
                 var sum = Cell.new(0)
                 var int_publisher = spawn(IntPublisher.cfg(first, last, 1))
                 var int_stream = Stream.new(int_publisher, 'request'#{'count': 3})
@@ -46,7 +46,7 @@ public final class SumOddIntsStream {
 
         ModuleSystem.register("examples", ExamplesMod::moduleRec);
 
-        ActorRef actorRef = actorBuilder()
+        ActorRef actorRef = Actor.builder()
             .setAddress(createAddress(SumOddIntsStream.class.getName()))
             .setSource(SOURCE)
             .spawn();

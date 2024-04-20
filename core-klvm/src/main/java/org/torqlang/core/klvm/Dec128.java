@@ -55,7 +55,7 @@ public final class Dec128 implements Num {
     }
 
     public static Dec128 of(BigDecimal value) {
-        return new Dec128(value.round(MathContext.DECIMAL128));
+        return new Dec128(new BigDecimal(value.unscaledValue(), value.scale(), MathContext.DECIMAL128));
     }
 
     @Override

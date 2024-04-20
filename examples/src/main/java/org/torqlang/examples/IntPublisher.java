@@ -10,13 +10,13 @@ package org.torqlang.examples;
 import org.torqlang.core.actor.ActorRef;
 import org.torqlang.core.actor.Envelope;
 import org.torqlang.core.klvm.*;
+import org.torqlang.core.local.Actor;
 import org.torqlang.core.local.StreamClient;
 
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
-import static org.torqlang.core.local.ActorSystem.actorBuilder;
 import static org.torqlang.core.local.ActorSystem.createAddress;
 
 public final class IntPublisher {
@@ -25,7 +25,7 @@ public final class IntPublisher {
         actor IntPublisher(first, last, incr) in
             import system[ArrayList, Cell, respond]
             var next_int = Cell.new(first)
-            ask 'request'#{'count': n} in
+            handle ask 'request'#{'count': n} in
                 func calculate_to() in
                     var to = @next_int + (n - 1) * incr
                     if to < last then to else last end
@@ -52,20 +52,16 @@ public final class IntPublisher {
 
     public static void perform() throws Exception {
 
-        ActorRef actorRef = actorBuilder()
-            .setAddress(createAddress(SimpleMath.class.getName()))
+        ActorRef actorRef = Actor.builder()
             .setArgs(List.of(Int32.of(10), Int32.of(20), Int32.I32_1))
-            .setSource(SOURCE)
-            .spawn();
+            .spawn(SOURCE);
 
         CompleteRec m = Rec.completeRecBuilder()
             .setLabel(Str.of("request"))
             .addField(Str.of("count"), Int32.of(2)).build();
 
         Queue<Envelope> response = StreamClient.builder()
-            .setAddress(createAddress("IntPublisherClient"))
-            .send(actorRef, m)
-            .awaitEof(100, TimeUnit.MILLISECONDS);
+            .sendAndAwaitEof(actorRef, m, 100, TimeUnit.MILLISECONDS);
 
         if (response.size() != 2) {
             throw new IllegalStateException("Mailbox size is not 2");

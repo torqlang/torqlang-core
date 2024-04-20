@@ -8,6 +8,7 @@
 package org.torqlang.core.lang;
 
 public final class MessageText {
+    public static final String ASK_OR_TELL_EXPECTED = "'ask' or 'tell' expected";
     public static final String CASE_EXPR_MUST_HAVE_ELSE = "A case expression must have an unconditional else clause";
     public static final String CATCH_OR_FINALLY_EXPECTED = "'catch' or 'finally' expected";
     public static final String COMMENT_IS_MISSING_CLOSING_SEQUENCE = "Comment is missing closing sequence '*/'";

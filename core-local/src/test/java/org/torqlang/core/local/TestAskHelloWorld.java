@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.torqlang.core.local.ActorSystem.actorBuilder;
 import static org.torqlang.core.local.ActorSystem.createAddress;
 
 public class TestAskHelloWorld {
@@ -35,18 +34,18 @@ public class TestAskHelloWorld {
                     end
                     fact_cps(x, 1m)
                 end
-                ask {'hello': num} in
+                handle ask {'hello': num} in
                     'Hello, ' + num + '! is ' + fact(num)
                 end
             end""";
-        ActorBuilderGenerated g = actorBuilder()
+        ActorBuilderGenerated g = Actor.builder()
             .setAddress(createAddress(getClass().getName() + "Actor"))
             .setSource(source)
             .generate();
         String expected = """
-            local $actor_cfg_ctor in
-                $create_actor_cfg_ctor(proc ($r) in // free vars: $respond
-                    local fact in
+            local $actor_cfgtr in
+                $create_actor_cfgtr(proc ($r) in // free vars: $respond
+                    local fact, $v3, $v9 in
                         $create_proc(proc (x, $r) in
                             local fact_cps in
                                 $create_proc(proc (n, k, $r) in // free vars: fact_cps
@@ -69,31 +68,38 @@ public class TestAskHelloWorld {
                         $create_proc(proc ($m) in // free vars: $respond, fact
                             local $else in
                                 $create_proc(proc () in // free vars: $m
-                                    local $v3 in
-                                        $create_rec('error'#{'name': 'org.torqlang.core.lang.NotHandledError', 'message': $m}, $v3)
-                                        throw $v3
+                                    local $v4 in
+                                        $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': $m}, $v4)
+                                        throw $v4
                                     end
                                 end, $else)
                                 case $m of {'hello': num} then
-                                    local $v4 in
-                                        local $v5, $v7 in
-                                            local $v6 in
-                                                $add('Hello, ', num, $v6)
-                                                $add($v6, '! is ', $v5)
+                                    local $v5 in
+                                        local $v6, $v8 in
+                                            local $v7 in
+                                                $add('Hello, ', num, $v7)
+                                                $add($v7, '! is ', $v6)
                                             end
-                                            fact(num, $v7)
-                                            $add($v5, $v7, $v4)
+                                            fact(num, $v8)
+                                            $add($v6, $v8, $v5)
                                         end
-                                        $respond($v4)
+                                        $respond($v5)
                                     end
                                 else
                                     $else()
                                 end
                             end
-                        end, $r)
+                        end, $v3)
+                        $create_proc(proc ($m) in
+                            local $v10 in
+                                $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': $m}, $v10)
+                                throw $v10
+                            end
+                        end, $v9)
+                        $create_tuple('handlers'#[$v3, $v9], $r)
                     end
-                end, $actor_cfg_ctor)
-                $create_rec('HelloFactorial'#{'cfg': $actor_cfg_ctor}, HelloFactorial)
+                end, $actor_cfgtr)
+                $create_rec('HelloFactorial'#{'cfg': $actor_cfgtr}, HelloFactorial)
             end""";
         assertEquals(expected, g.createActorRecStmt().toString());
         ActorRef actorRef = g.spawn();
@@ -109,37 +115,46 @@ public class TestAskHelloWorld {
     public void testHelloWorld() throws Exception {
         String source = """
             actor HelloWorld() in
-                ask 'hello' in
+                handle ask 'hello' in
                     'Hello, World!'
                 end
             end""";
-        ActorBuilderGenerated g = actorBuilder()
+        ActorBuilderGenerated g = Actor.builder()
             .setAddress(createAddress(getClass().getName() + "Actor"))
             .setSource(source)
             .generate();
         String expected = """
-            local $actor_cfg_ctor in
-                $create_actor_cfg_ctor(proc ($r) in // free vars: $respond
-                    $create_proc(proc ($m) in // free vars: $respond
-                        local $else in
-                            $create_proc(proc () in // free vars: $m
-                                local $v0 in
-                                    $create_rec('error'#{'name': 'org.torqlang.core.lang.NotHandledError', 'message': $m}, $v0)
-                                    throw $v0
+            local $actor_cfgtr in
+                $create_actor_cfgtr(proc ($r) in // free vars: $respond
+                    local $v0, $v3 in
+                        $create_proc(proc ($m) in // free vars: $respond
+                            local $else in
+                                $create_proc(proc () in // free vars: $m
+                                    local $v1 in
+                                        $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': $m}, $v1)
+                                        throw $v1
+                                    end
+                                end, $else)
+                                case $m of 'hello' then
+                                    local $v2 in
+                                        $bind('Hello, World!', $v2)
+                                        $respond($v2)
+                                    end
+                                else
+                                    $else()
                                 end
-                            end, $else)
-                            case $m of 'hello' then
-                                local $v1 in
-                                    $bind('Hello, World!', $v1)
-                                    $respond($v1)
-                                end
-                            else
-                                $else()
                             end
-                        end
-                    end, $r)
-                end, $actor_cfg_ctor)
-                $create_rec('HelloWorld'#{'cfg': $actor_cfg_ctor}, HelloWorld)
+                        end, $v0)
+                        $create_proc(proc ($m) in
+                            local $v4 in
+                                $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': $m}, $v4)
+                                throw $v4
+                            end
+                        end, $v3)
+                        $create_tuple('handlers'#[$v0, $v3], $r)
+                    end
+                end, $actor_cfgtr)
+                $create_rec('HelloWorld'#{'cfg': $actor_cfgtr}, HelloWorld)
             end""";
         assertEquals(expected, g.createActorRecStmt().toString());
         ActorRef actorRef = g.spawn();
@@ -163,25 +178,25 @@ public class TestAskHelloWorld {
             .awaitResponse(100, TimeUnit.MILLISECONDS);
         assertTrue(response instanceof FailedValue);
         FailedValue failedValue = (FailedValue) response;
-        assertEquals("FailedValue(error='error'#{'message': 'goodbye', 'name': 'org.torqlang.core.lang.NotHandledError'})", failedValue.toString());
+        assertEquals("FailedValue(error='error'#{'message': 'goodbye', 'name': 'org.torqlang.core.lang.AskNotHandledError'})", failedValue.toString());
     }
 
     @Test
     public void testHelloWorldFromActorSntc() throws Exception {
         String source = """
             actor HelloWorld() in
-                ask 'hello' in
+                handle ask 'hello' in
                     'Hello, World!'
                 end
             end""";
         // Run a separate builder to get the ActorSntc
-        ActorSntc actorSntc = actorBuilder()
+        ActorSntc actorSntc = Actor.builder()
             .setAddress(createAddress(getClass().getName() + "Actor"))
             .setSource(source)
             .rewrite()
             .actorSntc();
         // Now, show we can create an actor from just an ActorSntc (no source)
-        ActorRef actorRef = actorBuilder()
+        ActorRef actorRef = Actor.builder()
             .setAddress(createAddress(getClass().getName() + "Actor"))
             .setActorSntc(actorSntc)
             .spawn();

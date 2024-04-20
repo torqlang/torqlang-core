@@ -187,11 +187,16 @@ public final class Parser {
         nextToken(); // accept 'in' token
         List<SntcOrExpr> body = new ArrayList<>();
         while (true) {
-            current = currentToken;
-            if (current.isContextualKeyword(TELL_VALUE)) {
-                body.add(parseTell());
-            } else if (current.isContextualKeyword(ASK_VALUE)) {
-                body.add(parseAsk());
+            if (currentToken.isContextualKeyword(HANDLE_VALUE)) {
+                LexerToken handleToken = currentToken;
+                nextToken(); // accept 'handle' token
+                if (currentToken.isContextualKeyword(ASK_VALUE)) {
+                    body.add(parseAsk(handleToken));
+                } else if (currentToken.isContextualKeyword(TELL_VALUE)) {
+                    body.add(parseTell(handleToken));
+                } else {
+                    throw new ParserError(ASK_OR_TELL_EXPECTED, currentToken);
+                }
             } else {
                 SntcOrExpr next = parseSntcOrExpr();
                 if (next != null) {
@@ -239,8 +244,7 @@ public final class Parser {
         return args;
     }
 
-    private AskSntc parseAsk() {
-        LexerToken askToken = currentToken;
+    private AskSntc parseAsk(LexerToken handleToken) {
         LexerToken current = nextToken(); // accept 'ask' token
         Pat pat = parsePat();
         if (pat == null) {
@@ -251,7 +255,7 @@ public final class Parser {
         nextToken(); // accept 'in' token
         SeqLang body = parseSeq();
         LexerToken endToken = acceptEndToken();
-        return new AskSntc(pat, body, responseType, askToken.adjoin(endToken));
+        return new AskSntc(pat, body, responseType, handleToken.adjoin(endToken));
     }
 
     private SntcOrExpr parseAssign() {
@@ -1016,8 +1020,7 @@ public final class Parser {
         return answer;
     }
 
-    private TellSntc parseTell() {
-        LexerToken tellToken = currentToken;
+    private TellSntc parseTell(LexerToken handleToken) {
         LexerToken current = nextToken(); // accept 'tell' token
         Pat pat = parsePat();
         if (pat == null) {
@@ -1027,7 +1030,7 @@ public final class Parser {
         nextToken(); // accept 'in' token
         SeqLang body = parseSeq();
         LexerToken endToken = acceptEndToken();
-        return new TellSntc(pat, body, tellToken.adjoin(endToken));
+        return new TellSntc(pat, body, handleToken.adjoin(endToken));
     }
 
     private ThrowLang parseThrow() {

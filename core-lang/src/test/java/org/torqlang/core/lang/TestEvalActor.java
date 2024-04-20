@@ -33,7 +33,7 @@ public class TestEvalActor {
                         end
                         fact_cps(x, 1m)
                     end
-                    ask {'hello': num} in
+                    handle ask {'hello': num} in
                         'Hello, ' + num + '! is ' + fact(num)
                     end
                 end
@@ -47,9 +47,9 @@ public class TestEvalActor {
             .perform();
         assertEquals(source, e.sntcOrExpr().toString());
         String expected = """
-            local HelloFactorial, $actor_cfg_ctor in
-                $create_actor_cfg_ctor(proc ($r) in // free vars: $respond
-                    local fact in
+            local HelloFactorial, $actor_cfgtr in
+                $create_actor_cfgtr(proc ($r) in // free vars: $respond
+                    local fact, $v3, $v9 in
                         $create_proc(proc (x, $r) in
                             local fact_cps in
                                 $create_proc(proc (n, k, $r) in // free vars: fact_cps
@@ -72,31 +72,38 @@ public class TestEvalActor {
                         $create_proc(proc ($m) in // free vars: $respond, fact
                             local $else in
                                 $create_proc(proc () in // free vars: $m
-                                    local $v3 in
-                                        $create_rec('error'#{'name': 'org.torqlang.core.lang.NotHandledError', 'message': $m}, $v3)
-                                        throw $v3
+                                    local $v4 in
+                                        $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': $m}, $v4)
+                                        throw $v4
                                     end
                                 end, $else)
                                 case $m of {'hello': num} then
-                                    local $v4 in
-                                        local $v5, $v7 in
-                                            local $v6 in
-                                                $add('Hello, ', num, $v6)
-                                                $add($v6, '! is ', $v5)
+                                    local $v5 in
+                                        local $v6, $v8 in
+                                            local $v7 in
+                                                $add('Hello, ', num, $v7)
+                                                $add($v7, '! is ', $v6)
                                             end
-                                            fact(num, $v7)
-                                            $add($v5, $v7, $v4)
+                                            fact(num, $v8)
+                                            $add($v6, $v8, $v5)
                                         end
-                                        $respond($v4)
+                                        $respond($v5)
                                     end
                                 else
                                     $else()
                                 end
                             end
-                        end, $r)
+                        end, $v3)
+                        $create_proc(proc ($m) in
+                            local $v10 in
+                                $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': $m}, $v10)
+                                throw $v10
+                            end
+                        end, $v9)
+                        $create_tuple('handlers'#[$v3, $v9], $r)
                     end
-                end, $actor_cfg_ctor)
-                $create_rec('HelloFactorial'#{'cfg': $actor_cfg_ctor}, HelloFactorial)
+                end, $actor_cfgtr)
+                $create_rec('HelloFactorial'#{'cfg': $actor_cfgtr}, HelloFactorial)
                 $select_apply(HelloFactorial, ['cfg'], hello_factorial_cfg)
             end""";
         assertEquals(expected, e.kernel().toString());

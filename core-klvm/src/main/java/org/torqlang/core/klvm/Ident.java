@@ -14,13 +14,14 @@ import java.util.Set;
 public final class Ident implements Decl, LiteralOrIdent {
 
     public static final Ident ACT = new Ident("$act");
-    public static final Ident ACTOR_CFG_CTOR = new Ident("$actor_cfg_ctor");
+    public static final Ident ACTOR_CFGTR = new Ident("$actor_cfgtr");
     public static final Ident ELSE = new Ident("$else");
     public static final Ident FINALLY = new Ident("$finally");
     public static final Ident FOR = new Ident("$for");
     public static final Ident GUARD = new Ident("$guard");
     public static final Ident HANDLER = new Ident("$handler");
-    public static final Ident HANDLER_CTOR = new Ident("$handler_ctor");
+    public static final Ident HANDLERS = new Ident("$handlers");
+    public static final Ident HANDLERS_CTOR = new Ident("$handlers_ctor");
     public static final Ident IMPORT = new Ident("$import");
     public static final Ident ITER = new Ident("$iter");
     public static final Ident MESSAGE = new Ident("$m");

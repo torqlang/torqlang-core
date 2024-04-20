@@ -7,6 +7,7 @@
 
 package org.torqlang.core.local;
 
+import org.torqlang.core.actor.ActorRef;
 import org.torqlang.core.actor.Address;
 import org.torqlang.core.klvm.CompleteOrIdent;
 import org.torqlang.core.lang.ActorSntc;
@@ -23,4 +24,6 @@ public interface ActorBuilderInit {
     ActorBuilderReady setSource(String source);
 
     ActorBuilderInit setTrace(boolean trace);
+
+    ActorRef spawn(String source) throws Exception;
 }

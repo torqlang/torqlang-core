@@ -102,7 +102,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitAskSntc(AskSntc lang, FormatterState state) throws Exception {
-        state.write("ask ");
+        state.write("handle ask ");
         lang.pat.accept(this, state.inline());
         if (lang.responseType != null) {
             state.write(" -> ");
@@ -630,7 +630,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitTellSntc(TellSntc lang, FormatterState state) throws Exception {
-        state.write("tell ");
+        state.write("handle tell ");
         lang.pat.accept(this, state.inline());
         state.write(" in");
         FormatterState nextLevelState = state.nextLevel();

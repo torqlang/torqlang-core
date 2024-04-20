@@ -108,7 +108,7 @@ final class TimerMod {
                     throw new IllegalArgumentException("Unrecognized message: " + envelope);
                 }
             } catch (Throwable throwable) {
-                FailedValue failedValue = FailedValue.create(address().toString(), null, throwable);
+                FailedValue failedValue = FailedValue.create(address().toString(), throwable);
                 if (envelope.requester() != null) {
                     envelope.requester().send(createResponse(failedValue, envelope.requestId()));
                 } else {

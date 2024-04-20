@@ -12,11 +12,11 @@ import org.torqlang.core.klvm.CompleteRec;
 import org.torqlang.core.klvm.FailedValue;
 import org.torqlang.core.klvm.Rec;
 import org.torqlang.core.klvm.Str;
+import org.torqlang.core.local.Actor;
 import org.torqlang.core.local.RequestClient;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.torqlang.core.local.ActorSystem.actorBuilder;
 import static org.torqlang.core.local.ActorSystem.createAddress;
 
 public final class OrderDao {
@@ -65,7 +65,7 @@ public final class OrderDao {
                 'price': 8.00m,
                 'amountDue': 8.00m
             })
-            ask 'find-order'#{'order-id': id} in
+            handle ask 'find-order'#{'order-id': id} in
                 var order = orders.get(id)
                 if order == nothing then
                     throw 'error'#{'name': 'org.torqlang.examples.NotFoundError',
@@ -87,7 +87,7 @@ public final class OrderDao {
     }
 
     public static void perform() throws Exception {
-        ActorRef actorRef = actorBuilder()
+        ActorRef actorRef = Actor.builder()
             .setAddress(createAddress(OrderDao.class.getName()))
             .setSource(SOURCE)
             .spawn();

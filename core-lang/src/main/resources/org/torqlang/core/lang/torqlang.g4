@@ -58,18 +58,18 @@ act: 'act' stmt_or_expr+ 'end';
 actor: 'actor' ident? '(' pat_list? ')' 'in'
        (stmt_or_expr | message_handler)+ 'end';
 
-message_handler: tell_handler | ask_handler;
+message_handler: 'handle' (tell_handler | ask_handler);
 
-tell_handler: 'tell' pat
+tell_handler: 'tell' pat ('when' stmt_or_expr)?
               'in' stmt_or_expr+ 'end';
 
-ask_handler: 'ask' pat return_type_anno?
+ask_handler: 'ask' pat ('when' stmt_or_expr)? return_type_anno?
              'in' stmt_or_expr+ 'end';
 
 begin: 'begin' stmt_or_expr+ 'end';
 
 case: 'case' stmt_or_expr
-      ('of' pat ('if' stmt_or_expr)? 'then' stmt_or_expr+)+
+      ('of' pat ('when' stmt_or_expr)? 'then' stmt_or_expr+)+
       ('else' stmt_or_expr+)? 'end';
 
 for: 'for' pat 'in' stmt_or_expr 'do' stmt_or_expr+ 'end';

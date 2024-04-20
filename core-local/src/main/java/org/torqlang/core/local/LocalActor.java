@@ -51,7 +51,8 @@ final class LocalActor extends AbstractActor {
 
     private boolean trace;
     private Machine machine;
-    private EnvEntry handlerEntry;
+    private EnvEntry askHandlerEntry;
+    private EnvEntry tellHandlerEntry;
     private Envelope activeRequest;
     private Object waitState;
     private int childCount;
@@ -230,7 +231,7 @@ final class LocalActor extends AbstractActor {
         streamObj.appendRemainingResponseValues(values);
     }
 
-    private OnMessageResult computeTimeSlice() {
+    private ComputeAdvice computeTimeSlice() {
         // Compute only returns a halt in response to two conditions:
         //     1. Compute touched a FailedValue
         //         (a) The halt contains the touched (remote) FailedValue but the local stack
@@ -271,10 +272,10 @@ final class LocalActor extends AbstractActor {
         } else if (advice.isHalt()) {
             throw new MachineHaltError((ComputeHalt) advice);
         }
-        return NOT_FINISHED;
+        return advice;
     }
 
-    private OnMessageResult computeTimeSliceUsingHandler(Value value) {
+    private ComputeAdvice computeTimeSliceUsingHandler(Value value, EnvEntry handlerEntry) {
         if (trace) {
             logInfo("Processing request message " + value);
         }
@@ -317,7 +318,8 @@ final class LocalActor extends AbstractActor {
         Env actEnv = Env.create(ROOT_ENV, act.input);
         actEnv = actEnv.add(new EnvEntry(act.target, new Var()));
         machine = new Machine(LocalActor.this, new Stack(act.seq, actEnv, null));
-        return computeTimeSlice();
+        computeTimeSlice();
+        return NOT_FINISHED;
     }
 
     private OnMessageResult onConfigure(Envelope envelope) {
@@ -325,17 +327,17 @@ final class LocalActor extends AbstractActor {
             logInfo("Configuring");
         }
 
+        // Extract the actor configuration from the incoming Configure message
         Configure configure = (Configure) envelope.message();
         ActorCfg actorCfg = configure.actorCfg;
-        machine = new Machine(LocalActor.this, null);
 
-        // Build a list of arguments to be passed to the handler constructor
-        // For each argument we must do two things:
-        //   1) Add an environment entry mapping ArgIdent -> Var
-        //   2) Add the ArgIdent to the arguments list
+        // Create the kernel machine and necessary environment to construct the handlers
+        machine = new Machine(LocalActor.this, null);
         List<EnvEntry> envEntries = new ArrayList<>();
-        handlerEntry = new EnvEntry(Ident.HANDLER, new Var());
-        envEntries.add(handlerEntry);
+        EnvEntry handlersEntry = new EnvEntry(Ident.HANDLERS, new Var());
+        envEntries.add(handlersEntry);
+
+        // Build a list of arguments for the handlers constructor
         List<Complete> args = actorCfg.args();
         List<CompleteOrIdent> argIdents = new ArrayList<>();
         for (int i = 0; i < args.size(); i++) {
@@ -343,20 +345,27 @@ final class LocalActor extends AbstractActor {
             argIdents.add(argIdent);
             envEntries.add(new EnvEntry(argIdent, new Var(args.get(i))));
         }
+        argIdents.add(Ident.HANDLERS);
 
-        // Add the well-known identifier HANDLER as the result target
-        argIdents.add(Ident.HANDLER);
-
-        // Create a statement that will construct a handler with the environment and arguments built previously
-        Var constructorVar = new Var(actorCfg.handlerCtor());
-        envEntries.add(new EnvEntry(Ident.HANDLER_CTOR, constructorVar));
+        // Compute the handlers
+        Var constructorVar = new Var(actorCfg.handlersCtor());
+        envEntries.add(new EnvEntry(Ident.HANDLERS_CTOR, constructorVar));
         Env configEnv = Env.create(ROOT_ENV, envEntries);
-        // The actor constructor targets HANDLER with its result
-        ApplyStmt computeStmt = new ApplyStmt(Ident.HANDLER_CTOR, argIdents, emptySourceSpan());
+        ApplyStmt computeStmt = new ApplyStmt(Ident.HANDLERS_CTOR, argIdents, emptySourceSpan());
         machine.pushStackEntry(computeStmt, configEnv);
+        ComputeAdvice advice = computeTimeSlice();
+        if (advice != ComputeEnd.SINGLETON) {
+            throw new IllegalStateException("Did not compute handlers");
+        }
+        if (!(handlersEntry.var.valueOrVarSet() instanceof Tuple handlers)) {
+            throw new IllegalStateException("Handlers is not a Tuple");
+        }
 
-        // Compute the HANDLER value held for the actor's lifetime as part of 'handlerEntry' field.
-        return computeTimeSlice();
+        // Save the `ask` handlers and `tell` handlers separately
+        askHandlerEntry = new EnvEntry(Ident.HANDLER, new Var((Value) handlers.valueAt(0)));
+        tellHandlerEntry = new EnvEntry(Ident.HANDLER, new Var((Value) handlers.valueAt(1)));
+
+        return NOT_FINISHED;
     }
 
     private OnMessageResult onControl(Envelope envelope) {
@@ -417,7 +426,8 @@ final class LocalActor extends AbstractActor {
             if (trace) {
                 logInfo("Resuming computation after binding response values");
             }
-            return computeTimeSlice();
+            computeTimeSlice();
+            return NOT_FINISHED;
         } else {
             if (next.length != 1) {
                 throw new IllegalArgumentException("Not a single envelope");
@@ -427,11 +437,13 @@ final class LocalActor extends AbstractActor {
                 return onControl(only);
             }
             if (only.isNotify()) {
-                return computeTimeSliceUsingHandler((Value) only.message());
+                computeTimeSliceUsingHandler((Value) only.message(), tellHandlerEntry);
+                return NOT_FINISHED;
             }
             // We know we have a request
             activeRequest = only;
-            return computeTimeSliceUsingHandler((Value) only.message());
+            computeTimeSliceUsingHandler((Value) only.message(), askHandlerEntry);
+            return NOT_FINISHED;
         }
     }
 
@@ -496,7 +508,8 @@ final class LocalActor extends AbstractActor {
         if (trace) {
             logInfo("Resuming computation");
         }
-        return computeTimeSlice();
+        computeTimeSlice();
+        return NOT_FINISHED;
     }
 
     private OnMessageResult onStop(Envelope envelope) {
@@ -519,7 +532,8 @@ final class LocalActor extends AbstractActor {
         } catch (WaitException exc) {
             throw new IllegalStateException("Received WaitException binding a SyncVar message");
         }
-        return computeTimeSlice();
+        computeTimeSlice();
+        return NOT_FINISHED;
     }
 
     @Override
@@ -681,8 +695,8 @@ final class LocalActor extends AbstractActor {
 
         // Map each captured environment entry from the parent environment to the child environment.
 
-        Closure parentHandlerCtor = parentCfg.handlerCtor();
-        Env parentCapturedEnv = parentHandlerCtor.capturedEnv();
+        Closure parentHandlersCtor = parentCfg.handlersCtor();
+        Env parentCapturedEnv = parentHandlersCtor.capturedEnv();
         HashMap<Ident, Var> childCapturedEnvMap = new HashMap<>();
         for (EnvEntry parentEntry : parentCapturedEnv) {
             // We can skip free variables that reference root env entries because the root env is static (and Complete)
@@ -702,8 +716,8 @@ final class LocalActor extends AbstractActor {
         // We now have complete values (we are past the point of a potential WaitException) and are ready to create and
         // spawn the child actor.
 
-        Closure childHandlerCtor = new Closure(parentHandlerCtor.procDef(), childCapturedEnv);
-        ActorCfg childConfig = new ActorCfg(parentCfg.args(), childHandlerCtor);
+        Closure childHandlersCtor = new Closure(parentHandlersCtor.procDef(), childCapturedEnv);
+        ActorCfg childConfig = new ActorCfg(parentCfg.args(), childHandlersCtor);
         Configure configure = new Configure(childConfig);
         LocalActor childActor = new LocalActor(nextChildAddress(), createMailbox(), computationExecutor(),
             createLogger(), trace);

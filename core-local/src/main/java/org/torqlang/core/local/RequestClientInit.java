@@ -11,10 +11,14 @@ import org.torqlang.core.actor.ActorRef;
 import org.torqlang.core.actor.Address;
 import org.torqlang.core.klvm.Complete;
 
+import java.util.concurrent.TimeUnit;
+
 public interface RequestClientInit {
     Address address();
 
     RequestClientResponse send(ActorRef actorRef, Complete message);
+
+    Object sendAndAwaitResponse(ActorRef actorRef, Complete message, long timeout, TimeUnit unit) throws Exception;
 
     RequestClientInit setAddress(Address address);
 }

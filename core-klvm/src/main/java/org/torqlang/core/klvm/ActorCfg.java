@@ -14,11 +14,11 @@ import java.util.List;
 public final class ActorCfg implements Obj {
 
     private final List<Complete> args;
-    private final Closure handlerCtor;
+    private final Closure handlersCtor;
 
-    public ActorCfg(List<Complete> args, Closure handlerCtor) {
+    public ActorCfg(List<Complete> args, Closure handlersCtor) {
         this.args = args;
-        this.handlerCtor = handlerCtor;
+        this.handlersCtor = handlersCtor;
     }
 
     @Override
@@ -30,8 +30,8 @@ public final class ActorCfg implements Obj {
         return args;
     }
 
-    public final Closure handlerCtor() {
-        return handlerCtor;
+    public final Closure handlersCtor() {
+        return handlersCtor;
     }
 
     public final ValueOrVar select(Feature feature) throws WaitException {

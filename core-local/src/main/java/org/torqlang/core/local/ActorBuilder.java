@@ -19,6 +19,7 @@ import org.torqlang.core.util.SourceSpan;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.torqlang.core.local.ActorSystem.*;
 
@@ -69,6 +70,8 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
 {
     private static final Str CFG = Str.of("cfg");
     private static final int TIME_SLICE_1000 = 10_000;
+
+    private static final AtomicInteger nextActorId = new AtomicInteger(0);
 
     private State state;
 
@@ -126,6 +129,12 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     @Override
     public final List<? extends CompleteOrIdent> args() {
         return args;
+    }
+
+    private void checkAddress() {
+        if (address == null) {
+            address = ActorSystem.createAddress("anonymous-actor-" + nextActorId.getAndIncrement());
+        }
     }
 
     @Override
@@ -288,17 +297,17 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
         if (state != State.CONSTRUCTED) {
             throw new IllegalStateException("Cannot spawn at state: " + state);
         }
-        // The actor record will contain resolved fields. Therefore, we can access the ActorCfgCtor directly.
-        ActorCfgCtor actorCfgCtor = (ActorCfgCtor) actorRec.findValue(CFG);
+        // The actor record will contain values (not vars). Therefore, we can access the ActorCfgtr directly.
+        ActorCfgtr actorCfgtr = (ActorCfgtr) actorRec.findValue(CFG);
         Env env = Env.create(LocalActor.rootEnv(),
             List.of(
-                new EnvEntry(Ident.ACTOR_CFG_CTOR, new Var(actorCfgCtor)),
+                new EnvEntry(Ident.ACTOR_CFGTR, new Var(actorCfgtr)),
                 new EnvEntry(Ident.RESULT, new Var())
             )
         );
         List<CompleteOrIdent> argsWithTarget = ListTools.append(CompleteOrIdent.class, args, Ident.RESULT);
         List<Stmt> localStmts = new ArrayList<>();
-        localStmts.add(new ApplyStmt(Ident.ACTOR_CFG_CTOR, argsWithTarget, SourceSpan.emptySourceSpan()));
+        localStmts.add(new ApplyStmt(Ident.ACTOR_CFGTR, argsWithTarget, SourceSpan.emptySourceSpan()));
         SeqStmt seqStmt = new SeqStmt(localStmts, SourceSpan.emptySourceSpan());
         Stack stack = new Stack(seqStmt, env, null);
         Machine.compute(new Machine(stack), TIME_SLICE_1000);
@@ -307,10 +316,17 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
+        checkAddress();
         localActor = new LocalActor(address, createMailbox(), computationExecutor(), createLogger(), trace);
         localActor.configure(actorCfg);
         state = State.SPAWNED;
         return localActor;
+    }
+
+    @Override
+    public final ActorRef spawn(String source) throws Exception {
+        setSource(source);
+        return spawn();
     }
 
     private enum State {

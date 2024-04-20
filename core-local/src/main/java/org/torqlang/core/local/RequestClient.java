@@ -15,10 +15,13 @@ import org.torqlang.core.klvm.Nothing;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.torqlang.core.local.ActorSystem.createRequest;
 
 public class RequestClient implements RequestClientInit, RequestClientResponse {
+    private static final AtomicInteger nextClientId = new AtomicInteger(0);
+
     private Address address;
     private RequestClientActor requestClientActor;
     private CompletableFuture<Envelope> futureResponse;
@@ -43,17 +46,25 @@ public class RequestClient implements RequestClientInit, RequestClientResponse {
     }
 
     @Override
-    public RequestClientResponse send(ActorRef actorRef, Complete message) {
+    public final RequestClientResponse send(ActorRef actorRef, Complete message) {
         if (requestClientActor != null) {
             throw new IllegalStateException("Request already sent");
         }
         if (address == null) {
-            throw new IllegalStateException("Null address");
+            address = ActorSystem.createAddress("anonymous-request-client-" + nextClientId.getAndIncrement());
         }
         futureResponse = new CompletableFuture<>();
         requestClientActor = new RequestClientActor();
         actorRef.send(createRequest(message, requestClientActor, Nothing.SINGLETON));
         return this;
+    }
+
+    @Override
+    public final Object sendAndAwaitResponse(ActorRef actorRef, Complete message, long timeout, TimeUnit unit)
+        throws Exception
+    {
+        send(actorRef, message);
+        return awaitResponse(timeout, unit);
     }
 
     @Override

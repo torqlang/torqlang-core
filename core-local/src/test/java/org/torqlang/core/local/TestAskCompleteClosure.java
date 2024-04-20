@@ -14,7 +14,6 @@ import org.torqlang.core.klvm.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
-import static org.torqlang.core.local.ActorSystem.actorBuilder;
 import static org.torqlang.core.local.ActorSystem.createAddress;
 
 public class TestAskCompleteClosure {
@@ -26,7 +25,7 @@ public class TestAskCompleteClosure {
                 func echo(m) in
                     m
                 end
-                ask 'perform' in
+                handle ask 'perform' in
                     [
                         act echo(1) end,
                         act echo(2) end,
@@ -34,49 +33,56 @@ public class TestAskCompleteClosure {
                     ]
                 end
             end""";
-        ActorBuilderGenerated g = actorBuilder()
+        ActorBuilderGenerated g = Actor.builder()
             .setAddress(createAddress(getClass().getName() + "Actor"))
             .setSource(source)
             .generate();
         String expected = """
-            local $actor_cfg_ctor in
-                $create_actor_cfg_ctor(proc ($r) in // free vars: $act, $respond
-                    local echo in
+            local $actor_cfgtr in
+                $create_actor_cfgtr(proc ($r) in // free vars: $act, $respond
+                    local echo, $v0, $v6 in
                         $create_proc(proc (m, $r) in
                             $bind(m, $r)
                         end, echo)
                         $create_proc(proc ($m) in // free vars: $act, $respond, echo
                             local $else in
                                 $create_proc(proc () in // free vars: $m
-                                    local $v0 in
-                                        $create_rec('error'#{'name': 'org.torqlang.core.lang.NotHandledError', 'message': $m}, $v0)
-                                        throw $v0
+                                    local $v1 in
+                                        $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': $m}, $v1)
+                                        throw $v1
                                     end
                                 end, $else)
                                 case $m of 'perform' then
-                                    local $v1 in
-                                        local $v2, $v3, $v4 in
+                                    local $v2 in
+                                        local $v3, $v4, $v5 in
                                             $act
-                                                echo(1, $v2)
+                                                echo(1, $v3)
                                             end
                                             $act
-                                                echo(2, $v3)
+                                                echo(2, $v4)
                                             end
                                             $act
-                                                echo(3, $v4)
+                                                echo(3, $v5)
                                             end
-                                            $create_tuple([$v2, $v3, $v4], $v1)
+                                            $create_tuple([$v3, $v4, $v5], $v2)
                                         end
-                                        $respond($v1)
+                                        $respond($v2)
                                     end
                                 else
                                     $else()
                                 end
                             end
-                        end, $r)
+                        end, $v0)
+                        $create_proc(proc ($m) in
+                            local $v7 in
+                                $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': $m}, $v7)
+                                throw $v7
+                            end
+                        end, $v6)
+                        $create_tuple('handlers'#[$v0, $v6], $r)
                     end
-                end, $actor_cfg_ctor)
-                $create_rec('ConcurrentData'#{'cfg': $actor_cfg_ctor}, ConcurrentData)
+                end, $actor_cfgtr)
+                $create_rec('ConcurrentData'#{'cfg': $actor_cfgtr}, ConcurrentData)
             end""";
         assertEquals(expected, g.createActorRecStmt().toString());
         ActorRef actorRef = g.spawn();
@@ -106,7 +112,7 @@ public class TestAskCompleteClosure {
                     next_value := @next_value + 1
                     answer
                 end
-                ask 'perform' in
+                handle ask 'perform' in
                     [
                         act next() end,
                         act next() end,
@@ -114,14 +120,14 @@ public class TestAskCompleteClosure {
                     ]
                 end
             end""";
-        ActorBuilderGenerated g = actorBuilder()
+        ActorBuilderGenerated g = Actor.builder()
             .setAddress(createAddress(getClass().getName() + "Actor"))
             .setSource(source)
             .generate();
         String expected = """
-            local $actor_cfg_ctor in
-                $create_actor_cfg_ctor(proc ($r) in // free vars: $act, $import, $respond
-                    local Cell, next_value, next in
+            local $actor_cfgtr in
+                $create_actor_cfgtr(proc ($r) in // free vars: $act, $import, $respond
+                    local Cell, next_value, next, $v2, $v8 in
                         $import('system', ['Cell'])
                         $select_apply(Cell, ['new'], 0, next_value)
                         $create_proc(proc ($r) in // free vars: next_value
@@ -140,35 +146,42 @@ public class TestAskCompleteClosure {
                         $create_proc(proc ($m) in // free vars: $act, $respond, next
                             local $else in
                                 $create_proc(proc () in // free vars: $m
-                                    local $v2 in
-                                        $create_rec('error'#{'name': 'org.torqlang.core.lang.NotHandledError', 'message': $m}, $v2)
-                                        throw $v2
+                                    local $v3 in
+                                        $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': $m}, $v3)
+                                        throw $v3
                                     end
                                 end, $else)
                                 case $m of 'perform' then
-                                    local $v3 in
-                                        local $v4, $v5, $v6 in
-                                            $act
-                                                next($v4)
-                                            end
+                                    local $v4 in
+                                        local $v5, $v6, $v7 in
                                             $act
                                                 next($v5)
                                             end
                                             $act
                                                 next($v6)
                                             end
-                                            $create_tuple([$v4, $v5, $v6], $v3)
+                                            $act
+                                                next($v7)
+                                            end
+                                            $create_tuple([$v5, $v6, $v7], $v4)
                                         end
-                                        $respond($v3)
+                                        $respond($v4)
                                     end
                                 else
                                     $else()
                                 end
                             end
-                        end, $r)
+                        end, $v2)
+                        $create_proc(proc ($m) in
+                            local $v9 in
+                                $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': $m}, $v9)
+                                throw $v9
+                            end
+                        end, $v8)
+                        $create_tuple('handlers'#[$v2, $v8], $r)
                     end
-                end, $actor_cfg_ctor)
-                $create_rec('ConcurrentData'#{'cfg': $actor_cfg_ctor}, ConcurrentData)
+                end, $actor_cfgtr)
+                $create_rec('ConcurrentData'#{'cfg': $actor_cfgtr}, ConcurrentData)
             end""";
         assertEquals(expected, g.createActorRecStmt().toString());
         ActorRef actorRef = g.spawn();
