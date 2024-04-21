@@ -8,7 +8,7 @@
 package org.torqlang.examples;
 
 import org.torqlang.core.actor.ActorRef;
-import org.torqlang.core.klvm.Dec128;
+import org.torqlang.core.klvm.Int64;
 import org.torqlang.core.local.Actor;
 import org.torqlang.core.local.RequestClient;
 
@@ -22,10 +22,10 @@ public final class Factorial {
         actor Factorial() in
             func fact(x) in
                 func fact_cps(n, k) in
-                    if n < 2m then k
-                    else fact_cps(n - 1m, n * k) end
+                    if n < 2 then k
+                    else fact_cps(n - 1, n * k) end
                 end
-                fact_cps(x, 1m)
+                fact_cps(x, 1)
             end
             handle ask x in
                 fact(x)
@@ -43,9 +43,9 @@ public final class Factorial {
             .spawn(SOURCE);
 
         Object response = RequestClient.builder()
-            .sendAndAwaitResponse(actorRef, Dec128.of(10), 100, TimeUnit.MILLISECONDS);
+            .sendAndAwaitResponse(actorRef, Int64.of(10), 100, TimeUnit.MILLISECONDS);
 
-        checkExpectedResponse(Dec128.of(3628800), response);
+        checkExpectedResponse(Int64.of(3628800), response);
     }
 
 }
