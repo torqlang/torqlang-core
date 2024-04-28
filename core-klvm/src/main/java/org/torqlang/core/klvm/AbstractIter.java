@@ -14,11 +14,11 @@ public abstract class AbstractIter implements Proc {
 
     private static final int EXPECTED_ARG_COUNT = 1;
 
-    private final List<ValueOrVar> values;
+    private final List<ValueOrVar> elems;
     private int nextIndex;
 
-    public AbstractIter(Collection<? extends ValueOrVar> values) {
-        this.values = List.copyOf(values);
+    public AbstractIter(Collection<? extends ValueOrVar> elems) {
+        this.elems = List.copyOf(elems);
         this.nextIndex = 0;
     }
 
@@ -28,9 +28,9 @@ public abstract class AbstractIter implements Proc {
             throw new InvalidArgCountError(EXPECTED_ARG_COUNT, ys, this);
         }
         ValueOrVar next;
-        int size = values.size();
+        int size = elems.size();
         if (nextIndex < size) {
-            next = values.get(nextIndex);
+            next = elems.get(nextIndex);
             nextIndex++;
         } else {
             next = Eof.SINGLETON;

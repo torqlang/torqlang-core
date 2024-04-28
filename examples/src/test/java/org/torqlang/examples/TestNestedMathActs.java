@@ -13,7 +13,7 @@ public class TestNestedMathActs {
 
     @Test
     public void test() throws Exception {
-        NestedMathActs.perform();
+        new NestedMathActs().performWithErrorCheck();
     }
 
 }

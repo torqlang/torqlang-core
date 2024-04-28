@@ -23,9 +23,7 @@ import java.lang.invoke.MethodType;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.torqlang.examples.ExamplesTools.checkExpectedResponse;
-
-public final class AsyncLoadStrings {
+public final class AsyncLoadStrings extends AbstractExample {
 
     public static final String SOURCE = """
         actor LoadStrings() in
@@ -46,11 +44,12 @@ public final class AsyncLoadStrings {
     }
 
     public static void main(String[] args) throws Exception {
-        perform();
+        new AsyncLoadStrings().performWithErrorCheck();
         System.exit(0);
     }
 
-    public static void perform() throws Exception {
+    @Override
+    public final void perform() throws Exception {
 
         MethodHandles.Lookup lookup = MethodHandles.lookup();
         MethodHandle methodHandle = lookup.findStatic(AsyncLoadStrings.class, "loadStrings", MethodType.methodType(List.class));
@@ -60,8 +59,7 @@ public final class AsyncLoadStrings {
             .build();
         ModuleSystem.register("examples.Procs", () -> moduleRec);
 
-        ActorRef actorRef = Actor.builder()
-            .spawn(SOURCE);
+        ActorRef actorRef = Actor.builder().spawn(SOURCE).actorRef();
 
         Object response = RequestClient.builder()
             .sendAndAwaitResponse(actorRef, Str.of("details"), 100, TimeUnit.MILLISECONDS);

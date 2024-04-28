@@ -5,15 +5,10 @@
  * If not, see <http://torqlang.github.io/licensing/torqlang-license-v1_0>.
  */
 
-package org.torqlang.examples;
+package org.torqlang.core.klvm;
 
-import org.junit.Test;
+public interface FieldIterSource {
 
-public class TestFactorialWithTypeAnnos {
-
-    @Test
-    public void test() throws Exception {
-        new FactorialWithTypeAnnos().performWithErrorCheck();
-    }
+    ValueOrVar fieldIter() throws WaitException;
 
 }

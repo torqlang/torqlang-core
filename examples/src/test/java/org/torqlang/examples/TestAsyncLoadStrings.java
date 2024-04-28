@@ -13,7 +13,7 @@ public class TestAsyncLoadStrings {
 
     @Test
     public void test() throws Exception {
-        AsyncLoadStrings.perform();
+        new AsyncLoadStrings().performWithErrorCheck();
     }
 
 }

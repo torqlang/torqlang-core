@@ -400,7 +400,7 @@ public final class Parser {
             }
             if (current.substringEquals(SELF_VALUE)) {
                 nextToken(); // accept 'self' token
-                return new IdentAsExpr(Ident.SELF, current);
+                return new IdentAsExpr(Ident.$SELF, current);
             }
             if (current.substringEquals(BREAK_VALUE)) {
                 nextToken(); // accept 'break' token

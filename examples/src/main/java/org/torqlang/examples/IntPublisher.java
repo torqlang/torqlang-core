@@ -17,9 +17,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
-import static org.torqlang.core.local.ActorSystem.createAddress;
-
-public final class IntPublisher {
+public final class IntPublisher extends AbstractExample {
 
     public static final String SOURCE = """
         actor IntPublisher(first, last, incr) in
@@ -46,15 +44,17 @@ public final class IntPublisher {
         end""";
 
     public static void main(String[] args) throws Exception {
-        perform();
+        new IntPublisher().performWithErrorCheck();
         System.exit(0);
     }
 
-    public static void perform() throws Exception {
+    @Override
+    public final void perform() throws Exception {
 
         ActorRef actorRef = Actor.builder()
             .setArgs(List.of(Int32.of(10), Int32.of(20), Int32.I32_1))
-            .spawn(SOURCE);
+            .spawn(SOURCE)
+            .actorRef();
 
         CompleteRec m = Rec.completeRecBuilder()
             .setLabel(Str.of("request"))

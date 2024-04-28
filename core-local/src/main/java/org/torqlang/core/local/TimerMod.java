@@ -40,17 +40,17 @@ import static org.torqlang.core.local.ActorSystem.createResponse;
 final class TimerMod {
 
     public static final Ident TIMER_IDENT = Ident.create("Timer");
-    private static final int TIMER_CFG_CTOR_ARG_COUNT = 3;
-    private static final CompleteProc TIMER_CFG_CTOR = TimerMod::timerCfgCtor;
+    private static final int TIMER_CFGTR_ARG_COUNT = 3;
+    private static final CompleteProc TIMER_CFGTR = TimerMod::timerCfgtr;
     public static final CompleteRec TIMER_ACTOR = createTimerActor();
 
     private static CompleteRec createTimerActor() {
-        return CompleteRec.singleton(Str.of("cfg"), TIMER_CFG_CTOR);
+        return CompleteRec.singleton(Str.of("cfg"), TIMER_CFGTR);
     }
 
-    private static void timerCfgCtor(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
-        if (ys.size() != TIMER_CFG_CTOR_ARG_COUNT) {
-            throw new InvalidArgCountError(TIMER_CFG_CTOR_ARG_COUNT, ys, "TimerCfgCtor");
+    private static void timerCfgtr(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
+        if (ys.size() != TIMER_CFGTR_ARG_COUNT) {
+            throw new InvalidArgCountError(TIMER_CFGTR_ARG_COUNT, ys, "TimerCfgCtor");
         }
         Num period = (Num) ys.get(0).resolveValue(env);
         Str timeUnit = (Str) ys.get(1).resolveValue(env);

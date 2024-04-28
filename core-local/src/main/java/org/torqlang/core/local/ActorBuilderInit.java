@@ -9,12 +9,17 @@ package org.torqlang.core.local;
 
 import org.torqlang.core.actor.ActorRef;
 import org.torqlang.core.actor.Address;
+import org.torqlang.core.klvm.ActorCfg;
 import org.torqlang.core.klvm.CompleteOrIdent;
 import org.torqlang.core.lang.ActorSntc;
 
 import java.util.List;
 
 public interface ActorBuilderInit {
+    ActorBuilderConfigured configure(String source) throws Exception;
+
+    ActorBuilderConfigured setActorCfg(ActorCfg actorCfg);
+
     ActorBuilderParsed setActorSntc(ActorSntc actorSntc);
 
     ActorBuilderInit setAddress(Address address);
@@ -25,5 +30,5 @@ public interface ActorBuilderInit {
 
     ActorBuilderInit setTrace(boolean trace);
 
-    ActorRef spawn(String source) throws Exception;
+    ActorBuilderSpawned spawn(String source) throws Exception;
 }

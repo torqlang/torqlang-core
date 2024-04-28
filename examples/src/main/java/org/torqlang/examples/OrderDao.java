@@ -19,7 +19,10 @@ import java.util.concurrent.TimeUnit;
 
 import static org.torqlang.core.local.ActorSystem.createAddress;
 
-public final class OrderDao {
+/*
+ * TODO: Delete OrderDao later when its value has been replaced by Northwind examples
+ */
+public final class OrderDao extends AbstractExample {
 
     public static final String SOURCE = """
         actor OrderDao() in
@@ -82,15 +85,17 @@ public final class OrderDao {
         end""";
 
     public static void main(String[] args) throws Exception {
-        perform();
+        new OrderDao().performWithErrorCheck();
         System.exit(0);
     }
 
-    public static void perform() throws Exception {
+    @Override
+    public final void perform() throws Exception {
         ActorRef actorRef = Actor.builder()
             .setAddress(createAddress(OrderDao.class.getName()))
             .setSource(SOURCE)
-            .spawn();
+            .spawn()
+            .actorRef();
 
         // Find order ORDER-002
 

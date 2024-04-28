@@ -11,6 +11,7 @@ import org.torqlang.core.util.NeedsImpl;
 
 import java.util.List;
 
+@SuppressWarnings("ClassCanBeRecord")
 public final class ActorCfg implements Obj {
 
     private final List<Complete> args;

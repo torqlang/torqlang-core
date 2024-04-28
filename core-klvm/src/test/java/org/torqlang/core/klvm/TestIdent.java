@@ -50,8 +50,8 @@ public class TestIdent {
         i = Ident.create("a");
         assertEquals("a", i.name);
 
-        i = Ident.create("`this is an ident`");
-        assertEquals("`this is an ident`", i.name);
+        i = Ident.create("this is an ident");
+        assertEquals("this is an ident", i.name);
 
         exc = assertThrows(IllegalArgumentException.class, () -> Ident.create("$not_allowed"));
         assertEquals(KlvmMessageText.USER_IDENTIFIERS_CANNOT_BEGIN_WITH_A_DOLLAR_SIGN, exc.getMessage());

@@ -5,10 +5,15 @@
  * If not, see <http://torqlang.github.io/licensing/torqlang-license-v1_0>.
  */
 
-package org.torqlang.core.klvm;
+package org.torqlang.examples;
 
-public interface IterSource {
+import org.junit.Test;
 
-    ValueOrVar iter() throws WaitException;
+public class TestQueryOrderItems {
+
+    @Test
+    public void test() throws Exception {
+        new QueryOrderItems().performWithErrorCheck();
+    }
 
 }

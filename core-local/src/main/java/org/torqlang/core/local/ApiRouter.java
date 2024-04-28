@@ -5,15 +5,13 @@
  * If not, see <http://torqlang.github.io/licensing/torqlang-license-v1_0>.
  */
 
-package org.torqlang.examples;
+package org.torqlang.core.local;
 
-import org.junit.Test;
+public interface ApiRouter {
 
-public class TestFactorialWithTypeAnnos {
-
-    @Test
-    public void test() throws Exception {
-        new FactorialWithTypeAnnos().performWithErrorCheck();
+    static StaticApiRouterBuilder staticBuilder() {
+        return new StaticApiRouterBuilder();
     }
 
+    ApiRoute findRoute(ApiPath path);
 }

@@ -15,9 +15,7 @@ import org.torqlang.core.local.RequestClient;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.torqlang.examples.ExamplesTools.checkExpectedResponse;
-
-public final class ConcurrentMathWithIncr {
+public final class ConcurrentMathWithIncr extends AbstractExample {
 
     public static final String SOURCE = """
         actor ConcurrentMath() in
@@ -43,14 +41,14 @@ public final class ConcurrentMathWithIncr {
         end""";
 
     public static void main(String[] args) throws Exception {
-        perform();
+        new ConcurrentMathWithIncr().performWithErrorCheck();
         System.exit(0);
     }
 
-    public static void perform() throws Exception {
+    @Override
+    public final void perform() throws Exception {
 
-        ActorRef actorRef = Actor.builder()
-            .spawn(SOURCE);
+        ActorRef actorRef = Actor.builder().spawn(SOURCE).actorRef();
 
         // 1 + 2 * 3
         Object response = RequestClient.builder()

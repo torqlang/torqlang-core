@@ -34,7 +34,6 @@ public class BenchJavaFactorial {
     private static final BigDecimal FACTORIAL_100_DECIMAL128 =
         new BigDecimal("9.332621544394415268169923885626670E+157", MathContext.DECIMAL128);
 
-
     public static void main(String[] args) throws Exception {
         checkFactorial();
     }

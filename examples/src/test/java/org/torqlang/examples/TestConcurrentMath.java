@@ -13,7 +13,7 @@ public class TestConcurrentMath {
 
     @Test
     public void test() throws Exception {
-        ConcurrentMath.perform();
+        new ConcurrentMath().performWithErrorCheck();
     }
 
 }

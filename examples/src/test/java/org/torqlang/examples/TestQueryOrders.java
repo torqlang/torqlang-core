@@ -9,11 +9,11 @@ package org.torqlang.examples;
 
 import org.junit.Test;
 
-public class TestFactorialWithTypeAnnos {
+public class TestQueryOrders {
 
     @Test
     public void test() throws Exception {
-        new FactorialWithTypeAnnos().performWithErrorCheck();
+        new QueryOrders().performWithErrorCheck();
     }
 
 }

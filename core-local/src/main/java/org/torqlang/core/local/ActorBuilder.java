@@ -45,28 +45,30 @@ import static org.torqlang.core.local.ActorSystem.*;
  *   methods:    setActorSntc, setSource, setAddress, setArgs, setTrace
  * READY
  *   properties: source
- *   methods:    parse, rewrite, generate, createActorRec, spawn
+ *   methods:    parse, rewrite, generate, construct, configure, spawn
  * PARSED
  *   properties: source, actorSntc
- *   methods:    rewrite, generate, createActorRec, spawn
+ *   methods:    rewrite, generate, construct, configure, spawn
  * REWRITTEN
  *   properties: source, actorSntc, actorIdent, actorExpr
- *   methods:    generate, createActorRec, spawn
+ *   methods:    generate, construct, configure, spawn
  * GENERATED
  *   properties: source, actorSntc, actorIdent, actorExpr, createActorRecStmt
- *   methods:    createActorRec, spawn
+ *   methods:    construct, configure, spawn
  * CONSTRUCTED
  *   properties: source, actorSntc, actorIdent, actorExpr, createActorRecStmt, actorRec
+ *   methods:    configure, spawn
+ * CONFIGURED
+ *   properties: source, actorSntc, actorIdent, actorExpr, createActorRecStmt, actorRec, actorCfg
  *   methods:    spawn
- *  SPAWNED
- *   properties: source, actorSntc, actorIdent, actorExpr, createActorRecStmt, actorRec, actorRef
+ * SPAWNED
+ *   properties: source, actorSntc, actorIdent, actorExpr, createActorRecStmt, actorRec, actorCfg, actorRef
  *   methods:    (none)
  *
- * Not shown above are the properties address, args, and trace, which are available after INIT. They do not cause a
- * state change, so they are not mentioned.
+ * Not shown above are the properties address, args, and trace, which are available after INIT.
  */
 public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, ActorBuilderParsed,
-    ActorBuilderRewritten, ActorBuilderGenerated, ActorBuilderConstructed, ActorBuilderSpawned
+    ActorBuilderRewritten, ActorBuilderGenerated, ActorBuilderConstructed, ActorBuilderConfigured, ActorBuilderSpawned
 {
     private static final Str CFG = Str.of("cfg");
     private static final int TIME_SLICE_1000 = 10_000;
@@ -138,7 +140,59 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     }
 
     @Override
-    public final ActorBuilderConstructed createActorRec() throws Exception {
+    public final ActorCfg config() {
+        return actorCfg;
+    }
+
+    @Override
+    public final ActorBuilderConfigured configure() throws Exception {
+        if (state == State.READY) {
+            parse();
+        }
+        if (state == State.PARSED) {
+            rewrite();
+        }
+        if (state == State.REWRITTEN) {
+            generate();
+        }
+        if (state == State.GENERATED) {
+            construct();
+        }
+        if (state != State.CONSTRUCTED) {
+            throw new IllegalStateException("Cannot spawn at state: " + state);
+        }
+        // The actor record will contain values (not vars). Therefore, we can access the ActorCfgtr directly.
+        ActorCfgtr actorCfgtr = (ActorCfgtr) actorRec.findValue(CFG);
+        Env env = Env.create(LocalActor.rootEnv(),
+            List.of(
+                new EnvEntry(Ident.$ACTOR_CFGTR, new Var(actorCfgtr)),
+                new EnvEntry(Ident.$R, new Var())
+            )
+        );
+        List<CompleteOrIdent> argsWithTarget = ListTools.append(CompleteOrIdent.class, args, Ident.$R);
+        List<Stmt> localStmts = new ArrayList<>();
+        localStmts.add(new ApplyStmt(Ident.$ACTOR_CFGTR, argsWithTarget, SourceSpan.emptySourceSpan()));
+        SeqStmt seqStmt = new SeqStmt(localStmts, SourceSpan.emptySourceSpan());
+        Stack stack = new Stack(seqStmt, env, null);
+        Machine.compute(new Machine(stack), TIME_SLICE_1000);
+        try {
+            actorCfg = (ActorCfg) env.get(Ident.$R).resolveValue();
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+        state = State.CONFIGURED;
+        return this;
+    }
+
+    @Override
+    public final ActorBuilderConfigured configure(String source) throws Exception {
+        setSource(source);
+        configure();
+        return this;
+    }
+
+    @Override
+    public final ActorBuilderConstructed construct() throws Exception {
         if (state == State.READY) {
             parse();
         }
@@ -226,6 +280,16 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     }
 
     @Override
+    public final ActorBuilderConfigured setActorCfg(ActorCfg actorCfg) {
+        if (state != State.INIT) {
+            throw new IllegalStateException("Cannot setActorSntc at state: " + state);
+        }
+        this.actorCfg = actorCfg;
+        state = State.CONFIGURED;
+        return this;
+    }
+
+    @Override
     public final ActorBuilderParsed setActorSntc(ActorSntc actorSntc) {
         if (state != State.INIT) {
             throw new IllegalStateException("Cannot setActorSntc at state: " + state);
@@ -281,7 +345,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     }
 
     @Override
-    public final ActorRef spawn() throws Exception {
+    public final ActorBuilderSpawned spawn() throws Exception {
         if (state == State.READY) {
             parse();
         }
@@ -292,41 +356,26 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
             generate();
         }
         if (state == State.GENERATED) {
-            createActorRec();
+            construct();
         }
-        if (state != State.CONSTRUCTED) {
+        if (state == State.CONSTRUCTED) {
+            configure();
+        }
+        if (state != State.CONFIGURED) {
             throw new IllegalStateException("Cannot spawn at state: " + state);
-        }
-        // The actor record will contain values (not vars). Therefore, we can access the ActorCfgtr directly.
-        ActorCfgtr actorCfgtr = (ActorCfgtr) actorRec.findValue(CFG);
-        Env env = Env.create(LocalActor.rootEnv(),
-            List.of(
-                new EnvEntry(Ident.ACTOR_CFGTR, new Var(actorCfgtr)),
-                new EnvEntry(Ident.RESULT, new Var())
-            )
-        );
-        List<CompleteOrIdent> argsWithTarget = ListTools.append(CompleteOrIdent.class, args, Ident.RESULT);
-        List<Stmt> localStmts = new ArrayList<>();
-        localStmts.add(new ApplyStmt(Ident.ACTOR_CFGTR, argsWithTarget, SourceSpan.emptySourceSpan()));
-        SeqStmt seqStmt = new SeqStmt(localStmts, SourceSpan.emptySourceSpan());
-        Stack stack = new Stack(seqStmt, env, null);
-        Machine.compute(new Machine(stack), TIME_SLICE_1000);
-        try {
-            actorCfg = (ActorCfg) env.get(Ident.RESULT).resolveValue();
-        } catch (Exception exc) {
-            throw new RuntimeException(exc);
         }
         checkAddress();
         localActor = new LocalActor(address, createMailbox(), computationExecutor(), createLogger(), trace);
         localActor.configure(actorCfg);
         state = State.SPAWNED;
-        return localActor;
+        return this;
     }
 
     @Override
-    public final ActorRef spawn(String source) throws Exception {
+    public final ActorBuilderSpawned spawn(String source) throws Exception {
         setSource(source);
-        return spawn();
+        spawn();
+        return this;
     }
 
     private enum State {
@@ -336,6 +385,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
         REWRITTEN,
         GENERATED,
         CONSTRUCTED,
+        CONFIGURED,
         SPAWNED
     }
 

@@ -16,9 +16,8 @@ import org.torqlang.core.local.RequestClient;
 import java.util.concurrent.TimeUnit;
 
 import static org.torqlang.core.local.ActorSystem.createAddress;
-import static org.torqlang.examples.ExamplesTools.checkExpectedResponse;
 
-public final class NestedMathActs {
+public final class NestedMathActs extends AbstractExample {
 
     public static final String SOURCE = """
         actor NestedMathActs() in
@@ -33,16 +32,18 @@ public final class NestedMathActs {
         end""";
 
     public static void main(String[] args) throws Exception {
-        perform();
+        new NestedMathActs().performWithErrorCheck();
         System.exit(0);
     }
 
-    public static void perform() throws Exception {
+    @Override
+    public final void perform() throws Exception {
 
         ActorRef actorRef = Actor.builder()
             .setAddress(createAddress(NestedMathActs.class.getName()))
             .setSource(SOURCE)
-            .spawn();
+            .spawn()
+            .actorRef();
 
         Object response = RequestClient.builder()
             .setAddress(createAddress("NestedMathClient"))

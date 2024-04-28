@@ -67,7 +67,7 @@ public class TestAskSingleAct {
                 $create_rec('SingleAct'#{'cfg': $actor_cfgtr}, SingleAct)
             end""";
         assertEquals(expected, g.createActorRecStmt().toString());
-        ActorRef actorRef = g.spawn();
+        ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
             .setAddress(createAddress("SingleActClient"))
             .send(actorRef, Str.of("perform"))

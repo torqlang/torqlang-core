@@ -13,7 +13,7 @@ public class TestMergeIntStreams {
 
     @Test
     public void test() throws Exception {
-        MergeIntStreams.perform();
+        new MergeIntStreams().performWithErrorCheck();
     }
 
 }

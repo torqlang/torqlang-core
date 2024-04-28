@@ -71,11 +71,11 @@ final class LocalActor extends AbstractActor {
 
     private static Env createRootEnv() {
         List<EnvEntry> bindings = List.of(
-            new EnvEntry(Ident.ACT, new Var((CompleteProc) LocalActor::onCallbackToAct)),
-            new EnvEntry(Ident.IMPORT, new Var((CompleteProc) LocalActor::onCallbackToImport)),
-            new EnvEntry(Ident.RESPOND, new Var((CompleteProc) LocalActor::onCallbackToRespondFromAsk)),
-            new EnvEntry(Ident.SELF, new Var((CompleteProc) LocalActor::onCallbackToSelf)),
-            new EnvEntry(Ident.SPAWN, new Var((CompleteProc) LocalActor::onCallbackToSpawn))
+            new EnvEntry(Ident.$ACT, new Var((CompleteProc) LocalActor::onCallbackToAct)),
+            new EnvEntry(Ident.$IMPORT, new Var((CompleteProc) LocalActor::onCallbackToImport)),
+            new EnvEntry(Ident.$RESPOND, new Var((CompleteProc) LocalActor::onCallbackToRespondFromAsk)),
+            new EnvEntry(Ident.$SELF, new Var((CompleteProc) LocalActor::onCallbackToSelf)),
+            new EnvEntry(Ident.$SPAWN, new Var((CompleteProc) LocalActor::onCallbackToSpawn))
         );
         return Env.create(bindings);
     }
@@ -282,9 +282,9 @@ final class LocalActor extends AbstractActor {
         if (machine.stack() != null) {
             throw new IllegalStateException("Previous computation is not ended");
         }
-        EnvEntry messageEntry = new EnvEntry(Ident.NEXT, new Var(value));
+        EnvEntry messageEntry = new EnvEntry(Ident.$NEXT, new Var(value));
         Env computeEnv = Env.create(Env.emptyEnv(), handlerEntry, messageEntry);
-        ApplyStmt computeStmt = new ApplyStmt(Ident.HANDLER, Collections.singletonList(Ident.NEXT), emptySourceSpan());
+        ApplyStmt computeStmt = new ApplyStmt(Ident.$HANDLER, Collections.singletonList(Ident.$NEXT), emptySourceSpan());
         machine.pushStackEntry(computeStmt, computeEnv);
         return computeTimeSlice();
     }
@@ -334,7 +334,7 @@ final class LocalActor extends AbstractActor {
         // Create the kernel machine and necessary environment to construct the handlers
         machine = new Machine(LocalActor.this, null);
         List<EnvEntry> envEntries = new ArrayList<>();
-        EnvEntry handlersEntry = new EnvEntry(Ident.HANDLERS, new Var());
+        EnvEntry handlersEntry = new EnvEntry(Ident.$HANDLERS, new Var());
         envEntries.add(handlersEntry);
 
         // Build a list of arguments for the handlers constructor
@@ -345,13 +345,13 @@ final class LocalActor extends AbstractActor {
             argIdents.add(argIdent);
             envEntries.add(new EnvEntry(argIdent, new Var(args.get(i))));
         }
-        argIdents.add(Ident.HANDLERS);
+        argIdents.add(Ident.$HANDLERS);
 
         // Compute the handlers
         Var constructorVar = new Var(actorCfg.handlersCtor());
-        envEntries.add(new EnvEntry(Ident.HANDLERS_CTOR, constructorVar));
+        envEntries.add(new EnvEntry(Ident.$HANDLERS_CTOR, constructorVar));
         Env configEnv = Env.create(ROOT_ENV, envEntries);
-        ApplyStmt computeStmt = new ApplyStmt(Ident.HANDLERS_CTOR, argIdents, emptySourceSpan());
+        ApplyStmt computeStmt = new ApplyStmt(Ident.$HANDLERS_CTOR, argIdents, emptySourceSpan());
         machine.pushStackEntry(computeStmt, configEnv);
         ComputeAdvice advice = computeTimeSlice();
         if (advice != ComputeEnd.SINGLETON) {
@@ -362,8 +362,8 @@ final class LocalActor extends AbstractActor {
         }
 
         // Save the `ask` handlers and `tell` handlers separately
-        askHandlerEntry = new EnvEntry(Ident.HANDLER, new Var((Value) handlers.valueAt(0)));
-        tellHandlerEntry = new EnvEntry(Ident.HANDLER, new Var((Value) handlers.valueAt(1)));
+        askHandlerEntry = new EnvEntry(Ident.$HANDLER, new Var((Value) handlers.valueAt(0)));
+        tellHandlerEntry = new EnvEntry(Ident.$HANDLER, new Var((Value) handlers.valueAt(1)));
 
         return NOT_FINISHED;
     }
@@ -606,7 +606,7 @@ final class LocalActor extends AbstractActor {
 
         ArrayList<Stmt> stmtList = new ArrayList<>(2);
         stmtList.add(actStmt.stmt);
-        stmtList.add(new ApplyStmt(Ident.RESPOND, List.of(actStmt.target), actStmt.sourceSpan.toSourceSpanEnd()));
+        stmtList.add(new ApplyStmt(Ident.$RESPOND, List.of(actStmt.target), actStmt.sourceSpan.toSourceSpanEnd()));
         SeqStmt seq = new SeqStmt(stmtList, actStmt.sourceSpan);
         ValueOrVar responseTarget = actStmt.target.resolveValueOrVar(env);
         Act act = new Act(seq, actStmt.target, childInput);
@@ -865,7 +865,7 @@ final class LocalActor extends AbstractActor {
 
     }
 
-    private static class StreamIter implements Iter {
+    private static class StreamIter implements ValueIter {
 
         private final LocalActor localActor;
         private final StreamObj streamObj;
@@ -884,8 +884,8 @@ final class LocalActor extends AbstractActor {
                 localActor.logInfo("StreamIter performing an iteration");
             }
 
-            if (ys.size() != ITER_ARG_COUNT) {
-                throw new InvalidArgCountError(ITER_ARG_COUNT, ys, "LocalActor.StreamIter()");
+            if (ys.size() != VALUE_ITER_ARG_COUNT) {
+                throw new InvalidArgCountError(VALUE_ITER_ARG_COUNT, ys, "LocalActor.StreamIter()");
             }
 
             ValueOrVar headValueOrVar = streamObj.head.element.resolveValueOrVar();
@@ -925,7 +925,7 @@ final class LocalActor extends AbstractActor {
 
     }
 
-    private static final class StreamObj implements Obj, IterSource {
+    private static final class StreamObj implements Obj, ValueIterSource {
         private final LocalActor localActor;
         private final ActorRefObj publisher;
         private final RequestId requestId;
@@ -974,13 +974,13 @@ final class LocalActor extends AbstractActor {
         }
 
         @Override
-        public final ValueOrVar iter() {
-            return streamIter;
+        public final ValueOrVar select(Feature feature) {
+            throw new NeedsImpl();
         }
 
         @Override
-        public final ValueOrVar select(Feature feature) {
-            throw new NeedsImpl();
+        public final ValueOrVar valueIter() {
+            return streamIter;
         }
     }
 

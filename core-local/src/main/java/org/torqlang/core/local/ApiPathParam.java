@@ -5,13 +5,7 @@
  * If not, see <http://torqlang.github.io/licensing/torqlang-license-v1_0>.
  */
 
-package org.torqlang.core.klvm;
+package org.torqlang.core.local;
 
-/**
- * Iterate values in an order defined by the underlying source.
- */
-public interface Iter extends Proc {
-
-    int ITER_ARG_COUNT = 1;
-
+public record ApiPathParam(int pos, String name) {
 }

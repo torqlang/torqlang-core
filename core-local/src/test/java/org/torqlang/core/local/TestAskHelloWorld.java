@@ -102,7 +102,7 @@ public class TestAskHelloWorld {
                 $create_rec('HelloFactorial'#{'cfg': $actor_cfgtr}, HelloFactorial)
             end""";
         assertEquals(expected, g.createActorRecStmt().toString());
-        ActorRef actorRef = g.spawn();
+        ActorRef actorRef = g.spawn().actorRef();
         CompleteRec m = Rec.completeRecBuilder().addField(Str.of("hello"), Dec128.of(10)).build();
         Object response = RequestClient.builder()
             .setAddress(createAddress("HelloFactorialClient"))
@@ -157,7 +157,7 @@ public class TestAskHelloWorld {
                 $create_rec('HelloWorld'#{'cfg': $actor_cfgtr}, HelloWorld)
             end""";
         assertEquals(expected, g.createActorRecStmt().toString());
-        ActorRef actorRef = g.spawn();
+        ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
             .setAddress(createAddress("HelloWorldClient"))
             .send(actorRef, Str.of("hello"))
@@ -199,7 +199,7 @@ public class TestAskHelloWorld {
         ActorRef actorRef = Actor.builder()
             .setAddress(createAddress(getClass().getName() + "Actor"))
             .setActorSntc(actorSntc)
-            .spawn();
+            .spawn().actorRef();
         // Send 'hello' and verify 'Hello, World!'
         Object response = RequestClient.builder()
             .setAddress(createAddress("HelloWorldClient"))

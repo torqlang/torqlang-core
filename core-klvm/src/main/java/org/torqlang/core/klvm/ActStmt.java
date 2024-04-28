@@ -32,13 +32,13 @@ public class ActStmt extends AbstractStmt {
 
     @Override
     public void captureLexicallyFree(Set<Ident> knownBound, Set<Ident> lexicallyFree) {
-        Ident.captureLexicallyFree(Ident.ACT, knownBound, lexicallyFree);
+        Ident.captureLexicallyFree(Ident.$ACT, knownBound, lexicallyFree);
         stmt.captureLexicallyFree(knownBound, lexicallyFree);
     }
 
     @Override
     public void compute(Env env, Machine machine) throws WaitException {
-        Proc act = (Proc) env.get(Ident.ACT).resolveValue();
+        Proc act = (Proc) env.get(Ident.$ACT).resolveValue();
         act.apply(Collections.emptyList(), env, machine);
     }
 

@@ -24,7 +24,7 @@ final class BuiltInsMod {
             .addField(Str.of("HashMap"), HashMapMod.HASH_MAP_CLS)
             .addField(Str.of("is_bound"), KernelProcs.IS_BOUND_PROC)
             .addField(Str.of("is_det"), KernelProcs.IS_DET_PROC)
-            .addField(Str.of("Iter"), IterMod.ITER_CLS)
+            .addField(Str.of("FieldIter"), FieldIterMod.FIELD_ITER_CLS)
             .addField(Str.of("LocalDate"), LocalDateMod.LOCAL_DATE_CLS)
             .addField(Str.of("RangeIter"), RangeIterMod.RANGE_ITER_CLS)
             .addField(Str.of("Rec"), RecMod.REC_CLS)

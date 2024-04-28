@@ -85,7 +85,7 @@ public class TestAskCompleteClosure {
                 $create_rec('ConcurrentData'#{'cfg': $actor_cfgtr}, ConcurrentData)
             end""";
         assertEquals(expected, g.createActorRecStmt().toString());
-        ActorRef actorRef = g.spawn();
+        ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
             .setAddress(createAddress("CompleteClosureClient"))
             .send(actorRef, Str.of("perform"))
@@ -184,7 +184,7 @@ public class TestAskCompleteClosure {
                 $create_rec('ConcurrentData'#{'cfg': $actor_cfgtr}, ConcurrentData)
             end""";
         assertEquals(expected, g.createActorRecStmt().toString());
-        ActorRef actorRef = g.spawn();
+        ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
             .setAddress(createAddress("CompleteClosureClient"))
             .send(actorRef, Str.of("perform"))

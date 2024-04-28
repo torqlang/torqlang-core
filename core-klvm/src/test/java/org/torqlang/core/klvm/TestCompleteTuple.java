@@ -197,7 +197,7 @@ public class TestCompleteTuple {
         nv = t.toNativeValue();
         assertTrue(nv instanceof Map);
         map = (Map<?, ?>) nv;
-        assertEquals(Map.of(Rec.NATIVE_LABEL, testLabel.value, Rec.NATIVE_TUPLE, List.of()), map);
+        assertEquals(Map.of(Rec.$LABEL, testLabel.value, Rec.$REC, List.of()), map);
 
         t = CompleteTuple.create(List.of(a));
         assertTrue(t.isValidKey());
@@ -218,7 +218,7 @@ public class TestCompleteTuple {
         nv = t.toNativeValue();
         assertTrue(nv instanceof Map);
         map = (Map<?, ?>) nv;
-        assertEquals(Map.of(Rec.NATIVE_LABEL, testLabel.value, Rec.NATIVE_TUPLE, List.of(a.value)), map);
+        assertEquals(Map.of(Rec.$LABEL, testLabel.value, Rec.$REC, List.of(a.value)), map);
 
         CompleteTuple t2 = CompleteTuple.create(List.of(a));
         assertTrue(t2.isValidKey());
@@ -246,8 +246,8 @@ public class TestCompleteTuple {
         assertEquals(t2, t.select(Int32.I32_1));
         nv = t.toNativeValue();
         assertTrue(nv instanceof Map);
-        Map<?, ?> innerNativeValue = Map.of(Rec.NATIVE_LABEL, testLabel.value, Rec.NATIVE_TUPLE, List.of(a.value));
-        Map<?, ?> outerNativeValue = Map.of(Rec.NATIVE_LABEL, anotherTestLabel.value, Rec.NATIVE_TUPLE, List.of(b.value, innerNativeValue));
+        Map<?, ?> innerNativeValue = Map.of(Rec.$LABEL, testLabel.value, Rec.$REC, List.of(a.value));
+        Map<?, ?> outerNativeValue = Map.of(Rec.$LABEL, anotherTestLabel.value, Rec.$REC, List.of(b.value, innerNativeValue));
         assertEquals(outerNativeValue, nv);
     }
 

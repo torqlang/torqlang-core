@@ -111,7 +111,7 @@ public interface CompleteRec extends Complete, Rec {
         if (label().equals(DEFAULT_LABEL)) {
             return map;
         }
-        return Map.of(Rec.NATIVE_LABEL, label().toNativeValue(), Rec.NATIVE_REC, map);
+        return Map.of(Rec.$LABEL, label().toNativeValue(), Rec.$REC, map);
     }
 
     Complete valueAt(int index);

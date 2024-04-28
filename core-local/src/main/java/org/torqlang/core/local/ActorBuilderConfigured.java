@@ -8,25 +8,30 @@
 package org.torqlang.core.local;
 
 import org.torqlang.core.actor.Address;
-import org.torqlang.core.klvm.CompleteOrIdent;
+import org.torqlang.core.klvm.*;
+import org.torqlang.core.lang.ActorExpr;
 import org.torqlang.core.lang.ActorSntc;
 
 import java.util.List;
 
-public interface ActorBuilderParsed {
+public interface ActorBuilderConfigured {
+    ActorCfg actorCfg();
+
+    ActorExpr actorExpr();
+
+    Ident actorIdent();
+
+    Rec actorRec();
+
     ActorSntc actorSntc();
 
     Address address();
 
     List<? extends CompleteOrIdent> args();
 
-    ActorBuilderConfigured configure() throws Exception;
+    ActorCfg config();
 
-    ActorBuilderConstructed construct() throws Exception;
-
-    ActorBuilderGenerated generate() throws Exception;
-
-    ActorBuilderRewritten rewrite() throws Exception;
+    Stmt createActorRecStmt();
 
     String source();
 

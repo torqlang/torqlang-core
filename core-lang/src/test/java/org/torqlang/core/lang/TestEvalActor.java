@@ -41,7 +41,7 @@ public class TestEvalActor {
             end""";
         Ident configCtorIdent = Ident.create("hello_factorial_cfg");
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(Ident.RESPOND, new Var(Str.of("RESPOND_PROC_GOES_HERE")))
+            .addVar(Ident.$RESPOND, new Var(Str.of("RESPOND_PROC_GOES_HERE")))
             .addVar(configCtorIdent)
             .setSource(source)
             .perform();

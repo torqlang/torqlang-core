@@ -23,29 +23,23 @@ import java.util.List;
  * BASIC PROCESSING:
  *
  * -- A node generates its kernel statements into the given target scope.
- * -- If a node generates intermediate statements, it creates a child scope to contain them.
- * -- If a node traverses other nodes, it offers its child scope as the target scope.
+ * -- If a node traverses other nodes, it creates and offers a child scope when it traverses them.
  *
  * EXPRESSION NODES:
  *
- * -- An expression node always returns a value or identifier so that the caller can use the value or identifier as
- *    an argument. If it returns an identifier, it may have created a nested scope to contain intermediate statements.
- * -- If the caller offers an identifier, the expression node binds its result to the offered identifier and clears
- *    the identifier by calling `LocalTarget.clearOfferedIdent()`. If not offered an identifier, an expression node
- *    creates an identifier and adds it to the target scope. The node must always return an identifier or value.
- * -- The identifier offered is a free identifier. If a node creates intermediate results, it creates a child scope
- *    to contain intermediate results. Typically, the last statement in the child scope binds the offered (free)
- *    identifier.
- * -- If the expression node is a value, and it is not offered an identifier, it returns its kernel value so that the
- *    caller can use it as an argument.
- * -- If the expression node is an identifier, and it is not offered an identifier, it returns its identifier so that
- *    the caller can use it as an argument.
+ * -- A child node always returns a value or identifier so that the caller can use the value or identifier as an
+ *    argument.
+ * -- If a child node is a sub-expression, the parent node may offer an identifier. If offered an identifier, the child
+ *    node binds its result to the offered identifier and clears the offering by calling
+ *    `LocalTarget.clearOfferedIdent()`. If not offered an identifier, the child node creates an identifier and adds it
+ *    to the target scope. Finally, the child node returns either the offered identifier or created identifier.
+ * -- If a child node is an identifier or value and is offered an identifier, it binds itself to the offered
+ *    identifier and returns either the offered identifier or itself.
  *
  * SENTENCE NODES:
- *
- * CODE BODIES (such as procedures, cases expressions, and others):
- *
- * -- Body sequences are visited such that only the last entry in the sequence is offered a target.
+ * -- Sentence nodes are not offered identifiers because they are not "values".
+ * -- Body sequences are visited such that only the last entry in the sequence can be offered an identifier. If the
+ *    body is an expression, it is offered an identifier. Otherwise, no identifier is offered.
  *
  * Ident and Value Expression Processing
  * =====================================
@@ -117,7 +111,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
                 ),
                 new FieldExpr(
                     new StrAsExpr(Str.of("message"), endOfActorSpan),
-                    new IdentAsExpr(Ident.MESSAGE, endOfActorSpan),
+                    new IdentAsExpr(Ident.$M, endOfActorSpan),
                     endOfActorSpan
                 )
             ),
@@ -205,9 +199,9 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         if (elseNeeded) {
             Stmt applyElseStmt;
             if (exprIdent != null) {
-                applyElseStmt = new ApplyStmt(Ident.ELSE, List.of(exprIdent), elseSpan);
+                applyElseStmt = new ApplyStmt(Ident.$ELSE, List.of(exprIdent), elseSpan);
             } else {
-                applyElseStmt = new ApplyStmt(Ident.ELSE, List.of(), elseSpan);
+                applyElseStmt = new ApplyStmt(Ident.$ELSE, List.of(), elseSpan);
             }
             caseStmt = new CaseElseStmt(arg, valueOrPtn, caseBodyStmt, applyElseStmt, matchClause.body);
         } else {
@@ -242,9 +236,9 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         if (elseNeeded) {
             Stmt applyElseStmt;
             if (exprIdent != null) {
-                applyElseStmt = new ApplyStmt(Ident.ELSE, List.of(exprIdent), elseSpan);
+                applyElseStmt = new ApplyStmt(Ident.$ELSE, List.of(exprIdent), elseSpan);
             } else {
-                applyElseStmt = new ApplyStmt(Ident.ELSE, List.of(), elseSpan);
+                applyElseStmt = new ApplyStmt(Ident.$ELSE, List.of(), elseSpan);
             }
             ifStmt = new IfElseStmt(guardIdent, ifBodyStmt, applyElseStmt, guard);
         } else {
@@ -298,14 +292,14 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
 
         SourceSpan endOfActorSpan = lang.toSourceSpanEnd();
 
-        target.addIdentDef(new IdentDef(Ident.ACTOR_CFGTR));
+        target.addIdentDef(new IdentDef(Ident.$ACTOR_CFGTR));
         LocalTarget childTarget = target.asSntcTargetWithNewScope();
 
         // --- Build the configurator
         List<Pat> formalArgs = lang.formalArgs;
         List<Ident> xs = new ArrayList<>(formalArgs.size() + 1);
         compileFormalArgsToIdents(formalArgs, xs);
-        xs.add(Ident.RESULT);
+        xs.add(Ident.$R);
         // Initializer
         LocalTarget actorBodyTarget = childTarget.asSntcTargetWithNewScope();
         for (SntcOrExpr next : lang.initializer()) {
@@ -323,14 +317,14 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         List<ValueDef> handlers = List.of(new ValueDef(askProcIdent, endOfActorSpan),
             new ValueDef(tellProcIdent, endOfActorSpan));
         TupleDef handlersDef = new TupleDef(Str.of("handlers"), handlers, endOfActorSpan);
-        actorBodyTarget.addStmt(new CreateTupleStmt(Ident.RESULT, handlersDef, endOfActorSpan));
+        actorBodyTarget.addStmt(new CreateTupleStmt(Ident.$R, handlersDef, endOfActorSpan));
         // --- Build body containing initializer, ask handlers, and tell handlers
         Stmt bodyStmt = actorBodyTarget.build();
         ProcDef actorCfgtrDef = new ProcDef(xs, bodyStmt, lang);
-        childTarget.addStmt(new CreateActorCfgtrStmt(Ident.ACTOR_CFGTR, actorCfgtrDef, lang));
+        childTarget.addStmt(new CreateActorCfgtrStmt(Ident.$ACTOR_CFGTR, actorCfgtrDef, lang));
 
         // Build the actor record
-        FieldDef configDef = new FieldDef(Str.of("cfg"), Ident.ACTOR_CFGTR, endOfActorSpan);
+        FieldDef configDef = new FieldDef(Str.of("cfg"), Ident.$ACTOR_CFGTR, endOfActorSpan);
         RecDef actorRecDef = new RecDef(Str.of(exprIdent.name), List.of(configDef), endOfActorSpan);
         childTarget.addStmt(new CreateRecStmt(exprIdent, actorRecDef, endOfActorSpan));
 
@@ -350,21 +344,21 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
             SeqLang unhandledSeq = createElseUnhandledSeq(lang, errorIdent, notHandledErrorName, endOfActorSpan);
             unhandledSeq.accept(this, handlerBodyTarget);
             Stmt handlerThrowStmt = handlerBodyTarget.build();
-            target.addStmt(new CreateProcStmt(targetIdent, new ProcDef(List.of(Ident.MESSAGE),
+            target.addStmt(new CreateProcStmt(targetIdent, new ProcDef(List.of(Ident.$M),
                 handlerThrowStmt, lang), lang));
         } else {
             // Synthesize an "else" to throw an error if `$m` is not matched
             Ident errorIdent = allocateNextSystemVarIdent();
             SeqLang elseUnhandledSeq = createElseUnhandledSeq(lang, errorIdent, notHandledErrorName, endOfActorSpan);
             // Generate match logic using case statements
-            visitMatchClauses(Ident.MESSAGE, handlers.get(0), (List<MatchClause>) handlers, 1,
+            visitMatchClauses(Ident.$M, handlers.get(0), (List<MatchClause>) handlers, 1,
                 elseUnhandledSeq, null, handlerBodyTarget);
             // Add a jump-catch if `return` was used during an `ask`
             if (handlerBodyTarget.isReturnUsed()) {
                 handlerBodyTarget.addStmt(new JumpCatchStmt(RETURN_ID, endOfActorSpan));
             }
             Stmt handlerCaseStmt = handlerBodyTarget.build();
-            target.addStmt(new CreateProcStmt(targetIdent, new ProcDef(List.of(Ident.MESSAGE),
+            target.addStmt(new CreateProcStmt(targetIdent, new ProcDef(List.of(Ident.$M),
                 handlerCaseStmt, lang), lang));
         }
     }
@@ -434,7 +428,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         LocalTarget askTarget = target.asAskTargetWithNewScope(exprIdent);
         askTarget.addIdentDef(new IdentDef(exprIdent));
         lang.body.accept(this, askTarget);
-        askTarget.addStmt(new ApplyStmt(Ident.RESPOND, List.of(exprIdent), lang.toSourceSpanEnd()));
+        askTarget.addStmt(new ApplyStmt(Ident.$RESPOND, List.of(exprIdent), lang.toSourceSpanEnd()));
         target.addStmt(askTarget.build());
         return null;
     }
@@ -590,18 +584,18 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
 
         // ITER
 
-        childTarget.addIdentDef(new IdentDef(Ident.ITER));
-        LocalTarget iterTarget = childTarget.asExprTargetWithSameScope(Ident.ITER);
+        childTarget.addIdentDef(new IdentDef(Ident.$ITER));
+        LocalTarget iterTarget = childTarget.asExprTargetWithSameScope(Ident.$ITER);
         lang.iter.accept(this, iterTarget);
 
         // FOR
 
-        childTarget.addIdentDef(new IdentDef(Ident.FOR));
+        childTarget.addIdentDef(new IdentDef(Ident.$FOR));
         LocalTarget forTarget = childTarget.asSntcTargetWithNewScope();
         IdentAsPat forNextAsPat = assertIdentAsPatNotEscaped(lang.pat);
         Ident forNext = forNextAsPat.ident;
         forTarget.addIdentDef(new IdentDef(forNext));
-        forTarget.addStmt(new ApplyStmt(Ident.ITER, List.of(forNext), lang.iter));
+        forTarget.addStmt(new ApplyStmt(Ident.$ITER, List.of(forNext), lang.iter));
         Ident forBool = allocateNextSystemVarIdent();
         forTarget.addIdentDef(new IdentDef(forBool));
         forTarget.addStmt(new DisentailsStmt(forNext, Eof.SINGLETON, forBool, lang.iter));
@@ -610,17 +604,17 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         if (forBodyTarget.isContinueUsed()) {
             forBodyTarget.addStmt(new JumpCatchStmt(CONTINUE_ID, lang.body.toSourceSpanEnd()));
         }
-        forBodyTarget.addStmt(new ApplyStmt(Ident.FOR, List.of(), lang.body.toSourceSpanEnd()));
+        forBodyTarget.addStmt(new ApplyStmt(Ident.$FOR, List.of(), lang.body.toSourceSpanEnd()));
         forTarget.addStmt(new IfStmt(forBool, forBodyTarget.build(), lang.body));
         Stmt forStmt = forTarget.build();
         childTarget.addStmt(new CreateProcStmt(
-            Ident.FOR,
+            Ident.$FOR,
             new ProcDef(List.of(), forStmt, lang.body),
             lang.body));
 
         // FIRST INVOCATION
 
-        childTarget.addStmt(new ApplyStmt(Ident.FOR, List.of(), lang.body.toSourceSpanEnd()));
+        childTarget.addStmt(new ApplyStmt(Ident.$FOR, List.of(), lang.body.toSourceSpanEnd()));
         if (forBodyTarget.isBreakUsed()) {
             childTarget.addStmt(new JumpCatchStmt(BREAK_ID, lang.body.toSourceSpanEnd()));
         }
@@ -632,7 +626,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     @Override
     public final CompleteOrIdent visitFuncExpr(FuncExpr lang, LocalTarget target) throws Exception {
         Ident funcIdent = acceptOfferedIdentOrNextSystemVarIdent(target);
-        ProcDef procDef = createProcDef(lang.formalArgs, Ident.RESULT, lang.body.list, lang);
+        ProcDef procDef = createProcDef(lang.formalArgs, Ident.$R, lang.body.list, lang);
         target.addStmt(new CreateProcStmt(funcIdent, procDef, lang));
         return funcIdent;
     }
@@ -640,7 +634,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     @Override
     public final CompleteOrIdent visitFuncSntc(FuncSntc lang, LocalTarget target) throws Exception {
         target.addIdentDef(new IdentDef(lang.name()));
-        ProcDef procDef = createProcDef(lang.formalArgs, Ident.RESULT, lang.body.list, lang);
+        ProcDef procDef = createProcDef(lang.formalArgs, Ident.$R, lang.body.list, lang);
         target.addStmt(new CreateProcStmt(lang.name(), procDef, lang));
         return null;
     }
@@ -694,7 +688,8 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
                                         Ident exprIdent,
                                         LocalTarget target) throws Exception
     {
-        CompleteOrIdent booleanIdent = ifClause.condition.accept(this, target);
+        LocalTarget boolTarget = target.asExprTargetWithSameScope();
+        CompleteOrIdent boolIdent = ifClause.condition.accept(this, boolTarget);
         LocalTarget conTarget;
         if (exprIdent != null) {
             conTarget = target.asExprTargetWithNewScope(exprIdent);
@@ -725,9 +720,9 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
             altStmt = altTarget.build();
         }
         if (altStmt != null) {
-            target.addStmt(new IfElseStmt(booleanIdent, conStmt, altStmt, ifClause));
+            target.addStmt(new IfElseStmt(boolIdent, conStmt, altStmt, ifClause));
         } else {
-            target.addStmt(new IfStmt(booleanIdent, conStmt, ifClause));
+            target.addStmt(new IfStmt(boolIdent, conStmt, ifClause));
         }
     }
 
@@ -743,7 +738,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
             builder.addValue(s);
         }
         ys.add(builder.build());
-        childTarget.addStmt(new ApplyStmt(Ident.IMPORT, ys, lang));
+        childTarget.addStmt(new ApplyStmt(Ident.$IMPORT, ys, lang));
         target.addStmt(childTarget.build());
         return null;
     }
@@ -831,28 +826,28 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
 
         boolean elseNeeded = altMatchClauseNext < altMatchClauses.size() || elseSeq != null;
         if (elseNeeded) {
-            childTarget.addIdentDef(new IdentDef(Ident.ELSE));
+            childTarget.addIdentDef(new IdentDef(Ident.$ELSE));
             LocalTarget elseOrAltTarget;
             if (exprIdent != null) {
-                elseOrAltTarget = childTarget.asExprTargetWithNewScope(Ident.RESULT);
+                elseOrAltTarget = childTarget.asExprTargetWithNewScope(Ident.$R);
             } else {
                 elseOrAltTarget = childTarget.asSntcTargetWithNewScope();
             }
             if (altMatchClauseNext < altMatchClauses.size()) {
                 visitMatchClauses(arg, altMatchClauses.get(altMatchClauseNext), altMatchClauses,
-                    altMatchClauseNext + 1, elseSeq, Ident.RESULT, elseOrAltTarget);
+                    altMatchClauseNext + 1, elseSeq, Ident.$R, elseOrAltTarget);
             } else {
                 elseSeq.accept(this, elseOrAltTarget);
             }
             Stmt elseStmt = elseOrAltTarget.build();
             List<Ident> elseFormalArgs;
             if (exprIdent != null) {
-                elseFormalArgs = List.of(Ident.RESULT);
+                elseFormalArgs = List.of(Ident.$R);
             } else {
                 elseFormalArgs = List.of();
             }
             childTarget.addStmt(new CreateProcStmt(
-                Ident.ELSE, new ProcDef(elseFormalArgs, elseStmt, elseStmt),
+                Ident.$ELSE, new ProcDef(elseFormalArgs, elseStmt, elseStmt),
                 elseStmt));
         }
 
@@ -1030,7 +1025,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
             throw new ReturnNotAllowedError(lang);
         }
         if (lang.value != null) {
-            lang.value.accept(this, target.asExprTargetWithSameScope(Ident.RESULT));
+            lang.value.accept(this, target.asExprTargetWithSameScope(Ident.$R));
         }
         target.setReturnUsed();
         target.addStmt(new JumpThrowStmt(RETURN_ID, lang));
@@ -1109,7 +1104,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         if (exprIdent != null) {
             ys.add(exprIdent);
         }
-        childTarget.addStmt(new ApplyStmt(Ident.SPAWN, ys, lang));
+        childTarget.addStmt(new ApplyStmt(Ident.$SPAWN, ys, lang));
         target.addStmt(childTarget.build());
         return exprIdent;
     }
@@ -1184,11 +1179,11 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
 
         SeqLang finallySeq = lang.finallySeq;
         if (finallySeq != null) {
-            childTarget.addIdentDef(new IdentDef(Ident.FINALLY));
+            childTarget.addIdentDef(new IdentDef(Ident.$FINALLY));
             LocalTarget finallyTarget = LocalTarget.createSntcTargetForFinally();
             finallySeq.accept(this, finallyTarget);
             Stmt finallyStmt = finallyTarget.build();
-            childTarget.addStmt(new CreateProcStmt(Ident.FINALLY, new ProcDef(List.of(), finallyStmt, finallySeq), finallySeq));
+            childTarget.addStmt(new CreateProcStmt(Ident.$FINALLY, new ProcDef(List.of(), finallyStmt, finallySeq), finallySeq));
         }
 
         // TRY/CATCH
@@ -1209,7 +1204,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
             catchBodyTarget = childTarget.asSntcTargetWithNewScope();
         }
         SourceSpan endOfTrySpan = lang.toSourceSpanEnd();
-        ApplyLang applyFinallyLang = new ApplyLang(new IdentAsExpr(Ident.FINALLY, endOfTrySpan),
+        ApplyLang applyFinallyLang = new ApplyLang(new IdentAsExpr(Ident.$FINALLY, endOfTrySpan),
             List.of(), endOfTrySpan);
         ThrowLang throwAgainLang = new ThrowLang(new IdentAsExpr(catchIdent, endOfTrySpan), endOfTrySpan);
         SeqLang elseSeq;
@@ -1227,7 +1222,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         // APPLY FINALLY
 
         if (finallySeq != null) {
-            childTarget.addStmt(new ApplyStmt(Ident.FINALLY, List.of(), finallySeq));
+            childTarget.addStmt(new ApplyStmt(Ident.$FINALLY, List.of(), finallySeq));
         }
 
         target.addStmt(childTarget.build());
@@ -1328,38 +1323,38 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
 
         // GUARD
 
-        childTarget.addIdentDef(new IdentDef(Ident.GUARD));
-        LocalTarget guardTarget = childTarget.asExprTargetWithNewScope(Ident.RESULT);
+        childTarget.addIdentDef(new IdentDef(Ident.$GUARD));
+        LocalTarget guardTarget = childTarget.asExprTargetWithNewScope(Ident.$R);
         lang.cond.accept(this, guardTarget);
         Stmt guardStmt = guardTarget.build();
         childTarget.addStmt(new CreateProcStmt(
-            Ident.GUARD,
-            new ProcDef(List.of(Ident.RESULT), guardStmt, lang.cond),
+            Ident.$GUARD,
+            new ProcDef(List.of(Ident.$R), guardStmt, lang.cond),
             lang.cond));
 
         // WHILE
 
-        childTarget.addIdentDef(new IdentDef(Ident.WHILE));
+        childTarget.addIdentDef(new IdentDef(Ident.$WHILE));
         LocalTarget whileTarget = childTarget.asSntcTargetWithNewScope();
         Ident whileBool = allocateNextSystemVarIdent();
         whileTarget.addIdentDef(new IdentDef(whileBool));
-        whileTarget.addStmt(new ApplyStmt(Ident.GUARD, List.of(whileBool), lang.cond));
+        whileTarget.addStmt(new ApplyStmt(Ident.$GUARD, List.of(whileBool), lang.cond));
         LocalTarget whileBodyTarget = childTarget.asSntcTargetForLoopBodyWithNewScope();
         lang.body.accept(this, whileBodyTarget);
         if (whileBodyTarget.isContinueUsed()) {
             whileBodyTarget.addStmt(new JumpCatchStmt(CONTINUE_ID, lang.body.toSourceSpanEnd()));
         }
-        whileBodyTarget.addStmt(new ApplyStmt(Ident.WHILE, List.of(), lang.body.toSourceSpanEnd()));
+        whileBodyTarget.addStmt(new ApplyStmt(Ident.$WHILE, List.of(), lang.body.toSourceSpanEnd()));
         whileTarget.addStmt(new IfStmt(whileBool, whileBodyTarget.build(), lang.body));
         Stmt whileStmt = whileTarget.build();
         childTarget.addStmt(new CreateProcStmt(
-            Ident.WHILE,
+            Ident.$WHILE,
             new ProcDef(List.of(), whileStmt, lang.body),
             lang.body));
 
         // FIRST INVOCATION
 
-        childTarget.addStmt(new ApplyStmt(Ident.WHILE, List.of(), lang.body.toSourceSpanEnd()));
+        childTarget.addStmt(new ApplyStmt(Ident.$WHILE, List.of(), lang.body.toSourceSpanEnd()));
         if (whileBodyTarget.isBreakUsed()) {
             childTarget.addStmt(new JumpCatchStmt(BREAK_ID, lang.body.toSourceSpanEnd()));
         }

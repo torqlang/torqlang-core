@@ -13,7 +13,7 @@ public class TestOrderDao {
 
     @Test
     public void test() throws Exception {
-        OrderDao.perform();
+        new OrderDao().performWithErrorCheck();
     }
 
 }

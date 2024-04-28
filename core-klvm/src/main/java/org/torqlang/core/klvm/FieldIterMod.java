@@ -9,37 +9,37 @@ package org.torqlang.core.klvm;
 
 import java.util.List;
 
-public final class IterMod {
+public final class FieldIterMod {
 
-    public static final Ident ITER_IDENT = Ident.create("Iter");
-    public static final CompleteObj ITER_CLS = IterCls.SINGLETON;
+    public static final Ident FIELD_ITER_IDENT = Ident.create("FieldIter");
+    public static final CompleteObj FIELD_ITER_CLS = FieldIterCls.SINGLETON;
 
     static void clsNew(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         final int expectedArgCount = 2;
         if (ys.size() != expectedArgCount) {
-            throw new InvalidArgCountError(expectedArgCount, ys, "Iter.new");
+            throw new InvalidArgCountError(expectedArgCount, ys, "FieldIter.new");
         }
         Value source = ys.get(0).resolveValue(env);
-        if (!(source instanceof IterSource iterable)) {
+        if (!(source instanceof FieldIterSource iterable)) {
             throw new IllegalArgumentException(ys.get(0) + " must be a type of " +
-                IterSource.class.getSimpleName());
+                FieldIterSource.class.getSimpleName());
         }
-        ValueOrVar iter = iterable.iter();
+        ValueOrVar iter = iterable.fieldIter();
         ValueOrVar target = ys.get(1).resolveValueOrVar(env);
         target.bindToValueOrVar(iter, null);
     }
 
-    static final class IterCls implements CompleteObj {
-        private static final IterCls SINGLETON = new IterCls();
-        private static final CompleteProc ITER_CLS_NEW = IterMod::clsNew;
+    static final class FieldIterCls implements CompleteObj {
+        private static final FieldIterCls SINGLETON = new FieldIterCls();
+        private static final CompleteProc FIELD_ITER_CLS_NEW = FieldIterMod::clsNew;
 
-        private IterCls() {
+        private FieldIterCls() {
         }
 
         @Override
         public final Value select(Feature feature) {
             if (feature.equals(CommonFeatures.NEW)) {
-                return ITER_CLS_NEW;
+                return FIELD_ITER_CLS_NEW;
             }
             throw new FeatureNotFoundError(this, feature);
         }

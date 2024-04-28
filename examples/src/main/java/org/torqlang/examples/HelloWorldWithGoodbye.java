@@ -14,9 +14,7 @@ import org.torqlang.core.local.RequestClient;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.torqlang.examples.ExamplesTools.checkExpectedResponse;
-
-public final class HelloWorldWithGoodbye {
+public final class HelloWorldWithGoodbye extends AbstractExample {
 
     public static final String SOURCE = """
         actor HelloWorld() in
@@ -29,14 +27,14 @@ public final class HelloWorldWithGoodbye {
         end""";
 
     public static void main(String[] args) throws Exception {
-        perform();
+        new HelloWorldWithGoodbye().performWithErrorCheck();
         System.exit(0);
     }
 
-    public static void perform() throws Exception {
+    @Override
+    public final void perform() throws Exception {
 
-        ActorRef actorRef = Actor.builder()
-            .spawn(SOURCE);
+        ActorRef actorRef = Actor.builder().spawn(SOURCE).actorRef();
 
         Object response = RequestClient.builder()
             .sendAndAwaitResponse(actorRef, Str.of("hello"), 100, TimeUnit.MILLISECONDS);

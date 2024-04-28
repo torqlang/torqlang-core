@@ -16,8 +16,6 @@ import java.util.Map;
 
 public class ValueTools {
 
-    public static final String TORQLANG_COLON_LABEL_COLON = "torqlang:label:";
-
     public static Object toNativeValue(Complete value) {
         return value.toNativeValue();
     }
@@ -26,7 +24,10 @@ public class ValueTools {
         return toKernelValue(null, value);
     }
 
-    private static Complete toKernelValue(String label, Object value) {
+    private static Complete toKernelValue(Object label, Object value) {
+        if (value == null || value == JsonNull.SINGLETON) {
+            return Nothing.SINGLETON;
+        }
         if (value instanceof Complete) {
             return (Complete) value;
         }
@@ -55,18 +56,18 @@ public class ValueTools {
             return Dec128.of(bigDecimal);
         }
         if (value instanceof Map<?, ?> m) {
-            if (m.size() == 1) {
-                Map.Entry<?, ?> e = m.entrySet().iterator().next();
-                if (e.getKey() instanceof String s) {
-                    if (s.startsWith(TORQLANG_COLON_LABEL_COLON)) {
-                        if (label != null) {
-                            throw new IllegalArgumentException("A label cannot be followed by a label");
+            if (m.size() == 2) {
+                Object parsedLabel = m.get(Rec.$LABEL);
+                if (parsedLabel != null) {
+                    if (label != null) {
+                        throw new IllegalArgumentException("Label cannot follow a label");
+                    }
+                    Object parsedValue = m.get(Rec.$REC);
+                    if (parsedValue != null) {
+                        if (!(parsedValue instanceof Map) && !(parsedValue instanceof List)) {
+                            throw new IllegalArgumentException("Label must precede a Map or List");
                         }
-                        if (!(e.getValue() instanceof Map) && !(e.getValue() instanceof List)) {
-                            throw new IllegalArgumentException("A label must precede a Map or List");
-                        }
-                        String thisLabel = s.substring(TORQLANG_COLON_LABEL_COLON.length());
-                        return toKernelValue(thisLabel, e.getValue());
+                        return toKernelValue(parsedLabel, parsedValue);
                     }
                 }
             }
@@ -79,14 +80,22 @@ public class ValueTools {
                 Complete v = toKernelValue(e.getValue());
                 fs.add(new CompleteField(f, v));
             }
-            return CompleteRec.create(label != null ? Str.of(label) : null, fs);
+            Literal kernelLabel = null;
+            if (label != null) {
+                kernelLabel = (Literal) toKernelValue(label);
+            }
+            return CompleteRec.create(kernelLabel, fs);
         }
         if (value instanceof List<?> l) {
             List<Complete> es = new ArrayList<>();
             for (Object e : l) {
                 es.add(toKernelValue(e));
             }
-            return CompleteTuple.create(label != null ? Str.of(label) : null, es);
+            Literal kernelLabel = null;
+            if (label != null) {
+                kernelLabel = (Literal) toKernelValue(label);
+            }
+            return CompleteTuple.create(kernelLabel, es);
         }
         throw new IllegalArgumentException("Cannot convert to kernel value: " + value);
     }

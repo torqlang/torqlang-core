@@ -87,7 +87,7 @@ public class TestAskConcurrentFeatures {
                 $create_rec('ConcurrentFeatures'#{'cfg': $actor_cfgtr}, ConcurrentFeatures)
             end""";
         assertEquals(expected, g.createActorRecStmt().toString());
-        ActorRef actorRef = g.spawn();
+        ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
             .setAddress(createAddress("ConcurrentFeaturesClient"))
             .send(actorRef, Str.of("perform"))
@@ -135,7 +135,7 @@ public class TestAskConcurrentFeatures {
             .setAddress(createAddress(getClass().getName() + "Actor02"))
             .setSource(source)
             .generate();
-        ActorRef actorRef = g.spawn();
+        ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
             .setAddress(createAddress("ConcurrentFeaturesClient"))
             .send(actorRef, Str.of("perform"))
@@ -164,7 +164,7 @@ public class TestAskConcurrentFeatures {
             .setAddress(createAddress(getClass().getName() + "Actor03"))
             .setSource(source)
             .generate();
-        ActorRef actorRef = g.spawn();
+        ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
             .setAddress(createAddress("ConcurrentFeaturesClient"))
             .send(actorRef, Str.of("perform"))

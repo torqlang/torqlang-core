@@ -13,7 +13,7 @@ public class TestIntPublisher {
 
     @Test
     public void test() throws Exception {
-        IntPublisher.perform();
+        new IntPublisher().performWithErrorCheck();
     }
 
 }

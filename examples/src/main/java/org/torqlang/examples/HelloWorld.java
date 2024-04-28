@@ -14,9 +14,7 @@ import org.torqlang.core.local.RequestClient;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.torqlang.examples.ExamplesTools.checkExpectedResponse;
-
-public final class HelloWorld {
+public final class HelloWorld extends AbstractExample {
 
     public static final String SOURCE = """
         actor HelloWorld() in
@@ -26,17 +24,17 @@ public final class HelloWorld {
         end""";
 
     public static void main(String[] args) throws Exception {
-        perform();
+        new HelloWorld().performWithErrorCheck();
         System.exit(0);
     }
 
-    public static void perform() throws Exception {
+    @Override
+    public final void perform() throws Exception {
 
         // Build and spawn HelloWorld. After spawning, `HelloWorld` is waiting to
         // receive the 'hello' message. The spawn method returns an actorRef used
         // subsequently to send the actor messages.
-        ActorRef actorRef = Actor.builder()
-            .spawn(SOURCE);
+        ActorRef actorRef = Actor.builder().spawn(SOURCE).actorRef();
 
         // Send the 'hello' message to the actor reference returned above. Wait a
         // maximum of 100 milliseconds for a response.

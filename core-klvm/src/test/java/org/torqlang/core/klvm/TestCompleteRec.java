@@ -255,7 +255,7 @@ public class TestCompleteRec {
         nv = r.toNativeValue();
         assertTrue(nv instanceof Map);
         map = (Map<?, ?>) nv;
-        assertEquals(Map.of(Rec.NATIVE_LABEL, testLabel.value, Rec.NATIVE_REC, Map.of()), map);
+        assertEquals(Map.of(Rec.$LABEL, testLabel.value, Rec.$REC, Map.of()), map);
 
         r = CompleteRec.create(null, List.of(new CompleteField(zero, a)));
         assertTrue(r.isValidKey());
@@ -276,7 +276,7 @@ public class TestCompleteRec {
         nv = r.toNativeValue();
         assertTrue(nv instanceof Map);
         map = (Map<?, ?>) nv;
-        assertEquals(Map.of(Rec.NATIVE_LABEL, testLabel.value, Rec.NATIVE_REC, Map.of(zero.value, a.value)), map);
+        assertEquals(Map.of(Rec.$LABEL, testLabel.value, Rec.$REC, Map.of(zero.value, a.value)), map);
 
         CompleteRec r2 = CompleteRec.create(List.of(new CompleteField(zero, a)));
         assertTrue(r2.isValidKey());
@@ -304,8 +304,8 @@ public class TestCompleteRec {
         assertEquals(r2, r.select(one));
         nv = r.toNativeValue();
         assertTrue(nv instanceof Map);
-        Map<?, ?> innerNativeValue = Map.of(Rec.NATIVE_LABEL, testLabel.value, Rec.NATIVE_REC, Map.of(zero.value, a.value));
-        Map<?, ?> outerNativeValue = Map.of(Rec.NATIVE_LABEL, anotherTestLabel.value, Rec.NATIVE_REC, Map.of(zero.value, b.value, one.value, innerNativeValue));
+        Map<?, ?> innerNativeValue = Map.of(Rec.$LABEL, testLabel.value, Rec.$REC, Map.of(zero.value, a.value));
+        Map<?, ?> outerNativeValue = Map.of(Rec.$LABEL, anotherTestLabel.value, Rec.$REC, Map.of(zero.value, b.value, one.value, innerNativeValue));
         assertEquals(outerNativeValue, nv);
     }
 

@@ -120,7 +120,7 @@ final class ArrayListMod {
         }
     }
 
-    static class ArrayListObj implements Obj, IterSource {
+    static class ArrayListObj implements Obj, ValueIterSource {
         final ArrayList<ValueOrVar> state;
 
         public ArrayListObj() {
@@ -159,11 +159,6 @@ final class ArrayListMod {
         }
 
         @Override
-        public final ValueOrVar iter() {
-            return new ArrayListObjIter(state);
-        }
-
-        @Override
         public final Value select(Feature feature) {
             return objProcTable.selectAndBind(this, feature);
         }
@@ -177,8 +172,13 @@ final class ArrayListMod {
             return toKernelString();
         }
 
-        static class ArrayListObjIter extends AbstractIter implements Iter {
-            public ArrayListObjIter(List<ValueOrVar> values) {
+        @Override
+        public final ValueOrVar valueIter() {
+            return new ListValueIter(state);
+        }
+
+        static class ListValueIter extends AbstractIter implements ValueIter {
+            public ListValueIter(List<ValueOrVar> values) {
                 super(values);
             }
         }

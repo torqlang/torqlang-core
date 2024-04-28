@@ -9,9 +9,7 @@ package org.torqlang.core.local;
 
 import org.torqlang.core.klvm.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 final class HashMapMod {
 
@@ -87,7 +85,7 @@ final class HashMapMod {
         }
     }
 
-    static class HashMapObj implements Obj, ValueIterSource {
+    static class HashMapObj implements Obj, FieldIterSource, ValueIterSource {
         private final HashMap<Complete, ValueOrVar> state;
 
         HashMapObj() {
@@ -112,6 +110,11 @@ final class HashMapMod {
         }
 
         @Override
+        public final ValueOrVar fieldIter() {
+            return new MapFieldIter(state);
+        }
+
+        @Override
         public final int hashCode() {
             return state.hashCode();
         }
@@ -132,11 +135,25 @@ final class HashMapMod {
 
         @Override
         public final ValueOrVar valueIter() {
-            return new ObjValueIter(state);
+            return new MapValueIter(state);
         }
 
-        static class ObjValueIter extends AbstractIter implements ValueIter {
-            public ObjValueIter(HashMap<Complete, ValueOrVar> hashMap) {
+        static class MapFieldIter extends AbstractIter implements FieldIter {
+            public MapFieldIter(HashMap<Complete, ValueOrVar> hashMap) {
+                super(makeFields(hashMap));
+            }
+
+            private static List<Tuple> makeFields(HashMap<Complete, ValueOrVar> hashMap) {
+                List<Tuple> tuples = new ArrayList<>();
+                for (Map.Entry<Complete, ValueOrVar> entry : hashMap.entrySet()) {
+                    tuples.add(PartialTuple.create(null, List.of(entry.getKey(), entry.getValue())));
+                }
+                return tuples;
+            }
+        }
+
+        static class MapValueIter extends AbstractIter implements ValueIter {
+            public MapValueIter(HashMap<Complete, ValueOrVar> hashMap) {
                 super(hashMap.values());
             }
         }

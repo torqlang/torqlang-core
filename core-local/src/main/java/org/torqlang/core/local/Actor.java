@@ -20,7 +20,7 @@ public final class Actor {
     public static CompleteRec compileForImport(String source) throws Exception {
         Rec actorRec = builder()
                 .setSource(source)
-                .createActorRec()
+                .construct()
                 .actorRec();
         actorRec.checkDetermined();
         PartialField actorField = (PartialField) actorRec.fieldAt(0);

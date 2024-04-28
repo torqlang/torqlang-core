@@ -49,7 +49,7 @@ public interface CompleteTuple extends CompleteRec, Tuple {
         if (label().equals(Rec.DEFAULT_LABEL)) {
             return list;
         }
-        return Map.of(NATIVE_LABEL, label().toNativeValue(), NATIVE_TUPLE, list);
+        return Map.of($LABEL, label().toNativeValue(), $REC, list);
     }
 
 }

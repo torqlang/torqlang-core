@@ -14,16 +14,15 @@ import java.util.*;
  * to FeatureComparator. Two records with the same arity can be easily compared by iterating the records in
  * tandem by index, and unification of two records can only proceed if the records have the same arity.
  */
-public interface Rec extends Composite, ValueIterSource {
+public interface Rec extends Composite, FieldIterSource, ValueIterSource {
 
     Collection<Var> EMPTY_VAR_COLLECTION = Collections.emptyList();
     FeatureComparator FEATURE_COMPARATOR = FeatureComparator.SINGLETON;
 
     Nothing DEFAULT_LABEL = Nothing.SINGLETON;
 
-    String NATIVE_LABEL = "torqlang.label";
-    String NATIVE_REC = "torqlang.record";
-    String NATIVE_TUPLE = "torqlang.tuple";
+    String $LABEL = "$label";
+    String $REC = "$rec";
 
     static CompleteRecBuilder completeRecBuilder() {
         return new CompleteRecBuilder();
@@ -186,6 +185,12 @@ public interface Rec extends Composite, ValueIterSource {
 
     int fieldCount();
 
+    @Override
+    default ValueOrVar fieldIter() throws WaitException {
+        checkDetermined();
+        return new RecFieldIter(this);
+    }
+
     /*
      * Return the value at feature. If not found, return null.
      */
@@ -263,6 +268,35 @@ public interface Rec extends Composite, ValueIterSource {
     default ValueOrVar valueIter() throws WaitException {
         checkDetermined();
         return new RecValueIter(this);
+    }
+
+    class RecFieldIter implements FieldIter {
+
+        private final Rec rec;
+        private int nextIndex = 0;
+
+        RecFieldIter(Rec rec) {
+            this.rec = rec;
+        }
+
+        @Override
+        public void apply(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
+            if (ys.size() != FIELD_ITER_ARG_COUNT) {
+                throw new InvalidArgCountError(FIELD_ITER_ARG_COUNT, ys, this);
+            }
+            ValueOrVar next;
+            int size = rec.fieldCount();
+            if (nextIndex < size) {
+                Field nextField = rec.fieldAt(nextIndex);
+                next = PartialTuple.create(null, List.of(nextField.feature(), nextField.value()));
+                nextIndex++;
+            } else {
+                next = Eof.SINGLETON;
+            }
+            ValueOrVar target = ys.get(0).resolveValueOrVar(env);
+            target.bindToValueOrVar(next, null);
+        }
+
     }
 
     class RecValueIter implements ValueIter {

@@ -14,9 +14,7 @@ import org.torqlang.core.local.RequestClient;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.torqlang.examples.ExamplesTools.checkExpectedResponse;
-
-public final class FactorialWithTypeAnnos {
+public final class FactorialWithTypeAnnos extends AbstractExample {
 
     public static final String SOURCE = """
         actor Factorial() in
@@ -33,14 +31,14 @@ public final class FactorialWithTypeAnnos {
         end""";
 
     public static void main(String[] args) throws Exception {
-        perform();
+        new FactorialWithTypeAnnos().performWithErrorCheck();
         System.exit(0);
     }
 
-    public static void perform() throws Exception {
+    @Override
+    public final void perform() throws Exception {
 
-        ActorRef actorRef = Actor.builder()
-            .spawn(SOURCE);
+        ActorRef actorRef = Actor.builder().spawn(SOURCE).actorRef();
 
         Object response = RequestClient.builder()
             .sendAndAwaitResponse(actorRef, Int64.of(10), 100, TimeUnit.MILLISECONDS);

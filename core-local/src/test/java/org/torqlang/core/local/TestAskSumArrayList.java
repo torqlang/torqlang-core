@@ -23,11 +23,11 @@ public class TestAskSumArrayList {
     public void test() throws Exception {
         String source = """
             actor SumArrayList() in
-                import system[ArrayList, Cell, Iter]
+                import system[ArrayList, Cell, ValueIter]
                 var one_thru_five = ArrayList.new([1, 2, 3, 4, 5])
                 handle ask 'perform' in
                     var sum = Cell.new(0)
-                    for i in Iter.new(one_thru_five) do
+                    for i in ValueIter.new(one_thru_five) do
                         sum := @sum + i
                     end
                     @sum
@@ -40,13 +40,13 @@ public class TestAskSumArrayList {
         String expected = """
             local $actor_cfgtr in
                 $create_actor_cfgtr(proc ($r) in // free vars: $import, $respond
-                    local ArrayList, Cell, Iter, one_thru_five, $v1, $v7 in
-                        $import('system', ['ArrayList', 'Cell', 'Iter'])
+                    local ArrayList, Cell, ValueIter, one_thru_five, $v1, $v7 in
+                        $import('system', ['ArrayList', 'Cell', 'ValueIter'])
                         local $v0 in
                             $bind([1, 2, 3, 4, 5], $v0)
                             $select_apply(ArrayList, ['new'], $v0, one_thru_five)
                         end
-                        $create_proc(proc ($m) in // free vars: $respond, Cell, Iter, one_thru_five
+                        $create_proc(proc ($m) in // free vars: $respond, Cell, ValueIter, one_thru_five
                             local $else in
                                 $create_proc(proc () in // free vars: $m
                                     local $v2 in
@@ -58,7 +58,7 @@ public class TestAskSumArrayList {
                                     local $v3, sum in
                                         $select_apply(Cell, ['new'], 0, sum)
                                         local $iter, $for in
-                                            $select_apply(Iter, ['new'], one_thru_five, $iter)
+                                            $select_apply(ValueIter, ['new'], one_thru_five, $iter)
                                             $create_proc(proc () in // free vars: $for, $iter, sum
                                                 local i, $v4 in
                                                     $iter(i)
@@ -97,7 +97,7 @@ public class TestAskSumArrayList {
                 $create_rec('SumArrayList'#{'cfg': $actor_cfgtr}, SumArrayList)
             end""";
         assertEquals(expected, g.createActorRecStmt().toString());
-        ActorRef actorRef = g.spawn();
+        ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
             .setAddress(createAddress("SumArrayListClient"))
             .send(actorRef, Str.of("perform"))

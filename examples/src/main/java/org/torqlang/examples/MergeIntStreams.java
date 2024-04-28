@@ -8,27 +8,24 @@
 package org.torqlang.examples;
 
 import org.torqlang.core.actor.ActorRef;
-import org.torqlang.core.klvm.CompleteTuple;
-import org.torqlang.core.klvm.Int32;
-import org.torqlang.core.klvm.Rec;
-import org.torqlang.core.klvm.Str;
+import org.torqlang.core.klvm.*;
+import org.torqlang.core.lang.ValueTools;
 import org.torqlang.core.local.Actor;
 import org.torqlang.core.local.ModuleSystem;
 import org.torqlang.core.local.RequestClient;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.torqlang.examples.ExamplesTools.checkExpectedResponse;
-
-public final class MergeIntStreams {
+public final class MergeIntStreams extends AbstractExample {
 
     public static final String SOURCE = """
         actor MergeIntStreams() in
-            import system[ArrayList, Cell, Iter, Stream]
+            import system[ArrayList, Cell, Stream, ValueIter]
             import examples.IntPublisher
             handle ask 'merge' in
-                var odd_iter = Iter.new(Stream.new(spawn(IntPublisher.cfg(1, 10, 2)), 'request'#{'count': 3})),
-                    even_iter = Iter.new(Stream.new(spawn(IntPublisher.cfg(2, 10, 2)), 'request'#{'count': 2}))
+                var odd_iter = ValueIter.new(Stream.new(spawn(IntPublisher.cfg(1, 10, 2)), 'request'#{'count': 3})),
+                    even_iter = ValueIter.new(Stream.new(spawn(IntPublisher.cfg(2, 10, 2)), 'request'#{'count': 2}))
                 var answer = ArrayList.new()
                 var odd_next = Cell.new(odd_iter()),
                     even_next = Cell.new(even_iter())
@@ -54,34 +51,23 @@ public final class MergeIntStreams {
         end""";
 
     public static void main(String[] args) throws Exception {
-        perform();
+        new MergeIntStreams().performWithErrorCheck();
         System.exit(0);
     }
 
-    public static void perform() throws Exception {
+    @Override
+    public final void perform() throws Exception {
 
         ModuleSystem.register("examples", ExamplesMod::moduleRec);
 
-        ActorRef actorRef = Actor.builder()
-            .spawn(SOURCE);
+        ActorRef actorRef = Actor.builder().spawn(SOURCE).actorRef();
 
         Object response = RequestClient.builder()
             .sendAndAwaitResponse(actorRef, Str.of("merge"), 100, TimeUnit.MILLISECONDS);
 
-        CompleteTuple expectedTuple = Rec.completeTupleBuilder()
-            .addValue(Int32.of(1))
-            .addValue(Int32.of(2))
-            .addValue(Int32.of(3))
-            .addValue(Int32.of(4))
-            .addValue(Int32.of(5))
-            .addValue(Int32.of(6))
-            .addValue(Int32.of(7))
-            .addValue(Int32.of(8))
-            .addValue(Int32.of(9))
-            .addValue(Int32.of(10))
-            .build();
+        List<?> expectedTuple = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
-        checkExpectedResponse(expectedTuple, response);
+        checkExpectedResponse(expectedTuple, ValueTools.toNativeValue((Complete) response));
     }
 
 }

@@ -24,12 +24,12 @@ public class TestAskIterateTimerTicks {
     public void test() throws Exception {
         String source = """
             actor IterateTimerTicks() in
-                import system[Cell, Iter, Stream, Timer]
+                import system[Cell, Stream, Timer, ValueIter]
                 handle ask 'iterate' in
                     var tick_count = Cell.new(0)
                     var timer_stream = Stream.new(spawn(Timer.cfg(1, 'microseconds')),
                         'request'#{'ticks': 5})
-                    for tick in Iter.new(timer_stream) do
+                    for tick in ValueIter.new(timer_stream) do
                         tick_count := @tick_count + 1
                     end
                     @tick_count
@@ -42,9 +42,9 @@ public class TestAskIterateTimerTicks {
         String expected = """
             local $actor_cfgtr in
                 $create_actor_cfgtr(proc ($r) in // free vars: $import, $respond, $spawn
-                    local Cell, Iter, Stream, Timer, $v0, $v9 in
-                        $import('system', ['Cell', 'Iter', 'Stream', 'Timer'])
-                        $create_proc(proc ($m) in // free vars: $respond, $spawn, Cell, Iter, Stream, Timer
+                    local Cell, Stream, Timer, ValueIter, $v0, $v9 in
+                        $import('system', ['Cell', 'Stream', 'Timer', 'ValueIter'])
+                        $create_proc(proc ($m) in // free vars: $respond, $spawn, Cell, Stream, Timer, ValueIter
                             local $else in
                                 $create_proc(proc () in // free vars: $m
                                     local $v1 in
@@ -64,7 +64,7 @@ public class TestAskIterateTimerTicks {
                                             $select_apply(Stream, ['new'], $v3, $v5, timer_stream)
                                         end
                                         local $iter, $for in
-                                            $select_apply(Iter, ['new'], timer_stream, $iter)
+                                            $select_apply(ValueIter, ['new'], timer_stream, $iter)
                                             $create_proc(proc () in // free vars: $for, $iter, tick_count
                                                 local tick, $v6 in
                                                     $iter(tick)
@@ -103,7 +103,7 @@ public class TestAskIterateTimerTicks {
                 $create_rec('IterateTimerTicks'#{'cfg': $actor_cfgtr}, IterateTimerTicks)
             end""";
         assertEquals(expected, g.createActorRecStmt().toString());
-        ActorRef actorRef = g.spawn();
+        ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
             .setAddress(createAddress("IterateTimerTicksClient"))
             .send(actorRef, Str.of("iterate"))

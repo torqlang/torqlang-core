@@ -7,7 +7,6 @@
 
 package org.torqlang.core.local;
 
-import org.torqlang.core.actor.ActorRef;
 import org.torqlang.core.actor.Address;
 import org.torqlang.core.klvm.CompleteOrIdent;
 import org.torqlang.core.klvm.Ident;
@@ -28,11 +27,13 @@ public interface ActorBuilderGenerated {
 
     List<? extends CompleteOrIdent> args();
 
-    ActorBuilderConstructed createActorRec() throws Exception;
+    ActorBuilderConfigured configure() throws Exception;
+
+    ActorBuilderConstructed construct() throws Exception;
 
     Stmt createActorRecStmt();
 
     String source();
 
-    ActorRef spawn() throws Exception;
+    ActorBuilderSpawned spawn() throws Exception;
 }

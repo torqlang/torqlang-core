@@ -13,7 +13,7 @@ public class TestHelloWorldWithGoodbye {
 
     @Test
     public void test() throws Exception {
-        HelloWorldWithGoodbye.perform();
+        new HelloWorldWithGoodbye().performWithErrorCheck();
     }
 
 }

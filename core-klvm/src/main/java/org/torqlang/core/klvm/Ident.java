@@ -13,28 +13,28 @@ import java.util.Set;
 
 public final class Ident implements Decl, LiteralOrIdent {
 
-    public static final Ident ACT = new Ident("$act");
-    public static final Ident ACTOR_CFGTR = new Ident("$actor_cfgtr");
-    public static final Ident ELSE = new Ident("$else");
-    public static final Ident FINALLY = new Ident("$finally");
-    public static final Ident FOR = new Ident("$for");
-    public static final Ident GUARD = new Ident("$guard");
-    public static final Ident HANDLER = new Ident("$handler");
-    public static final Ident HANDLERS = new Ident("$handlers");
-    public static final Ident HANDLERS_CTOR = new Ident("$handlers_ctor");
-    public static final Ident IMPORT = new Ident("$import");
-    public static final Ident ITER = new Ident("$iter");
-    public static final Ident MESSAGE = new Ident("$m");
-    public static final Ident NEXT = new Ident("$next");
-    public static final Ident RESPOND = new Ident("$respond");
-    public static final Ident RESULT = new Ident("$r");
-    public static final Ident SELF = new Ident("$self");
-    public static final Ident SPAWN = new Ident("$spawn");
-    public static final Ident WHILE = new Ident("$while");
+    public static final Ident $ACT = new Ident("$act");
+    public static final Ident $ACTOR_CFGTR = new Ident("$actor_cfgtr");
+    public static final Ident $ELSE = new Ident("$else");
+    public static final Ident $FINALLY = new Ident("$finally");
+    public static final Ident $FOR = new Ident("$for");
+    public static final Ident $GUARD = new Ident("$guard");
+    public static final Ident $HANDLER = new Ident("$handler");
+    public static final Ident $HANDLERS = new Ident("$handlers");
+    public static final Ident $HANDLERS_CTOR = new Ident("$handlers_ctor");
+    public static final Ident $IMPORT = new Ident("$import");
+    public static final Ident $ITER = new Ident("$iter");
+    public static final Ident $M = new Ident("$m");
+    public static final Ident $NEXT = new Ident("$next");
+    public static final Ident $RESPOND = new Ident("$respond");
+    public static final Ident $R = new Ident("$r");
+    public static final Ident $SELF = new Ident("$self");
+    public static final Ident $SPAWN = new Ident("$spawn");
+    public static final Ident $WHILE = new Ident("$while");
 
-    private static final String ANONYMOUS_PREFIX = "$_";
-    private static final String ARG_PREFIX = "$a";
-    private static final String VAR_PREFIX = "$v";
+    private static final String $_ = "$_";
+    private static final String $A = "$a";
+    private static final String $V = "$v";
 
     private static final char UPPER_CASE_A = 'A';
     private static final char UPPER_CASE_Z = 'Z';
@@ -75,15 +75,15 @@ public final class Ident implements Decl, LiteralOrIdent {
     }
 
     public static Ident createSystemAnonymousIdent(int suffix) {
-        return new Ident(ANONYMOUS_PREFIX + suffix);
+        return new Ident($_ + suffix);
     }
 
     public static Ident createSystemArgIdent(int suffix) {
-        return new Ident(ARG_PREFIX + suffix);
+        return new Ident($A + suffix);
     }
 
     public static Ident createSystemVarIdent(int suffix) {
-        return new Ident(VAR_PREFIX + suffix);
+        return new Ident($V + suffix);
     }
 
     public static boolean isAlphaNumericOrUnderscore(char c) {
