@@ -7,9 +7,9 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.torqlang.core.lang.CommonTools.assertSourceSpan;
 
 public class TestParserTryLang {
@@ -20,7 +20,7 @@ public class TestParserTryLang {
         //                            012345678901234567890123456789012345678901234567890123456789012345678
         Parser p = new Parser("try 1 2 3 catch a then 4 5 6 catch b then 7 8 9 finally 10 11 12 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof TryLang);
+        assertInstanceOf(TryLang.class, sox);
         TryLang tryLang = (TryLang) sox;
         assertSourceSpan(tryLang, 0, 68);
         String expectedFormat = """
@@ -51,7 +51,7 @@ public class TestParserTryLang {
         //                            0123456789012345678901234
         Parser p = new Parser("try 0 catch a then 1 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof TryLang);
+        assertInstanceOf(TryLang.class, sox);
         TryLang tryLang = (TryLang) sox;
         assertSourceSpan(tryLang, 0, 24);
         assertSourceSpan(tryLang.body, 4, 5);
@@ -70,12 +70,12 @@ public class TestParserTryLang {
         CatchClause catchClause = tryLang.catchClauses.get(0);
         assertSourceSpan(catchClause, 6, 20);
         // Test part -- catchClause pat
-        assertTrue(catchClause.pat instanceof IdentAsPat);
+        assertInstanceOf(IdentAsPat.class, catchClause.pat);
         assertSourceSpan(catchClause.pat, 12, 13);
         // Test part -- catchClause body
         assertEquals(1, catchClause.body.list.size());
         SntcOrExpr catchBodyExpr = catchClause.body.list.get(0);
-        assertTrue(catchBodyExpr instanceof IntAsExpr);
+        assertInstanceOf(IntAsExpr.class, catchBodyExpr);
         assertSourceSpan(catchBodyExpr, 19, 20);
         // Test part -- finallySeq
         assertNull(tryLang.finallySeq);
@@ -87,7 +87,7 @@ public class TestParserTryLang {
         //                            01234567890123456789012345678901234
         Parser p = new Parser("try 0 catch a then 1 finally 2 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof TryLang);
+        assertInstanceOf(TryLang.class, sox);
         TryLang tryLang = (TryLang) sox;
         assertSourceSpan(tryLang, 0, 34);
         assertSourceSpan(tryLang.body, 4, 5);
@@ -108,18 +108,18 @@ public class TestParserTryLang {
         CatchClause catchClause = tryLang.catchClauses.get(0);
         assertSourceSpan(catchClause, 6, 20);
         // Test part -- catchClause pat
-        assertTrue(catchClause.pat instanceof IdentAsPat);
+        assertInstanceOf(IdentAsPat.class, catchClause.pat);
         assertSourceSpan(catchClause.pat, 12, 13);
         // Test part -- catchClause body
         assertEquals(1, catchClause.body.list.size());
         SntcOrExpr catchBodyExpr = catchClause.body.list.get(0);
-        assertTrue(catchBodyExpr instanceof IntAsExpr);
+        assertInstanceOf(IntAsExpr.class, catchBodyExpr);
         assertSourceSpan(catchBodyExpr, 19, 20);
         // Test part -- finallySeq
         assertNotNull(tryLang.finallySeq);
         assertEquals(1, tryLang.finallySeq.list.size());
         SntcOrExpr finallyExpr = tryLang.finallySeq.list.get(0);
-        assertTrue(finallyExpr instanceof IntAsExpr);
+        assertInstanceOf(IntAsExpr.class, finallyExpr);
         assertSourceSpan(finallyExpr, 29, 30);
     }
 
@@ -129,7 +129,7 @@ public class TestParserTryLang {
         //                            01234567890123456789
         Parser p = new Parser("try 0 finally 1 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof TryLang);
+        assertInstanceOf(TryLang.class, sox);
         TryLang tryLang = (TryLang) sox;
         assertSourceSpan(tryLang, 0, 19);
         assertSourceSpan(tryLang.body, 4, 5);
@@ -149,7 +149,7 @@ public class TestParserTryLang {
         assertNotNull(tryLang.finallySeq);
         assertEquals(1, tryLang.finallySeq.list.size());
         SntcOrExpr finallyExpr = tryLang.finallySeq.list.get(0);
-        assertTrue(finallyExpr instanceof IntAsExpr);
+        assertInstanceOf(IntAsExpr.class, finallyExpr);
         assertSourceSpan(finallyExpr, 14, 15);
     }
 

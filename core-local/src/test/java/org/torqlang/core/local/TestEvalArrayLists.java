@@ -7,14 +7,13 @@
 
 package org.torqlang.core.local;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.*;
 import org.torqlang.core.lang.Evaluator;
 import org.torqlang.core.lang.EvaluatorPerformed;
-import org.torqlang.core.local.ArrayListMod.ArrayListObj;
+import org.torqlang.core.local.ArrayListPack.ArrayListObj;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestEvalArrayLists {
 
@@ -28,7 +27,7 @@ public class TestEvalArrayLists {
                 x.add(1)
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(ArrayListMod.ARRAY_LIST_IDENT, new Var(ArrayListMod.ARRAY_LIST_CLS))
+            .addVar(ArrayListPack.ARRAY_LIST_IDENT, new Var(ArrayListPack.ARRAY_LIST_CLS))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
@@ -39,7 +38,7 @@ public class TestEvalArrayLists {
             $select_apply(x, ['add'], 2)
             $select_apply(x, ['add'], 1)""";
         assertEquals(expected, e.kernel().toString());
-        assertTrue(e.varAtName("x").valueOrVarSet() instanceof ArrayListObj);
+        assertInstanceOf(ArrayListObj.class, e.varAtName("x").valueOrVarSet());
         ArrayListObj x = (ArrayListObj) e.varAtName("x").valueOrVarSet();
         assertEquals(3, x.state.size());
         assertEquals(Int32.of(3), x.state.get(0).resolveValue());
@@ -59,7 +58,7 @@ public class TestEvalArrayLists {
                 x.add(0)
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(ArrayListMod.ARRAY_LIST_IDENT, new Var(ArrayListMod.ARRAY_LIST_CLS))
+            .addVar(ArrayListPack.ARRAY_LIST_IDENT, new Var(ArrayListPack.ARRAY_LIST_CLS))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
@@ -72,7 +71,7 @@ public class TestEvalArrayLists {
             $select_apply(x, ['clear'])
             $select_apply(x, ['add'], 0)""";
         assertEquals(expected, e.kernel().toString());
-        assertTrue(e.varAtName("x").valueOrVarSet() instanceof ArrayListObj);
+        assertInstanceOf(ArrayListObj.class, e.varAtName("x").valueOrVarSet());
         ArrayListObj x = (ArrayListObj) e.varAtName("x").valueOrVarSet();
         assertEquals(1, x.state.size());
         assertEquals(Int32.of(0), x.state.get(0).resolveValue());
@@ -87,7 +86,7 @@ public class TestEvalArrayLists {
                 x = b.to_tuple()
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(ArrayListMod.ARRAY_LIST_IDENT, new Var(ArrayListMod.ARRAY_LIST_CLS))
+            .addVar(ArrayListPack.ARRAY_LIST_IDENT, new Var(ArrayListPack.ARRAY_LIST_CLS))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
@@ -104,7 +103,7 @@ public class TestEvalArrayLists {
             .addValue(Int32.I32_2)
             .addValue(Int32.I32_1)
             .build();
-        assertTrue(e.varAtName("x").valueOrVarSet() instanceof Rec);
+        assertInstanceOf(Rec.class, e.varAtName("x").valueOrVarSet());
         Rec xRec = (Rec) e.varAtName("x").valueOrVarSet();
         assertTrue(expectedTuple.entails(xRec, null));
     }

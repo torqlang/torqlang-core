@@ -7,8 +7,6 @@
 
 package org.torqlang.core.local;
 
-import org.torqlang.core.actor.ActorRef;
-import org.torqlang.core.actor.Address;
 import org.torqlang.core.klvm.ActorCfg;
 import org.torqlang.core.klvm.CompleteOrIdent;
 import org.torqlang.core.lang.ActorSntc;
@@ -27,6 +25,8 @@ public interface ActorBuilderInit {
     ActorBuilderInit setArgs(List<? extends CompleteOrIdent> args);
 
     ActorBuilderReady setSource(String source);
+
+    ActorBuilderInit setSystem(ActorSystem system);
 
     ActorBuilderInit setTrace(boolean trace);
 

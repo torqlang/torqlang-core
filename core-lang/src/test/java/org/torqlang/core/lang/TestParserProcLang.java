@@ -7,12 +7,12 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Ident;
 import org.torqlang.core.klvm.Int32;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.torqlang.core.lang.CommonTools.*;
 
 public class TestParserProcLang {
@@ -23,7 +23,7 @@ public class TestParserProcLang {
         //                            01234567890123456
         Parser p = new Parser("proc () in 0 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof ProcExpr);
+        assertInstanceOf(ProcExpr.class, sox);
         ProcExpr procExpr = (ProcExpr) sox;
         assertSourceSpan(procExpr, 0, 16);
         assertSourceSpan(procExpr.body, 11, 12);
@@ -45,7 +45,7 @@ public class TestParserProcLang {
         //                            012345678901234567
         Parser p = new Parser("proc (a) in 0 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof ProcExpr);
+        assertInstanceOf(ProcExpr.class, sox);
         ProcExpr procExpr = (ProcExpr) sox;
         assertSourceSpan(procExpr, 0, 17);
         assertSourceSpan(procExpr.body, 12, 13);
@@ -68,7 +68,7 @@ public class TestParserProcLang {
         //                            012345678901234567890
         Parser p = new Parser("proc (a, b) in 0 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof ProcExpr);
+        assertInstanceOf(ProcExpr.class, sox);
         ProcExpr procExpr = (ProcExpr) sox;
         assertSourceSpan(procExpr, 0, 20);
         assertSourceSpan(procExpr.body, 15, 16);
@@ -92,7 +92,7 @@ public class TestParserProcLang {
         //                            01234567890123456789012
         Parser p = new Parser("proc MyProc() in 0 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof ProcSntc);
+        assertInstanceOf(ProcSntc.class, sox);
         ProcSntc procSntc = (ProcSntc) sox;
         assertSourceSpan(procSntc, 0, 22);
         assertEquals(Ident.create("MyProc"), procSntc.name());
@@ -115,7 +115,7 @@ public class TestParserProcLang {
         //                            012345678901234567890123
         Parser p = new Parser("proc MyProc(a) in 0 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof ProcSntc);
+        assertInstanceOf(ProcSntc.class, sox);
         ProcSntc procSntc = (ProcSntc) sox;
         assertSourceSpan(procSntc, 0, 23);
         assertEquals(Ident.create("MyProc"), procSntc.name());
@@ -139,7 +139,7 @@ public class TestParserProcLang {
         //                            012345678901234567890123456
         Parser p = new Parser("proc MyProc(a, b) in 0 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof ProcSntc);
+        assertInstanceOf(ProcSntc.class, sox);
         ProcSntc procSntc = (ProcSntc) sox;
         assertSourceSpan(procSntc, 0, 26);
         assertEquals(Ident.create("MyProc"), procSntc.name());

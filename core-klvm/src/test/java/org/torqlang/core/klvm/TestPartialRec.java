@@ -7,12 +7,12 @@
 
 package org.torqlang.core.klvm;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestPartialRec {
 
@@ -45,7 +45,7 @@ public class TestPartialRec {
         assertEquals(a, r.findValue(zero));
         assertEquals(a, r.select(zero));
         c = r.checkComplete();
-        assertTrue(c instanceof CompleteRec);
+        assertInstanceOf(CompleteRec.class, c);
         cr = (CompleteRec) c;
         assertEquals(Rec.DEFAULT_LABEL, cr.label());
         assertEquals(1, cr.fieldCount());
@@ -89,7 +89,7 @@ public class TestPartialRec {
         assertEquals(a, r.findValue(zero));
         assertEquals(a, r.select(zero));
         c = r.checkComplete();
-        assertTrue(c instanceof CompleteRec);
+        assertInstanceOf(CompleteRec.class, c);
         cr = (CompleteRec) c;
         assertEquals(testLabel, cr.label());
         assertEquals(1, cr.fieldCount());
@@ -137,7 +137,7 @@ public class TestPartialRec {
         assertEquals(b, r.findValue(one));
         assertEquals(b, r.select(one));
         c = r.checkComplete();
-        assertTrue(c instanceof CompleteRec);
+        assertInstanceOf(CompleteRec.class, c);
         cr = (CompleteRec) c;
         f = cr.fieldAt(0);
         assertEquals(zero, f.feature().resolveValue());
@@ -192,7 +192,7 @@ public class TestPartialRec {
         assertEquals(b, r.findValue(one));
         assertEquals(b, r.select(one));
         c = r.checkComplete();
-        assertTrue(c instanceof CompleteRec);
+        assertInstanceOf(CompleteRec.class, c);
         cr = (CompleteRec) c;
         f = cr.fieldAt(0);
         assertEquals(zero, f.feature().resolveValue());
@@ -344,7 +344,7 @@ public class TestPartialRec {
 
         aVar.bindToValue(a, null);
         c = r.checkComplete();
-        assertTrue(c instanceof CompleteRec);
+        assertInstanceOf(CompleteRec.class, c);
         cr = (CompleteRec) c;
         assertEquals(Rec.DEFAULT_LABEL, cr.label());
         assertEquals(1, cr.fieldCount());

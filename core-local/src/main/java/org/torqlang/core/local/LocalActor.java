@@ -7,18 +7,13 @@
 
 package org.torqlang.core.local;
 
-import org.torqlang.core.actor.ActorRef;
-import org.torqlang.core.actor.Address;
-import org.torqlang.core.actor.Envelope;
 import org.torqlang.core.klvm.Stack;
 import org.torqlang.core.klvm.*;
 import org.torqlang.core.util.NeedsImpl;
 
 import java.util.*;
-import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
-import static org.torqlang.core.local.ActorSystem.*;
 import static org.torqlang.core.local.OnMessageResult.FINISHED;
 import static org.torqlang.core.local.OnMessageResult.NOT_FINISHED;
 import static org.torqlang.core.util.ListTools.nullSafeCopyOf;
@@ -47,6 +42,7 @@ final class LocalActor extends AbstractActor {
 
     private static final Env ROOT_ENV = createRootEnv();
 
+    private final ActorSystem system;
     private final IdentityHashMap<Var, List<ChildVar>> triggers = new IdentityHashMap<>();
 
     private boolean trace;
@@ -61,8 +57,9 @@ final class LocalActor extends AbstractActor {
     private List<Envelope> selectableResponses = Collections.emptyList();
     private List<Envelope> suspendedResponses = Collections.emptyList();
 
-    LocalActor(Address address, Mailbox mailbox, Executor executor, Logger logger, boolean trace) {
-        super(address, mailbox, executor, logger);
+    LocalActor(Address address, ActorSystem system, boolean trace) {
+        super(address, system.createMailbox(), system.executor(), system.createLogger());
+        this.system = system;
         this.trace = trace;
         if (trace) {
             logInfo("Created");
@@ -96,9 +93,10 @@ final class LocalActor extends AbstractActor {
     /*
      * Imports must be a type of `Complete`
      */
-    private static void onCallbackToImport(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
+    static void onCallbackToImport(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         // TODO: Support a third argument -- an alias
         //       For example: import system[ArrayList as JavaArrayList]
+        LocalActor owner = machine.owner();
         if (ys.size() != 2) {
             throw new InvalidArgCountError(2, ys, "LocalActor.onCallbackToImport");
         }
@@ -107,12 +105,7 @@ final class LocalActor extends AbstractActor {
             throw new IllegalArgumentException("Not a Str: " + qualifierRes);
         }
         String qualifier = qualifierStr.value;
-        CompleteRec moduleRec;
-        if (qualifier.equals("system")) {
-            moduleRec = SystemMod.moduleRec;
-        } else {
-            moduleRec = ModuleSystem.moduleAt(qualifier);
-        }
+        CompleteRec moduleRec = owner.system.moduleAt(qualifier);
         Value selectionsRes = ys.get(1).resolveValue(env);
         if (!(selectionsRes instanceof CompleteTuple selectionsTuple)) {
             throw new IllegalArgumentException("Not a CompleteTuple: " + selectionsRes);
@@ -135,7 +128,7 @@ final class LocalActor extends AbstractActor {
         owner.activeRequest = null;
     }
 
-    private static void onCallbackToRespondFromProc(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
+    static void onCallbackToRespondFromProc(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         LocalActor owner = machine.owner();
         owner.sendResponse(ys, env, machine);
     }
@@ -290,7 +283,7 @@ final class LocalActor extends AbstractActor {
     }
 
     final void configure(ActorCfg actorCfg) {
-        send(createControlNotify(new Configure(actorCfg)));
+        send(Envelope.createControlNotify(new Configure(actorCfg)));
     }
 
     @Override
@@ -491,14 +484,14 @@ final class LocalActor extends AbstractActor {
                         " to child var " + childVar.childVar + " at actor: " + childVar.child.address() +
                         " with value: " + parentComplete);
                 }
-                childVar.child.send(createControlNotify(new SyncVar(childVar.childVar, parentComplete)));
+                childVar.child.send(Envelope.createControlNotify(new SyncVar(childVar.childVar, parentComplete)));
             }
         }
     }
 
     protected final void onReceivedAfterFailed(Envelope envelope) {
         if (envelope.isRequest()) {
-            envelope.requester().send(createResponse(failedValue, envelope.requestId()));
+            envelope.requester().send(Envelope.createResponse(failedValue, envelope.requestId()));
         } else {
             super.onReceivedAfterFailed(envelope);
         }
@@ -514,7 +507,7 @@ final class LocalActor extends AbstractActor {
 
     private OnMessageResult onStop(Envelope envelope) {
         if (envelope.requester() != null) {
-            envelope.requester().send(createControlResponse(Stop.SINGLETON, envelope.requestId()));
+            envelope.requester().send(Envelope.createControlResponse(Stop.SINGLETON, envelope.requestId()));
         }
         return FINISHED;
     }
@@ -558,7 +551,7 @@ final class LocalActor extends AbstractActor {
             if (trace) {
                 logRespondingWithValue(failedValue);
             }
-            activeRequest.requester().send(createResponse(failedValue, activeRequest.requestId()));
+            activeRequest.requester().send(Envelope.createResponse(failedValue, activeRequest.requestId()));
         } else {
             String errorText = "Actor halted\n" + failedValue.toDetailsString();
             logError(errorText);
@@ -567,15 +560,14 @@ final class LocalActor extends AbstractActor {
         while (!mailbox.isEmpty()) {
             Envelope next = mailbox.removeNext();
             if (next.isRequest()) {
-                next.requester().send(createResponse(failedValue, next.requestId()));
+                next.requester().send(Envelope.createResponse(failedValue, next.requestId()));
             }
         }
     }
 
     private void performCallbackToAct(List<CompleteOrIdent> ys, Env env, Machine machine) {
 
-        LocalActor child = new LocalActor(nextChildAddress(), createMailbox(),
-            computationExecutor(), createLogger(), trace);
+        LocalActor child = new LocalActor(nextChildAddress(), system, trace);
 
         ActStmt actStmt = (ActStmt) machine.current().stmt;
 
@@ -610,7 +602,7 @@ final class LocalActor extends AbstractActor {
         SeqStmt seq = new SeqStmt(stmtList, actStmt.sourceSpan);
         ValueOrVar responseTarget = actStmt.target.resolveValueOrVar(env);
         Act act = new Act(seq, actStmt.target, childInput);
-        child.send(createControlRequest(act, LocalActor.this, new ValueOrVarRef(responseTarget)));
+        child.send(Envelope.createControlRequest(act, LocalActor.this, new ValueOrVarRef(responseTarget)));
     }
 
     private void performCallbackToSelf(List<CompleteOrIdent> ys, Env env, Machine machine) {
@@ -679,7 +671,7 @@ final class LocalActor extends AbstractActor {
         if (trace) {
             logRespondingWithValue(responseValue);
         }
-        activeRequest.requester().send(createResponse(responseValue, activeRequest.requestId()));
+        activeRequest.requester().send(Envelope.createResponse(responseValue, activeRequest.requestId()));
     }
 
     private ActorRefObj spawnActorCfg(ActorCfg parentCfg) throws WaitException {
@@ -719,17 +711,15 @@ final class LocalActor extends AbstractActor {
         Closure childHandlersCtor = new Closure(parentHandlersCtor.procDef(), childCapturedEnv);
         ActorCfg childConfig = new ActorCfg(parentCfg.args(), childHandlersCtor);
         Configure configure = new Configure(childConfig);
-        LocalActor childActor = new LocalActor(nextChildAddress(), createMailbox(), computationExecutor(),
-            createLogger(), trace);
+        LocalActor childActor = new LocalActor(nextChildAddress(), system, trace);
 
-        childActor.send(createControlNotify(configure));
+        childActor.send(Envelope.createControlNotify(configure));
 
         return new ActorRefObj(childActor);
     }
 
     private ActorRefObj spawnNativeActorCfg(NativeActorCfg nativeActorCfg) {
-        ActorRef actorRef = nativeActorCfg.spawn(nextChildAddress(), createMailbox(),
-            computationExecutor(), createLogger(), trace);
+        ActorRef actorRef = nativeActorCfg.spawn(nextChildAddress(), system, trace);
         return new ActorRefObj(actorRef);
     }
 
@@ -747,17 +737,6 @@ final class LocalActor extends AbstractActor {
             this.seq = seq;
             this.target = target;
             this.input = nullSafeCopyOf(input);
-        }
-    }
-
-    private static class ActorMod {
-        private static final CompleteRec moduleRec = createModuleRec();
-
-        private static CompleteRec createModuleRec() {
-            return Rec.completeRecBuilder()
-                .addField(Str.of("respond"), (CompleteProc) LocalActor::onCallbackToRespondFromProc)
-                .addField(Str.of("Stream"), LocalActor.StreamCls.SINGLETON)
-                .build();
         }
     }
 
@@ -808,8 +787,9 @@ final class LocalActor extends AbstractActor {
         }
     }
 
-    private static final class StreamCls implements CompleteObj {
-        private static final StreamCls SINGLETON = new StreamCls();
+    static final class StreamCls implements CompleteObj {
+        static final StreamCls SINGLETON = new StreamCls();
+
         private static final CompleteProc STREAM_CLS_NEW = StreamCls::clsNew;
 
         private StreamCls() {
@@ -967,7 +947,7 @@ final class LocalActor extends AbstractActor {
             if (localActor.trace) {
                 localActor.logInfo("StreamObj sending request " + requestMessage + " to " + publisher.referent().address());
             }
-            publisher.referent().send(createRequest(requestMessage, localActor, requestId));
+            publisher.referent().send(Envelope.createRequest(requestMessage, localActor, requestId));
             if (localActor.trace) {
                 localActor.logInfo("StreamObj request " + requestMessage + " sent to " + publisher.referent().address());
             }
@@ -999,25 +979,6 @@ final class LocalActor extends AbstractActor {
         private SyncVar(Var var, Complete value) {
             this.var = var;
             this.value = value;
-        }
-    }
-
-    private final class SystemMod {
-        private static final CompleteRec moduleRec = createModuleRec();
-
-        private static CompleteRec createModuleRec() {
-            CompleteRecBuilder builder = Rec.completeRecBuilder();
-            CompleteRec moduleRec = ActorMod.moduleRec;
-            int fieldCount = ActorMod.moduleRec.fieldCount();
-            for (int i = 0; i < fieldCount; i++) {
-                builder.addField(moduleRec.fieldAt(i));
-            }
-            moduleRec = BuiltInsMod.moduleRec;
-            fieldCount = BuiltInsMod.moduleRec.fieldCount();
-            for (int i = 0; i < fieldCount; i++) {
-                builder.addField(moduleRec.fieldAt(i));
-            }
-            return builder.build();
         }
     }
 

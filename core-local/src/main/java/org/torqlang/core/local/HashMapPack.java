@@ -11,14 +11,14 @@ import org.torqlang.core.klvm.*;
 
 import java.util.*;
 
-final class HashMapMod {
+final class HashMapPack {
 
     public static final Ident HASH_MAP_IDENT = Ident.create("HashMap");
     public static final CompleteObj HASH_MAP_CLS = HashMapCls.SINGLETON;
 
     private static final ObjProcTable<HashMapObj> objProcTable = ObjProcTable.<HashMapObj>builder()
-        .addEntry(CommonFeatures.GET, HashMapMod::objGet)
-        .addEntry(CommonFeatures.PUT, HashMapMod::objPut)
+        .addEntry(CommonFeatures.GET, HashMapPack::objGet)
+        .addEntry(CommonFeatures.PUT, HashMapPack::objPut)
         .build();
 
     static void clsNew(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
@@ -66,7 +66,7 @@ final class HashMapMod {
 
     static class HashMapCls implements CompleteObj {
         private static final HashMapCls SINGLETON = new HashMapCls();
-        private static final CompleteProc HASH_MAP_CLS_NEW = HashMapMod::clsNew;
+        private static final CompleteProc HASH_MAP_CLS_NEW = HashMapPack::clsNew;
 
         private HashMapCls() {
         }

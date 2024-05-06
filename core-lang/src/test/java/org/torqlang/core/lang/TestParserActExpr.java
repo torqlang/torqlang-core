@@ -7,10 +7,10 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.torqlang.core.lang.CommonTools.*;
 
 public class TestParserActExpr {
@@ -20,7 +20,7 @@ public class TestParserActExpr {
         //                            0123456789
         Parser p = new Parser("act a end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof ActExpr);
+        assertInstanceOf(ActExpr.class, sox);
         ActExpr actExpr = (ActExpr) sox;
         assertSourceSpan(actExpr, 0, 9);
         // Test format
@@ -43,7 +43,7 @@ public class TestParserActExpr {
         //                            01234567890123
         Parser p = new Parser("act a b c end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof ActExpr);
+        assertInstanceOf(ActExpr.class, sox);
         ActExpr actExpr = (ActExpr) sox;
         assertSourceSpan(actExpr, 0, 13);
         // Test format

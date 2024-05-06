@@ -7,15 +7,15 @@
 
 package org.torqlang.examples;
 
-import org.torqlang.core.actor.ActorRef;
 import org.torqlang.core.klvm.Int32;
 import org.torqlang.core.klvm.Str;
 import org.torqlang.core.local.Actor;
+import org.torqlang.core.local.ActorRef;
 import org.torqlang.core.local.RequestClient;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.torqlang.core.local.ActorSystem.createAddress;
+import static org.torqlang.core.local.Address.createAddress;
 
 public final class NestedMathActs extends AbstractExample {
 

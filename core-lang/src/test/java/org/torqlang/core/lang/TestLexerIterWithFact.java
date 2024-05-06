@@ -7,21 +7,19 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestLexerIterWithFact {
 
-    // @formatter:off
-    private static final String BLOCK_COMMENT_VALUE =
-        "/*func fact_cps(n, k) in\n" +
-            "            if n==0 then k\n" +
-            "            else fact_cps(n - 1, n * k) end\n" +
-            "        end*/";
-    // @formatter:on
+    private static final String BLOCK_COMMENT_VALUE = """
+        /*func fact_cps(n, k) in
+                    if n==0 then k
+                    else fact_cps(n - 1, n * k) end
+                end*/""";
 
     private static final String FACTORIAL = """
         local fact in
@@ -116,7 +114,9 @@ public class TestLexerIterWithFact {
         assertTrue(lexer.next().isOneCharSymbol(')'));
         assertTrue(lexer.next().isKeyword("end"));
         assertTrue(lexer.next().isKeyword("end"));
-        assertTrue(lexer.next().isComment(BLOCK_COMMENT_VALUE));
+        LexerToken commentToken = lexer.next();
+        assertTrue(commentToken.isComment());
+        assertEquals(BLOCK_COMMENT_VALUE, commentToken.substring());
         assertTrue(lexer.next().isIdent("fact_cps"));
         assertTrue(lexer.next().isOneCharSymbol('('));
         assertTrue(lexer.next().isIdent("x"));

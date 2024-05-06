@@ -7,15 +7,14 @@
 
 package org.torqlang.core.local;
 
-import org.junit.Test;
-import org.torqlang.core.actor.ActorRef;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Int32;
 import org.torqlang.core.klvm.Str;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.torqlang.core.local.ActorSystem.createAddress;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.torqlang.core.local.Address.createAddress;
 
 public class TestAskSumArrayList {
 

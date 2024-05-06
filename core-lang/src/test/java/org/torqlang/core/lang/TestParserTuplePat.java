@@ -7,10 +7,10 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Ident;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.torqlang.core.lang.CommonTools.*;
 
 public class TestParserTuplePat {
@@ -21,13 +21,13 @@ public class TestParserTuplePat {
         //                            01234567890
         Parser p = new Parser("var [] = x");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof VarSntc);
+        assertInstanceOf(VarSntc.class, sox);
         VarSntc varSntc = (VarSntc) sox;
         assertSourceSpan(varSntc, 0, 10);
         assertEquals(1, varSntc.varDecls.size());
         InitVarDecl decl = asInitVarDecl(varSntc.varDecls.get(0));
         assertSourceSpan(decl, 4, 10);
-        assertTrue(decl.varPat instanceof TuplePat);
+        assertInstanceOf(TuplePat.class, decl.varPat);
         TuplePat tuplePat = (TuplePat) decl.varPat;
         assertSourceSpan(tuplePat, 4, 6);
         // Test label and partial arity
@@ -51,13 +51,13 @@ public class TestParserTuplePat {
         //                            012345678901
         Parser p = new Parser("var [a] = x");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof VarSntc);
+        assertInstanceOf(VarSntc.class, sox);
         VarSntc varSntc = (VarSntc) sox;
         assertSourceSpan(varSntc, 0, 11);
         assertEquals(1, varSntc.varDecls.size());
         InitVarDecl decl = asInitVarDecl(varSntc.varDecls.get(0));
         assertSourceSpan(decl, 4, 11);
-        assertTrue(decl.varPat instanceof TuplePat);
+        assertInstanceOf(TuplePat.class, decl.varPat);
         TuplePat tuplePat = (TuplePat) decl.varPat;
         assertSourceSpan(tuplePat, 4, 7);
         // Test label and partial arity
@@ -83,13 +83,13 @@ public class TestParserTuplePat {
         //                            01234567890123456
         Parser p = new Parser("var [a, ...] = x");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof VarSntc);
+        assertInstanceOf(VarSntc.class, sox);
         VarSntc varSntc = (VarSntc) sox;
         assertSourceSpan(varSntc, 0, 16);
         assertEquals(1, varSntc.varDecls.size());
         InitVarDecl decl = asInitVarDecl(varSntc.varDecls.get(0));
         assertSourceSpan(decl, 4, 16);
-        assertTrue(decl.varPat instanceof TuplePat);
+        assertInstanceOf(TuplePat.class, decl.varPat);
         TuplePat tuplePat = (TuplePat) decl.varPat;
         assertSourceSpan(tuplePat, 4, 12);
         // Test label and partial arity
@@ -115,13 +115,13 @@ public class TestParserTuplePat {
         //                            012345678901234
         Parser p = new Parser("var [a, b] = x");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof VarSntc);
+        assertInstanceOf(VarSntc.class, sox);
         VarSntc varSntc = (VarSntc) sox;
         assertSourceSpan(varSntc, 0, 14);
         assertEquals(1, varSntc.varDecls.size());
         InitVarDecl decl = asInitVarDecl(varSntc.varDecls.get(0));
         assertSourceSpan(decl, 4, 14);
-        assertTrue(decl.varPat instanceof TuplePat);
+        assertInstanceOf(TuplePat.class, decl.varPat);
         TuplePat tuplePat = (TuplePat) decl.varPat;
         assertSourceSpan(tuplePat, 4, 10);
         // Test label and partial arity
@@ -149,13 +149,13 @@ public class TestParserTuplePat {
         //                            01234567890123456789
         Parser p = new Parser("var [a, b, ...] = x");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof VarSntc);
+        assertInstanceOf(VarSntc.class, sox);
         VarSntc varSntc = (VarSntc) sox;
         assertSourceSpan(varSntc, 0, 19);
         assertEquals(1, varSntc.varDecls.size());
         InitVarDecl decl = asInitVarDecl(varSntc.varDecls.get(0));
         assertSourceSpan(decl, 4, 19);
-        assertTrue(decl.varPat instanceof TuplePat);
+        assertInstanceOf(TuplePat.class, decl.varPat);
         TuplePat tuplePat = (TuplePat) decl.varPat;
         assertSourceSpan(tuplePat, 4, 15);
         // Test label and partial arity

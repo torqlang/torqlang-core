@@ -7,14 +7,13 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.CompleteRec;
 import org.torqlang.core.klvm.Int32;
 import org.torqlang.core.klvm.Rec;
 import org.torqlang.core.klvm.Str;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.torqlang.core.lang.CommonTools.*;
 
 public class TestParserTupleExpr {
@@ -24,7 +23,7 @@ public class TestParserTupleExpr {
         //                            012
         Parser p = new Parser("[]");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof TupleExpr);
+        assertInstanceOf(TupleExpr.class, sox);
         TupleExpr tupleExpr = (TupleExpr) sox;
         assertSourceSpan(tupleExpr, 0, 2);
         assertNull(tupleExpr.label());
@@ -49,7 +48,7 @@ public class TestParserTupleExpr {
         //                            0123
         Parser p = new Parser("[0]");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof TupleExpr);
+        assertInstanceOf(TupleExpr.class, sox);
         TupleExpr tupleExpr = (TupleExpr) sox;
         assertSourceSpan(tupleExpr, 0, 3);
         assertNull(tupleExpr.label());
@@ -69,11 +68,36 @@ public class TestParserTupleExpr {
     }
 
     @Test
+    public void testValues1WithLabel() {
+        //                                      1
+        //                            012345678901234
+        Parser p = new Parser("'my-label'#[0]");
+        SntcOrExpr sox = p.parse();
+        assertInstanceOf(TupleExpr.class, sox);
+        TupleExpr tupleExpr = (TupleExpr) sox;
+        assertSourceSpan(tupleExpr, 0, 14);
+        assertEquals(Str.of("my-label"), asStrAsExpr(tupleExpr.label()).str);
+        // Test features
+        assertEquals(1, tupleExpr.values().size());
+        SntcOrExpr valueExpr = tupleExpr.values().get(0);
+        assertSourceSpan(valueExpr, 12, 13);
+        assertEquals(Int32.I32_0, asIntAsExpr(valueExpr).int64());
+        // Test toString format
+        String expectedFormat = "'my-label'#[0]";
+        String actualFormat = tupleExpr.toString();
+        assertEquals(expectedFormat, actualFormat);
+        // Test indented format
+        expectedFormat = "'my-label'#[0]";
+        actualFormat = LangFormatter.SINGLETON.format(tupleExpr);
+        assertEquals(expectedFormat, actualFormat);
+    }
+
+    @Test
     public void testValues2() {
         //                            0123456
         Parser p = new Parser("[0, 1]");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof TupleExpr);
+        assertInstanceOf(TupleExpr.class, sox);
         TupleExpr tupleExpr = (TupleExpr) sox;
         assertSourceSpan(tupleExpr, 0, 6);
         assertNull(tupleExpr.label());
@@ -91,31 +115,6 @@ public class TestParserTupleExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "[0, 1]";
-        actualFormat = LangFormatter.SINGLETON.format(tupleExpr);
-        assertEquals(expectedFormat, actualFormat);
-    }
-
-    @Test
-    public void testValues1WithLabel() {
-        //                                      1
-        //                            012345678901234
-        Parser p = new Parser("'my-label'#[0]");
-        SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof TupleExpr);
-        TupleExpr tupleExpr = (TupleExpr) sox;
-        assertSourceSpan(tupleExpr, 0, 14);
-        assertEquals(Str.of("my-label"), asStrAsExpr(tupleExpr.label()).str);
-        // Test features
-        assertEquals(1, tupleExpr.values().size());
-        SntcOrExpr valueExpr = tupleExpr.values().get(0);
-        assertSourceSpan(valueExpr, 12, 13);
-        assertEquals(Int32.I32_0, asIntAsExpr(valueExpr).int64());
-        // Test toString format
-        String expectedFormat = "'my-label'#[0]";
-        String actualFormat = tupleExpr.toString();
-        assertEquals(expectedFormat, actualFormat);
-        // Test indented format
-        expectedFormat = "'my-label'#[0]";
         actualFormat = LangFormatter.SINGLETON.format(tupleExpr);
         assertEquals(expectedFormat, actualFormat);
     }

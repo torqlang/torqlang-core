@@ -7,11 +7,10 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Ident;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.torqlang.core.lang.CommonTools.asIdentAsExpr;
 import static org.torqlang.core.lang.CommonTools.assertSourceSpan;
 
@@ -22,11 +21,11 @@ public class TestParserAndExpr {
         //                            0123456
         Parser p = new Parser("a && b");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof AndExpr);
+        assertInstanceOf(AndExpr.class, sox);
         AndExpr andExpr = (AndExpr) sox;
         assertSourceSpan(sox, 0, 6);
         assertEquals("a && b", andExpr.toString());
-        assertTrue(andExpr.arg1 instanceof IdentAsExpr);
+        assertInstanceOf(IdentAsExpr.class, andExpr.arg1);
         assertEquals(Ident.create("a"), asIdentAsExpr(andExpr.arg1).ident);
         assertSourceSpan(andExpr.arg1, 0, 1);
         assertEquals(Ident.create("b"), asIdentAsExpr(andExpr.arg2).ident);

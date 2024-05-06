@@ -7,38 +7,12 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.torqlang.core.lang.CommonTools.asStrAsExpr;
 
 public class TestParserStrEncodings {
-
-    @Test
-    public void testUnicode() {
-
-        Parser p;
-        SntcOrExpr sox;
-        String v;
-
-        p = new Parser("'\\u0078'");
-        sox = p.parse();
-        assertTrue(sox instanceof StrAsExpr);
-        v = asStrAsExpr(sox).str.value;
-        assertEquals("x", v);
-
-        p = new Parser("'\\u0078\\u0079'");
-        sox = p.parse();
-        assertTrue(sox instanceof StrAsExpr);
-        v = asStrAsExpr(sox).str.value;
-        assertEquals("xy", v);
-
-        p = new Parser("'\\u0078\\u0079\\u007A'");
-        sox = p.parse();
-        assertTrue(sox instanceof StrAsExpr);
-        v = asStrAsExpr(sox).str.value;
-        assertEquals("xyz", v);
-    }
 
     @Test
     public void testEscapeChars() {
@@ -49,7 +23,7 @@ public class TestParserStrEncodings {
 
         p = new Parser("'\\t\\b\\n\\r\\f'");
         sox = p.parse();
-        assertTrue(sox instanceof StrAsExpr);
+        assertInstanceOf(StrAsExpr.class, sox);
         v = asStrAsExpr(sox).str.value;
         assertEquals("<<0009>><<0008>><<000a>><<000d>><<000c>>", toStringWithEscapedControlCodes(v));
 
@@ -72,7 +46,7 @@ public class TestParserStrEncodings {
         assertEquals(76, expected.length()); // Prove that expected source is 3 less than given source
         Parser p = new Parser(source);
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof StrAsExpr);
+        assertInstanceOf(StrAsExpr.class, sox);
         String v = asStrAsExpr(sox).str.value;
         // The resulting string length should be 3 less because of two missing single quotes and one escape
         assertEquals(source.length() - 3, v.length());
@@ -80,6 +54,32 @@ public class TestParserStrEncodings {
         assertNotEquals(toStringWithEscapedControlCodes(source), toStringWithEscapedControlCodes(v));
         assertEquals("We hold these truths to be self-evident,<<000a>>that all men are created equal, ...",
             toStringWithEscapedControlCodes(v));
+    }
+
+    @Test
+    public void testUnicode() {
+
+        Parser p;
+        SntcOrExpr sox;
+        String v;
+
+        p = new Parser("'\\u0078'");
+        sox = p.parse();
+        assertInstanceOf(StrAsExpr.class, sox);
+        v = asStrAsExpr(sox).str.value;
+        assertEquals("x", v);
+
+        p = new Parser("'\\u0078\\u0079'");
+        sox = p.parse();
+        assertInstanceOf(StrAsExpr.class, sox);
+        v = asStrAsExpr(sox).str.value;
+        assertEquals("xy", v);
+
+        p = new Parser("'\\u0078\\u0079\\u007A'");
+        sox = p.parse();
+        assertInstanceOf(StrAsExpr.class, sox);
+        v = asStrAsExpr(sox).str.value;
+        assertEquals("xyz", v);
     }
 
     private String toStringWithEscapedControlCodes(String s) {

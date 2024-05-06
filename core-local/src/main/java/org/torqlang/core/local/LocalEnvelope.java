@@ -7,9 +7,6 @@
 
 package org.torqlang.core.local;
 
-import org.torqlang.core.actor.ActorRef;
-import org.torqlang.core.actor.Envelope;
-
 import java.util.ArrayList;
 import java.util.List;
 

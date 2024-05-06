@@ -7,10 +7,10 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Ident;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.torqlang.core.lang.CommonTools.*;
 import static org.torqlang.core.lang.SymbolsAndKeywords.*;
 

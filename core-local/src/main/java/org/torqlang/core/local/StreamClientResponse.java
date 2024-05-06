@@ -7,9 +7,6 @@
 
 package org.torqlang.core.local;
 
-import org.torqlang.core.actor.Address;
-import org.torqlang.core.actor.Envelope;
-
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 

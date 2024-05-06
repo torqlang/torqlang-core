@@ -7,10 +7,10 @@
 
 package org.torqlang.core.klvm;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.util.IntegerCounter;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.torqlang.core.klvm.VarSet.EMPTY_VAR_SET;
 
 public class TestVar {
@@ -43,7 +43,6 @@ public class TestVar {
     @Test
     public void testBindToValueWithNull() {
         Var v1 = new Var();
-        @SuppressWarnings("DataFlowIssue")
         Exception exc = assertThrows(NullPointerException.class, () -> v1.bindToValue(null, null));
         assertEquals("value", exc.getMessage());
     }
@@ -102,7 +101,7 @@ public class TestVar {
     }
 
     @Test
-    public void testBindToVarWithDifferentValues() throws Exception {
+    public void testBindToVarWithDifferentValues() {
         Var v1 = new Var(Int32.I32_0);
         assertEquals(Int32.I32_0, v1.valueOrVarSet());
         Var v2 = new Var(Int32.I32_1);
@@ -141,7 +140,7 @@ public class TestVar {
         v1.bindToVar(v2, null);
         assertSame(v1.valueOrVarSet(), v2.valueOrVarSet());
         assertSame(v1.valueOrVarSet(), v3.valueOrVarSet());
-        assertTrue(v1.valueOrVarSet() instanceof VarSet);
+        assertInstanceOf(VarSet.class, v1.valueOrVarSet());
         VarSet vs = (VarSet) v1.valueOrVarSet();
         assertEquals(3, vs.size());
         assertTrue(vs.contains(v1));
@@ -164,7 +163,7 @@ public class TestVar {
         assertSame(v1.valueOrVarSet(), v2.valueOrVarSet());
         assertSame(v1.valueOrVarSet(), v3.valueOrVarSet());
         assertSame(v1.valueOrVarSet(), v4.valueOrVarSet());
-        assertTrue(v1.valueOrVarSet() instanceof VarSet);
+        assertInstanceOf(VarSet.class, v1.valueOrVarSet());
         VarSet vs = (VarSet) v1.valueOrVarSet();
         assertEquals(4, vs.size());
         assertTrue(vs.contains(v1));
@@ -229,7 +228,7 @@ public class TestVar {
     }
 
     @Test
-    public void testEntailsValueOrVarWithEmptyVarSets() throws Exception {
+    public void testEntailsValueOrVarWithEmptyVarSets() {
         Var v1 = new Var();
         Var v2 = new Var();
         Exception exc = assertThrows(WaitVarException.class, () -> v1.entailsValueOrVar(v2, null));

@@ -7,7 +7,6 @@
 
 package org.torqlang.core.local;
 
-import org.torqlang.core.actor.Address;
 import org.torqlang.core.klvm.CompleteOrIdent;
 import org.torqlang.core.klvm.Ident;
 import org.torqlang.core.klvm.Stmt;

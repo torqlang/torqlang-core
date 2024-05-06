@@ -12,88 +12,88 @@ import org.torqlang.core.util.StringTools;
 
 import java.util.function.Function;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class CommonTools {
 
     static BoolAsExpr asBoolAsExpr(Object value) {
-        assertTrue(value instanceof BoolAsExpr);
+        assertInstanceOf(BoolAsExpr.class, value);
         return (BoolAsExpr) value;
     }
 
     static BoolAsPat asBoolAsPat(Object value) {
-        assertTrue(value instanceof BoolAsPat);
+        assertInstanceOf(BoolAsPat.class, value);
         return (BoolAsPat) value;
     }
 
     static CharAsExpr asCharAsExpr(Object value) {
-        assertTrue(value instanceof CharAsExpr);
+        assertInstanceOf(CharAsExpr.class, value);
         return (CharAsExpr) value;
     }
 
     static Dec128AsExpr asDec128AsExpr(Object value) {
-        assertTrue(value instanceof Dec128AsExpr);
+        assertInstanceOf(Dec128AsExpr.class, value);
         return (Dec128AsExpr) value;
     }
 
     static EofAsExpr asEofAsExpr(Object value) {
-        assertTrue(value instanceof EofAsExpr);
+        assertInstanceOf(EofAsExpr.class, value);
         return (EofAsExpr) value;
     }
 
     static EofAsPat asEofAsPat(Object value) {
-        assertTrue(value instanceof EofAsPat);
+        assertInstanceOf(EofAsPat.class, value);
         return (EofAsPat) value;
     }
 
     static FeatureAsPat asFeatureAsPat(Object value) {
-        assertTrue(value instanceof FeatureAsPat);
+        assertInstanceOf(FeatureAsPat.class, value);
         return (FeatureAsPat) value;
     }
 
     static FltAsExpr asFltAsExpr(Object value) {
-        assertTrue(value instanceof FltAsExpr);
+        assertInstanceOf(FltAsExpr.class, value);
         return (FltAsExpr) value;
     }
 
     static GroupExpr asGroupExpr(Object value) {
-        assertTrue(value instanceof GroupExpr);
+        assertInstanceOf(GroupExpr.class, value);
         return (GroupExpr) value;
     }
 
     static IdentAsExpr asIdentAsExpr(Object value) {
-        assertTrue(value instanceof IdentAsExpr);
+        assertInstanceOf(IdentAsExpr.class, value);
         return (IdentAsExpr) value;
     }
 
     static IdentAsPat asIdentAsPat(Object value) {
-        assertTrue(value instanceof IdentAsPat);
+        assertInstanceOf(IdentAsPat.class, value);
         return (IdentAsPat) value;
     }
 
     static InitVarDecl asInitVarDecl(Object value) {
-        assertTrue(value instanceof InitVarDecl);
+        assertInstanceOf(InitVarDecl.class, value);
         return (InitVarDecl) value;
     }
 
     static IntAsExpr asIntAsExpr(Object value) {
-        assertTrue(value instanceof IntAsExpr);
+        assertInstanceOf(IntAsExpr.class, value);
         return (IntAsExpr) value;
     }
 
     static IntAsPat asIntAsPat(Object value) {
-        assertTrue(value instanceof IntAsPat);
+        assertInstanceOf(IntAsPat.class, value);
         return (IntAsPat) value;
     }
 
     static NothingAsExpr asNothingAsExpr(Object value) {
-        assertTrue(value instanceof NothingAsExpr);
+        assertInstanceOf(NothingAsExpr.class, value);
         return (NothingAsExpr) value;
     }
 
     static NothingAsPat asNothingAsPat(Object value) {
-        assertTrue(value instanceof NothingAsPat);
+        assertInstanceOf(NothingAsPat.class, value);
         return (NothingAsPat) value;
     }
 
@@ -105,33 +105,33 @@ public class CommonTools {
     }
 
     static SntcOrExpr asSingleExprFromGroupExpr(Object value) {
-        assertTrue(value instanceof GroupExpr);
+        assertInstanceOf(GroupExpr.class, value);
         GroupExpr groupExpr = (GroupExpr) value;
-        assertTrue(groupExpr.expr instanceof SeqLang);
+        assertInstanceOf(SeqLang.class, groupExpr.expr);
         SeqLang seqLang = (SeqLang) groupExpr.expr;
         assertEquals(1, seqLang.list.size());
         return seqLang.list.get(0);
     }
 
     static SntcOrExpr asSingleExprFromSeqLang(Object value) {
-        assertTrue(value instanceof SeqLang);
+        assertInstanceOf(SeqLang.class, value);
         SeqLang seqLang = (SeqLang) value;
         assertEquals(1, seqLang.list.size());
         return seqLang.list.get(0);
     }
 
     static StrAsExpr asStrAsExpr(Object value) {
-        assertTrue(value instanceof StrAsExpr);
+        assertInstanceOf(StrAsExpr.class, value);
         return (StrAsExpr) value;
     }
 
     static StrAsPat asStrAsPat(Object value) {
-        assertTrue(value instanceof StrAsPat);
+        assertInstanceOf(StrAsPat.class, value);
         return (StrAsPat) value;
     }
 
     static UnaryExpr asUnaryExpr(Object value) {
-        assertTrue(value instanceof UnaryExpr);
+        assertInstanceOf(UnaryExpr.class, value);
         return (UnaryExpr) value;
     }
 
@@ -167,7 +167,11 @@ public class CommonTools {
         return sb.toString();
     }
 
-    static <T, R> R testValue(T argument, Function<T, R> function) {
+    static <T> Boolean getBoolean(T argument, Function<T, Boolean> function) {
+        return getValue(argument, function);
+    }
+
+    static <T, R> R getValue(T argument, Function<T, R> function) {
         return function.apply(argument);
     }
 

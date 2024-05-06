@@ -7,8 +7,6 @@
 
 package org.torqlang.core.local;
 
-import org.torqlang.core.actor.ActorRef;
-import org.torqlang.core.actor.Address;
 import org.torqlang.core.klvm.*;
 import org.torqlang.core.lang.ActorExpr;
 import org.torqlang.core.lang.ActorSntc;
@@ -21,8 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.torqlang.core.local.ActorSystem.*;
-
 /*
  * Note that as we transition forward in the process, we gain properties and loose methods.
  *
@@ -34,15 +30,16 @@ import static org.torqlang.core.local.ActorSystem.*;
  * READY       parse            PARSED
  * PARSED      rewrite          REWRITTEN
  * REWRITTEN   generate         GENERATED
- * GENERATED   createActorRec   CONSTRUCTED
- * CONSTRUCTED spawn            SPAWNED
+ * GENERATED   construct        CONSTRUCTED
+ * CONSTRUCTED configure        CONFIGURED
+ * CONFIGURED  spawn            SPAWNED
  * SPAWNED     (end)
  *
  * Properties and Methods
  * ======================
  * INIT
  *   properties: (none)
- *   methods:    setActorSntc, setSource, setAddress, setArgs, setTrace
+ *   methods:    setSystem, setActorSntc, setSource, setAddress, setArgs, setTrace
  * READY
  *   properties: source
  *   methods:    parse, rewrite, generate, construct, configure, spawn
@@ -65,7 +62,7 @@ import static org.torqlang.core.local.ActorSystem.*;
  *   properties: source, actorSntc, actorIdent, actorExpr, createActorRecStmt, actorRec, actorCfg, actorRef
  *   methods:    (none)
  *
- * Not shown above are the properties address, args, and trace, which are available after INIT.
+ * Not shown above are the properties system, address, args, and trace, which are available after INIT.
  */
 public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, ActorBuilderParsed,
     ActorBuilderRewritten, ActorBuilderGenerated, ActorBuilderConstructed, ActorBuilderConfigured, ActorBuilderSpawned
@@ -78,6 +75,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     private State state;
 
     private Address address;
+    private ActorSystem system;
     private String source;
     private boolean trace;
     private ActorExpr actorExpr;
@@ -135,7 +133,13 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
 
     private void checkAddress() {
         if (address == null) {
-            address = ActorSystem.createAddress("anonymous-actor-" + nextActorId.getAndIncrement());
+            address = Address.createAddress("anonymous-actor-" + nextActorId.getAndIncrement());
+        }
+    }
+
+    private void checkSystem() {
+        if (system == null) {
+            system = ActorSystem.defaultSystem();
         }
     }
 
@@ -345,6 +349,22 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     }
 
     @Override
+    public final ActorBuilderInit setSystem(ActorSystem system) {
+        if (state != State.INIT) {
+            throw new IllegalStateException("Cannot setSystem at state: " + state);
+        }
+        this.system = system;
+        return this;
+    }
+
+    @Override
+    public final ActorBuilderSpawned spawn(String source) throws Exception {
+        setSource(source);
+        spawn();
+        return this;
+    }
+
+    @Override
     public final ActorBuilderSpawned spawn() throws Exception {
         if (state == State.READY) {
             parse();
@@ -365,17 +385,15 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
             throw new IllegalStateException("Cannot spawn at state: " + state);
         }
         checkAddress();
-        localActor = new LocalActor(address, createMailbox(), computationExecutor(), createLogger(), trace);
+        checkSystem();
+        localActor = new LocalActor(address, system, trace);
         localActor.configure(actorCfg);
         state = State.SPAWNED;
         return this;
     }
 
-    @Override
-    public final ActorBuilderSpawned spawn(String source) throws Exception {
-        setSource(source);
-        spawn();
-        return this;
+    public final ActorSystem system() {
+        return system;
     }
 
     private enum State {

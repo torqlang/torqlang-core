@@ -7,13 +7,13 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.*;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.torqlang.core.lang.CommonTools.*;
 
 public class TestParserValueExpr {
@@ -24,7 +24,7 @@ public class TestParserValueExpr {
         //                            01234567890123456789012345678901234567890123456789012345678
         Parser p = new Parser("begin a 1 1L 1.0 1.0f 1m false true nothing eof &x 'x' end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof BeginLang);
+        assertInstanceOf(BeginLang.class, sox);
         BeginLang beginLang = (BeginLang) sox;
         assertSourceSpan(beginLang, 0, 58);
         List<SntcOrExpr> list = beginLang.body.list;
@@ -78,7 +78,7 @@ public class TestParserValueExpr {
         Parser p = new Parser("begin a; -1; -1L; -1.0; -1.0f; -1m; -&x end");
 
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof BeginLang);
+        assertInstanceOf(BeginLang.class, sox);
         BeginLang beginLang = (BeginLang) sox;
 
         assertSourceSpan(beginLang, 0, 43);

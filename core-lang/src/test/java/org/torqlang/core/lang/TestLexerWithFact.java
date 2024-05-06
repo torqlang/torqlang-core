@@ -7,19 +7,18 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestLexerWithFact {
 
-    // @formatter:off
-    private static final String BLOCK_COMMENT_VALUE =
-        "/*func fact_cps(n, k) in\n" +
-            "            if n==0 then k\n" +
-            "            else fact_cps(n - 1, n * k) end\n" +
-            "        end*/";
-    // @formatter:on
+    private static final String BLOCK_COMMENT_VALUE = """
+        /*func fact_cps(n, k) in
+                    if n==0 then k
+                    else fact_cps(n - 1, n * k) end
+                end*/""";
 
     private static final String FACTORIAL = """
         local fact in
@@ -82,7 +81,9 @@ public class TestLexerWithFact {
         assertTrue(lexer.nextToken(false).isOneCharSymbol(')'));
         assertTrue(lexer.nextToken(false).isKeyword("end"));
         assertTrue(lexer.nextToken(false).isKeyword("end"));
-        assertTrue(lexer.nextToken(false).isComment(BLOCK_COMMENT_VALUE));
+        LexerToken commentToken = lexer.nextToken(false);
+        assertTrue(commentToken.isComment());
+        assertEquals(BLOCK_COMMENT_VALUE, commentToken.substring());
         assertTrue(lexer.nextToken(false).isIdent("fact_cps"));
         assertTrue(lexer.nextToken(false).isOneCharSymbol('('));
         assertTrue(lexer.nextToken(false).isIdent("x"));

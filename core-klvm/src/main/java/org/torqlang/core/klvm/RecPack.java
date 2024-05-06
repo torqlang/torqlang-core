@@ -9,14 +9,14 @@ package org.torqlang.core.klvm;
 
 import java.util.List;
 
-public final class RecMod {
+public final class RecPack {
 
     public static final Ident REC_IDENT = Ident.create("Rec");
     public static final CompleteObj REC_CLS = RecCls.SINGLETON;
 
     private static final ObjProcTable<RecCls> clsProcTable = ObjProcTable.<RecCls>builder()
-        .addEntry(CommonFeatures.ASSIGN, RecMod::clsAssign)
-        .addEntry(CommonFeatures.SIZE, RecMod::clsSize)
+        .addEntry(CommonFeatures.ASSIGN, RecPack::clsAssign)
+        .addEntry(CommonFeatures.SIZE, RecPack::clsSize)
         .build();
 
     /*

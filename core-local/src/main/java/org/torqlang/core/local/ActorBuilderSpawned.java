@@ -7,8 +7,6 @@
 
 package org.torqlang.core.local;
 
-import org.torqlang.core.actor.ActorRef;
-import org.torqlang.core.actor.Address;
 import org.torqlang.core.klvm.*;
 import org.torqlang.core.lang.ActorExpr;
 import org.torqlang.core.lang.ActorSntc;

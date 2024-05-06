@@ -7,14 +7,14 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Ident;
 import org.torqlang.core.klvm.Int32;
 import org.torqlang.core.klvm.Int64;
 import org.torqlang.core.klvm.Var;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class TestEvalDivideNums {
 

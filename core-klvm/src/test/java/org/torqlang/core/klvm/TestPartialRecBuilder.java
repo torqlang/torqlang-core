@@ -7,11 +7,11 @@
 
 package org.torqlang.core.klvm;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestPartialRecBuilder {
 
@@ -61,7 +61,7 @@ public class TestPartialRecBuilder {
         Str a = Str.of("a");
 
         r = Rec.partialRecBuilder().setLabel(testLabel).addField(zero, a).build();
-        assertTrue(r instanceof CompleteRec);
+        assertInstanceOf(CompleteRec.class, r);
         cr = (CompleteRec) r;
         assertEquals(testLabel, cr.label());
         assertEquals(1, cr.fieldCount());
@@ -77,7 +77,7 @@ public class TestPartialRecBuilder {
         PartialRec pr;
 
         r = Rec.partialRecBuilder().setLabel(labelVar).build();
-        assertTrue(r instanceof PartialRec);
+        assertInstanceOf(PartialRec.class, r);
         pr = (PartialRec) r;
 
         assertEquals(labelVar, pr.futureLabel());
@@ -90,7 +90,7 @@ public class TestPartialRecBuilder {
         CompleteRec cr;
 
         r = Rec.partialRecBuilder().setLabel(testLabel).build();
-        assertTrue(r instanceof CompleteRec);
+        assertInstanceOf(CompleteRec.class, r);
         cr = (CompleteRec) r;
 
         assertEquals(testLabel, cr.label());
@@ -113,7 +113,7 @@ public class TestPartialRecBuilder {
             .setLabel(testLabel)
             .addField(futureField)
             .build();
-        assertTrue(r instanceof PartialRec);
+        assertInstanceOf(PartialRec.class, r);
         pr = (PartialRec) r;
         assertEquals(testLabel, pr.label());
         assertEquals(1, pr.futureFieldCount());
@@ -161,7 +161,7 @@ public class TestPartialRecBuilder {
             .addField(two, cVar)
             .addField(threeValueOrVar, d)
             .build();
-        assertTrue(r instanceof PartialRec);
+        assertInstanceOf(PartialRec.class, r);
         pr = (PartialRec) r;
         assertEquals(testLabel, pr.label());
         assertEquals(1, pr.futureFieldCount());

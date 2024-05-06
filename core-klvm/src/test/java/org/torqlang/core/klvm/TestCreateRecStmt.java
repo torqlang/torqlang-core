@@ -7,14 +7,14 @@
 
 package org.torqlang.core.klvm;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.util.SourceSpan;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestCreateRecStmt {
 
@@ -66,7 +66,7 @@ public class TestCreateRecStmt {
         assertEquals("'test-label'#{0: 'a'}", recDef.toString());
         CreateRecStmt cr = new CreateRecStmt(x, recDef, emptySpan);
         cr.compute(env, null);
-        assertTrue(xVar.valueOrVarSet() instanceof CompleteRec);
+        assertInstanceOf(CompleteRec.class, xVar.valueOrVarSet());
         CompleteRec rec = (CompleteRec) xVar.resolveValue();
         assertEquals(a, rec.select(Int32.I32_0));
     }
@@ -106,9 +106,9 @@ public class TestCreateRecStmt {
         CreateRecStmt cr2 = new CreateRecStmt(y, yRecDef, emptySpan);
         cr2.compute(env, null);
 
-        assertTrue(yVar.valueOrVarSet() instanceof CompleteRec);
+        assertInstanceOf(CompleteRec.class, yVar.valueOrVarSet());
         CompleteRec yRec = (CompleteRec) yVar.valueOrVarSet();
-        assertTrue(yRec.select(Int32.I32_0) instanceof CompleteRec);
+        assertInstanceOf(CompleteRec.class, yRec.select(Int32.I32_0));
         CompleteRec xRec = (CompleteRec) yRec.select(Int32.I32_0);
         assertEquals(Int32.I32_0, xRec.featureAt(0));
         assertEquals(a, xRec.valueAt(0));
@@ -152,10 +152,10 @@ public class TestCreateRecStmt {
         CreateRecStmt cr2 = new CreateRecStmt(y, yRecDef, emptySpan);
         cr2.compute(env, null);
 
-        assertTrue(yVar.valueOrVarSet() instanceof PartialRec);
+        assertInstanceOf(PartialRec.class, yVar.valueOrVarSet());
         PartialRec yRec = (PartialRec) yVar.valueOrVarSet();
         // yRec should directly reference xRec
-        assertTrue(yRec.valueAt(0) instanceof PartialRec);
+        assertInstanceOf(PartialRec.class, yRec.valueAt(0));
         PartialRec xRec = (PartialRec) yRec.valueAt(0);
         assertEquals(Int32.I32_0, xRec.featureAt(0));
         assertEquals(a, xRec.valueAt(0));
@@ -178,7 +178,7 @@ public class TestCreateRecStmt {
         assertEquals("'test-label'#{0: y}", recDef.toString());
         CreateRecStmt cr = new CreateRecStmt(x, recDef, emptySpan);
         cr.compute(env, null);
-        assertTrue(xVar.valueOrVarSet() instanceof PartialRec);
+        assertInstanceOf(PartialRec.class, xVar.valueOrVarSet());
         PartialRec rec = (PartialRec) xVar.resolveValue();
         assertEquals(yVar, rec.select(Int32.I32_0));
     }

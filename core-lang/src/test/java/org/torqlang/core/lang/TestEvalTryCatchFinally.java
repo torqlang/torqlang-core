@@ -7,10 +7,10 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestEvalTryCatchFinally {
 
@@ -104,7 +104,7 @@ public class TestEvalTryCatchFinally {
             end""";
         assertEquals(expected, e.kernel().toString());
         MachineHaltError exc = assertThrows(MachineHaltError.class, e::perform);
-        assertTrue(exc.computeHalt().uncaughtThrow instanceof Rec);
+        assertInstanceOf(Rec.class, exc.computeHalt().uncaughtThrow);
         Rec errorRec = (Rec) exc.computeHalt().uncaughtThrow;
         assertEquals(Str.of("error"), errorRec.label());
         assertEquals(Str.of("java.lang.ArithmeticException"), errorRec.findValue(Str.of("name")));

@@ -7,11 +7,11 @@
 
 package org.torqlang.core.klvm;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestCompleteTuple {
 
@@ -132,10 +132,10 @@ public class TestCompleteTuple {
         //
 
         cx = vx.resolveValueOrVar().checkComplete();
-        assertTrue(cx instanceof CompleteTuple);
+        assertInstanceOf(CompleteTuple.class, cx);
 
         cy = vy.resolveValueOrVar().checkComplete();
-        assertTrue(cy instanceof CompleteTuple);
+        assertInstanceOf(CompleteTuple.class, cy);
 
         assertNotSame(cx, cy);
         assertTrue(cx.entails(cy, null));
@@ -186,7 +186,7 @@ public class TestCompleteTuple {
         assertEquals(0, t.fieldCount());
         assertEquals(Rec.DEFAULT_LABEL, t.label());
         nv = t.toNativeValue();
-        assertTrue(nv instanceof List);
+        assertInstanceOf(List.class, nv);
         assertEquals(List.of(), nv);
 
         t = CompleteTuple.create(testLabel, List.of());
@@ -195,7 +195,7 @@ public class TestCompleteTuple {
         assertEquals(0, t.fieldCount());
         assertEquals(testLabel, t.label());
         nv = t.toNativeValue();
-        assertTrue(nv instanceof Map);
+        assertInstanceOf(Map.class, nv);
         map = (Map<?, ?>) nv;
         assertEquals(Map.of(Rec.$LABEL, testLabel.value, Rec.$REC, List.of()), map);
 
@@ -206,7 +206,7 @@ public class TestCompleteTuple {
         assertEquals(Rec.DEFAULT_LABEL, t.label());
         assertEquals(a, t.select(Int32.I32_0));
         nv = t.toNativeValue();
-        assertTrue(nv instanceof List);
+        assertInstanceOf(List.class, nv);
         assertEquals(List.of("a"), nv);
 
         t = CompleteTuple.create(testLabel, List.of(a));
@@ -216,7 +216,7 @@ public class TestCompleteTuple {
         assertEquals(testLabel, t.label());
         assertEquals(a, t.select(Int32.I32_0));
         nv = t.toNativeValue();
-        assertTrue(nv instanceof Map);
+        assertInstanceOf(Map.class, nv);
         map = (Map<?, ?>) nv;
         assertEquals(Map.of(Rec.$LABEL, testLabel.value, Rec.$REC, List.of(a.value)), map);
 
@@ -231,7 +231,7 @@ public class TestCompleteTuple {
         assertEquals(b, t.select(Int32.I32_0));
         assertEquals(t2, t.select(Int32.I32_1));
         nv = t.toNativeValue();
-        assertTrue(nv instanceof List);
+        assertInstanceOf(List.class, nv);
         assertEquals(List.of(b.value, List.of(a.value)), nv);
 
         t2 = CompleteTuple.create(testLabel, List.of(a));
@@ -245,7 +245,7 @@ public class TestCompleteTuple {
         assertEquals(b, t.select(Int32.I32_0));
         assertEquals(t2, t.select(Int32.I32_1));
         nv = t.toNativeValue();
-        assertTrue(nv instanceof Map);
+        assertInstanceOf(Map.class, nv);
         Map<?, ?> innerNativeValue = Map.of(Rec.$LABEL, testLabel.value, Rec.$REC, List.of(a.value));
         Map<?, ?> outerNativeValue = Map.of(Rec.$LABEL, anotherTestLabel.value, Rec.$REC, List.of(b.value, innerNativeValue));
         assertEquals(outerNativeValue, nv);

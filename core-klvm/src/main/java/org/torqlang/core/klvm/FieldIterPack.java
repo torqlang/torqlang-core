@@ -9,7 +9,7 @@ package org.torqlang.core.klvm;
 
 import java.util.List;
 
-public final class FieldIterMod {
+public final class FieldIterPack {
 
     public static final Ident FIELD_ITER_IDENT = Ident.create("FieldIter");
     public static final CompleteObj FIELD_ITER_CLS = FieldIterCls.SINGLETON;
@@ -31,7 +31,7 @@ public final class FieldIterMod {
 
     static final class FieldIterCls implements CompleteObj {
         private static final FieldIterCls SINGLETON = new FieldIterCls();
-        private static final CompleteProc FIELD_ITER_CLS_NEW = FieldIterMod::clsNew;
+        private static final CompleteProc FIELD_ITER_CLS_NEW = FieldIterPack::clsNew;
 
         private FieldIterCls() {
         }

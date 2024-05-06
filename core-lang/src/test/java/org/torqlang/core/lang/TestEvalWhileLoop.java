@@ -7,10 +7,10 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestEvalWhileLoop {
 
@@ -28,7 +28,7 @@ public class TestEvalWhileLoop {
                 x = @c
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(CellMod.CELL_IDENT, new Var(CellMod.CELL_CLS))
+            .addVar(CellPack.CELL_IDENT, new Var(CellPack.CELL_CLS))
             .addVar(Ident.create("a"), new Var(Int32.of(5)))
             .addVar(Ident.create("x"))
             .setSource(source)
@@ -69,7 +69,7 @@ public class TestEvalWhileLoop {
         // a = 3
 
         e = Evaluator.builder()
-            .addVar(CellMod.CELL_IDENT, new Var(CellMod.CELL_CLS))
+            .addVar(CellPack.CELL_IDENT, new Var(CellPack.CELL_CLS))
             .addVar(Ident.create("a"), new Var(Int32.of(3)))
             .addVar(Ident.create("x"))
             .setSource(source)
@@ -94,7 +94,7 @@ public class TestEvalWhileLoop {
                 x = @c
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(CellMod.CELL_IDENT, new Var(CellMod.CELL_CLS))
+            .addVar(CellPack.CELL_IDENT, new Var(CellPack.CELL_CLS))
             .addVar(Ident.create("a"), new Var(Int32.of(5)))
             .addVar(Ident.create("x"))
             .setSource(source)
@@ -171,7 +171,7 @@ public class TestEvalWhileLoop {
                 x = @c
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(CellMod.CELL_IDENT, new Var(CellMod.CELL_CLS))
+            .addVar(CellPack.CELL_IDENT, new Var(CellPack.CELL_CLS))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();

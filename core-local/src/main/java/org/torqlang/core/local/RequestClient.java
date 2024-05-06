@@ -7,9 +7,6 @@
 
 package org.torqlang.core.local;
 
-import org.torqlang.core.actor.ActorRef;
-import org.torqlang.core.actor.Address;
-import org.torqlang.core.actor.Envelope;
 import org.torqlang.core.klvm.Complete;
 import org.torqlang.core.klvm.Nothing;
 
@@ -17,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.torqlang.core.local.ActorSystem.createRequest;
+import static org.torqlang.core.local.Envelope.createRequest;
 
 public class RequestClient implements RequestClientInit, RequestClientResponse {
     private static final AtomicInteger nextClientId = new AtomicInteger(0);
@@ -51,7 +48,7 @@ public class RequestClient implements RequestClientInit, RequestClientResponse {
             throw new IllegalStateException("Request already sent");
         }
         if (address == null) {
-            address = ActorSystem.createAddress("anonymous-request-client-" + nextClientId.getAndIncrement());
+            address = Address.createAddress("anonymous-request-client-" + nextClientId.getAndIncrement());
         }
         futureResponse = new CompletableFuture<>();
         requestClientActor = new RequestClientActor();

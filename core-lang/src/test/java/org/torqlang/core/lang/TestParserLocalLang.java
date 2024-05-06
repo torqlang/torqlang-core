@@ -7,11 +7,11 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Ident;
 import org.torqlang.core.klvm.Int32;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.torqlang.core.lang.CommonTools.*;
 
 public class TestParserLocalLang {
@@ -22,11 +22,11 @@ public class TestParserLocalLang {
         //                            012345678901234567890123
         Parser p = new Parser("local x::Int32 in x end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof LocalLang);
+        assertInstanceOf(LocalLang.class, sox);
         LocalLang varSntc = (LocalLang) sox;
         assertSourceSpan(varSntc, 0, 23);
         assertEquals(1, varSntc.varDecls.size());
-        assertTrue(varSntc.varDecls.get(0) instanceof IdentVarDecl);
+        assertInstanceOf(IdentVarDecl.class, varSntc.varDecls.get(0));
         IdentVarDecl identVarDecl = (IdentVarDecl) varSntc.varDecls.get(0);
         assertSourceSpan(identVarDecl, 6, 14);
         assertSourceSpan(identVarDecl.identAsPat, 6, 14);
@@ -49,11 +49,11 @@ public class TestParserLocalLang {
         //                            0123456789012345678901234567890
         Parser p = new Parser("local x::Int32, y = 1 in x end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof LocalLang);
+        assertInstanceOf(LocalLang.class, sox);
         LocalLang varSntc = (LocalLang) sox;
         assertSourceSpan(varSntc, 0, 30);
         assertEquals(2, varSntc.varDecls.size());
-        assertTrue(varSntc.varDecls.get(0) instanceof IdentVarDecl);
+        assertInstanceOf(IdentVarDecl.class, varSntc.varDecls.get(0));
         IdentVarDecl identVarDecl = (IdentVarDecl) varSntc.varDecls.get(0);
         assertSourceSpan(identVarDecl, 6, 14);
         assertSourceSpan(identVarDecl.identAsPat, 6, 14);
@@ -61,8 +61,8 @@ public class TestParserLocalLang {
         assertFalse(identVarDecl.identAsPat.escaped);
         assertEquals(Ident.create("Int32"), identVarDecl.identAsPat.typeAnno.ident);
         assertSourceSpan(identVarDecl.identAsPat.typeAnno, 9, 14);
-        assertTrue(varSntc.varDecls.get(1) instanceof InitVarDecl);
-        assertTrue(varSntc.varDecls.get(1) instanceof InitVarDecl);
+        assertInstanceOf(InitVarDecl.class, varSntc.varDecls.get(1));
+        assertInstanceOf(InitVarDecl.class, varSntc.varDecls.get(1));
         InitVarDecl initVarDecl = (InitVarDecl) varSntc.varDecls.get(1);
         assertSourceSpan(initVarDecl, 16, 21);
         assertEquals(Ident.create("y"), asIdentAsPat(initVarDecl.varPat).ident);

@@ -7,15 +7,12 @@
 
 package org.torqlang.core.local;
 
-import org.torqlang.core.actor.ActorRef;
-import org.torqlang.core.actor.Address;
-import org.torqlang.core.actor.Envelope;
 import org.torqlang.core.klvm.*;
 
 import java.util.List;
 import java.util.concurrent.*;
 
-import static org.torqlang.core.local.ActorSystem.createResponse;
+import static org.torqlang.core.local.Envelope.createResponse;
 
 /*
  * A Timer generates a stream of ticks as `<period 1>, <tick 1>, ..., <period n>, <tick n>` where `<period>` is a delay
@@ -37,11 +34,11 @@ import static org.torqlang.core.local.ActorSystem.createResponse;
  *
  * A timer can only be used by one requester (subscriber) at a time.
  */
-final class TimerMod {
+final class TimerPack {
 
     public static final Ident TIMER_IDENT = Ident.create("Timer");
     private static final int TIMER_CFGTR_ARG_COUNT = 3;
-    private static final CompleteProc TIMER_CFGTR = TimerMod::timerCfgtr;
+    private static final CompleteProc TIMER_CFGTR = TimerPack::timerCfgtr;
     public static final CompleteRec TIMER_ACTOR = createTimerActor();
 
     private static CompleteRec createTimerActor() {
@@ -80,8 +77,8 @@ final class TimerMod {
         private ScheduledFuture<?> scheduledFuture;
         private boolean trace;
 
-        public Timer(Address address, Mailbox mailbox, Executor executor, Logger logger, boolean trace, Num periodNum, Str timeUnitStr) {
-            super(address, mailbox, executor, logger);
+        public Timer(Address address, ActorSystem system, boolean trace, Num periodNum, Str timeUnitStr) {
+            super(address, system.createMailbox(), system.executor(), system.createLogger());
             this.trace = trace;
             this.periodNum = periodNum;
             this.timeUnitStr = timeUnitStr;
@@ -207,8 +204,8 @@ final class TimerMod {
         }
 
         @Override
-        public final ActorRef spawn(Address address, Mailbox mailbox, Executor executor, Logger logger, boolean trace) {
-            return new Timer(address, mailbox, executor, logger, trace, periodNum, timeUnitStr);
+        public final ActorRef spawn(Address address, ActorSystem system, boolean trace) {
+            return new Timer(address, system, trace, periodNum, timeUnitStr);
         }
     }
 

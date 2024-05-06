@@ -7,10 +7,10 @@
 
 package org.torqlang.core.klvm;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestEnvEntry {
 
@@ -27,11 +27,9 @@ public class TestEnvEntry {
         assertEquals(a, ee.ident);
         assertEquals(s, ee.var.valueOrVarSet());
 
-        //noinspection DataFlowIssue
         exc = assertThrows(NullPointerException.class, () -> new EnvEntry(null, new Var(s)));
         assertEquals("Ident is null", exc.getMessage());
 
-        //noinspection DataFlowIssue
         exc = assertThrows(NullPointerException.class, () -> new EnvEntry(a, null));
         assertEquals("Ident <a> mapped to null Var", exc.getMessage());
     }

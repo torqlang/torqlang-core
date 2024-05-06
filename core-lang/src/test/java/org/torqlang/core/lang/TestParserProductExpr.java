@@ -7,11 +7,10 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Int32;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.torqlang.core.lang.CommonTools.*;
 
 public class TestParserProductExpr {
@@ -21,11 +20,11 @@ public class TestParserProductExpr {
         //                            012345
         Parser p = new Parser("3 * 5");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof ProductExpr);
+        assertInstanceOf(ProductExpr.class, sox);
         ProductExpr productExpr = (ProductExpr) sox;
         assertSourceSpan(productExpr, 0, 5);
         assertEquals("3 * 5", productExpr.toString());
-        assertTrue(productExpr.arg1 instanceof IntAsExpr);
+        assertInstanceOf(IntAsExpr.class, productExpr.arg1);
         assertEquals(Int32.I32_3, asIntAsExpr(productExpr.arg1).int64());
         assertSourceSpan(productExpr.arg1, 0, 1);
         assertEquals(ProductOper.MULTIPLY, productExpr.oper);
@@ -38,11 +37,11 @@ public class TestParserProductExpr {
         //                            0123456
         Parser p = new Parser("3 * -5");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof ProductExpr);
+        assertInstanceOf(ProductExpr.class, sox);
         ProductExpr productExpr = (ProductExpr) sox;
         assertSourceSpan(productExpr, 0, 6);
         assertEquals("3 * -5", productExpr.toString());
-        assertTrue(productExpr.arg1 instanceof IntAsExpr);
+        assertInstanceOf(IntAsExpr.class, productExpr.arg1);
         assertEquals(Int32.I32_3, asIntAsExpr(productExpr.arg1).int64());
         assertSourceSpan(productExpr.arg1, 0, 1);
         assertEquals(ProductOper.MULTIPLY, productExpr.oper);

@@ -7,8 +7,6 @@
 
 package org.torqlang.core.local;
 
-import org.torqlang.core.actor.Envelope;
-
 import java.util.Comparator;
 
 public class LinkedListMailbox implements Mailbox {

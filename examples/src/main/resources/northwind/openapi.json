@@ -18,18 +18,6 @@
     {
       "name": "Orders",
       "description": "Orders"
-    },
-    {
-      "name": "Purchase Orders",
-      "description": "Purchase Orders"
-    },
-    {
-      "name": "Products",
-      "description": "Products"
-    },
-    {
-      "name": "Other",
-      "description": "Other"
     }
   ],
   "paths": {
@@ -54,10 +42,78 @@
           }
         }
       }
+    },
+    "/orders/{id}": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/{id}/details": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderDetails"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "Message": {
+        "type": "object",
+        "required": ["code", "message", "type"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "ERR-12345"
+          },
+          "details": {
+            "type": "string",
+            "example": "A zero quantity is not allowed for an order iterm. Enter a positive order quantity or remove the item from the order."
+          },
+          "message": {
+            "type": "string",
+            "example": "Zero quantity is not allowed"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["ERROR", "INFO", "WARN"],
+            "example": "ERROR"
+          },
+          "trace_id": {
+            "type": "string",
+            "example": "19bc9126-6182-47f8-b799-a81ea54f8e8f"
+          }
+        }
+      },
       "Order": {
         "type": "object",
         "properties": {
@@ -65,53 +121,53 @@
             "type": "integer",
             "format": "int64"
           },
-          "employee-id": {
+          "employee_id": {
             "type": "integer",
             "format": "int64"
           },
-          "customer-id": {
+          "customer_id": {
             "type": "integer",
             "format": "int64"
           },
-          "order-date": {
+          "order_date": {
             "type": "string",
             "format": "date-time",
             "example": "2006-01-15T00:00:00Z"
           },
-          "shipped-date": {
+          "shipped_date": {
             "type": "string",
             "format": "date-time",
             "example": "2006-01-22T00:00:00Z"
           },
-          "shipper-id": {
+          "shipper_id": {
             "type": "integer",
             "format": "int64"
           },
-          "ship-name": {
+          "ship_name": {
             "type": "string",
             "maxLength": 50
           },
-          "ship-address": {
+          "ship_address": {
             "type": "string",
             "format": "long-text"
           },
-          "ship-city": {
+          "ship_city": {
             "type": "string",
             "maxLength": 50
           },
-          "ship-state-province": {
+          "ship_state_province": {
             "type": "string",
             "maxLength": 50
           },
-          "ship-zip-postal-code": {
+          "ship_zip_postal_code": {
             "type": "string",
             "maxLength": 50
           },
-          "ship-country-region": {
+          "ship_country_region": {
             "type": "string",
             "maxLength": 50
           },
-          "shipping-fee": {
+          "shipping_fee": {
             "type": "string",
             "format": "decimal(19, 4)"
           },
@@ -123,7 +179,7 @@
             "type": "string",
             "maxLength": 50
           },
-          "paid-date": {
+          "paid_date": {
             "type": "string",
             "format": "date-time",
             "example": "2006-01-15T00:00:00Z"
@@ -132,17 +188,62 @@
             "type": "string",
             "format": "long-text"
           },
-          "tax-rate": {
+          "tax_rate": {
             "type": "number",
             "format": "double"
           },
-          "tax-status-id": {
+          "tax_status_id": {
             "type": "integer",
             "format": "int32"
           },
-          "status-id": {
+          "status_id": {
             "type": "integer",
             "format": "int32"
+          }
+        }
+      },
+      "OrderDetails": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "order_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "product_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "quantity": {
+            "type": "string",
+            "format": "decimal(18, 4)"
+          },
+          "unit_price": {
+            "type": "string",
+            "format": "decimal(19, 4)"
+          },
+          "discount": {
+            "type": "number"
+          },
+          "status_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "date_allocated": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2006-01-15T00:00:00Z"
+          },
+          "purchase_order_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "inventory_id": {
+            "type": "integer",
+            "format": "int64"
           }
         }
       }

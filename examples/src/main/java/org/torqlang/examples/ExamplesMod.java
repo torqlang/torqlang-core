@@ -22,7 +22,7 @@ final class ExamplesMod {
                 .addField(Str.of("IntPublisher"), Actor.compileForImport(IntPublisher.SOURCE))
                 .build();
         } catch (Exception exc) {
-            throw new IllegalStateException("IntPublisher actor record not created", exc);
+            throw new IllegalStateException("ExamplesMod error", exc);
         }
     }
 

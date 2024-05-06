@@ -7,11 +7,11 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class TestEvalRecAssign {
 
@@ -24,7 +24,7 @@ public class TestEvalRecAssign {
                 Rec.assign(r1, r2, x)
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(RecMod.REC_IDENT, new Var(RecMod.REC_CLS))
+            .addVar(RecPack.REC_IDENT, new Var(RecPack.REC_CLS))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
@@ -38,7 +38,7 @@ public class TestEvalRecAssign {
         assertEquals(expected, e.kernel().toString());
         Rec expectedRec = Rec.completeRecBuilder()
             .build();
-        assertTrue(e.varAtName("x").valueOrVarSet() instanceof Rec);
+        assertInstanceOf(Rec.class, e.varAtName("x").valueOrVarSet());
         Rec xRec = (Rec) e.varAtName("x").valueOrVarSet();
         assertEquals(expectedRec, xRec);
     }
@@ -52,7 +52,7 @@ public class TestEvalRecAssign {
                 Rec.assign(r1, r2, x)
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(RecMod.REC_IDENT, new Var(RecMod.REC_CLS))
+            .addVar(RecPack.REC_IDENT, new Var(RecPack.REC_CLS))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
@@ -67,7 +67,7 @@ public class TestEvalRecAssign {
         Rec expectedRec = Rec.completeRecBuilder()
             .addField(Str.of("a"), Int32.I32_1)
             .build();
-        assertTrue(e.varAtName("x").valueOrVarSet() instanceof Rec);
+        assertInstanceOf(Rec.class, e.varAtName("x").valueOrVarSet());
         Rec xRec = (Rec) e.varAtName("x").valueOrVarSet();
         assertEquals(expectedRec, xRec);
     }
@@ -81,7 +81,7 @@ public class TestEvalRecAssign {
                 Rec.assign(r1, r2, x)
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(RecMod.REC_IDENT, new Var(RecMod.REC_CLS))
+            .addVar(RecPack.REC_IDENT, new Var(RecPack.REC_CLS))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
@@ -96,7 +96,7 @@ public class TestEvalRecAssign {
         Rec expectedRec = Rec.completeRecBuilder()
             .addField(Str.of("a"), Int32.I32_1)
             .build();
-        assertTrue(e.varAtName("x").valueOrVarSet() instanceof Rec);
+        assertInstanceOf(Rec.class, e.varAtName("x").valueOrVarSet());
         Rec xRec = (Rec) e.varAtName("x").valueOrVarSet();
         assertEquals(expectedRec, xRec);
     }
@@ -110,7 +110,7 @@ public class TestEvalRecAssign {
                 Rec.assign(r1, r2, x)
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(RecMod.REC_IDENT, new Var(RecMod.REC_CLS))
+            .addVar(RecPack.REC_IDENT, new Var(RecPack.REC_CLS))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
@@ -125,7 +125,7 @@ public class TestEvalRecAssign {
         Rec expectedRec = Rec.completeRecBuilder()
             .addField(Str.of("a"), Int32.I32_1)
             .build();
-        assertTrue(e.varAtName("x").valueOrVarSet() instanceof Rec);
+        assertInstanceOf(Rec.class, e.varAtName("x").valueOrVarSet());
         Rec xRec = (Rec) e.varAtName("x").valueOrVarSet();
         assertEquals(expectedRec, xRec);
     }
@@ -139,7 +139,7 @@ public class TestEvalRecAssign {
                 Rec.assign(r1, r2, x)
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(RecMod.REC_IDENT, new Var(RecMod.REC_CLS))
+            .addVar(RecPack.REC_IDENT, new Var(RecPack.REC_CLS))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
@@ -156,7 +156,7 @@ public class TestEvalRecAssign {
             .addField(Str.of("b"), Int32.I32_4)
             .addField(Str.of("c"), Int32.I32_5)
             .build();
-        assertTrue(e.varAtName("x").valueOrVarSet() instanceof Rec);
+        assertInstanceOf(Rec.class, e.varAtName("x").valueOrVarSet());
         Rec xRec = (Rec) e.varAtName("x").valueOrVarSet();
         assertEquals(expectedRec, xRec);
     }
@@ -170,7 +170,7 @@ public class TestEvalRecAssign {
                 x = Rec.assign(r1, r2)
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(RecMod.REC_IDENT, new Var(RecMod.REC_CLS))
+            .addVar(RecPack.REC_IDENT, new Var(RecPack.REC_CLS))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
@@ -187,7 +187,7 @@ public class TestEvalRecAssign {
             .addField(Str.of("b"), Int32.I32_4)
             .addField(Str.of("c"), Int32.I32_5)
             .build();
-        assertTrue(e.varAtName("x").valueOrVarSet() instanceof Rec);
+        assertInstanceOf(Rec.class, e.varAtName("x").valueOrVarSet());
         Rec xRec = (Rec) e.varAtName("x").valueOrVarSet();
         assertEquals(expectedRec, xRec);
     }

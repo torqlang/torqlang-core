@@ -7,17 +7,17 @@
 
 package org.torqlang.examples;
 
-import org.torqlang.core.actor.ActorRef;
 import org.torqlang.core.klvm.CompleteRec;
 import org.torqlang.core.klvm.FailedValue;
 import org.torqlang.core.klvm.Rec;
 import org.torqlang.core.klvm.Str;
 import org.torqlang.core.local.Actor;
+import org.torqlang.core.local.ActorRef;
 import org.torqlang.core.local.RequestClient;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.torqlang.core.local.ActorSystem.createAddress;
+import static org.torqlang.core.local.Address.createAddress;
 
 /*
  * TODO: Delete OrderDao later when its value has been replaced by Northwind examples

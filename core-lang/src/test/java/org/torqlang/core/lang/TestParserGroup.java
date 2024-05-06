@@ -7,11 +7,11 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Int32;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.torqlang.core.lang.CommonTools.*;
 
 public class TestParserGroup {
@@ -37,18 +37,18 @@ public class TestParserGroup {
         //                            0123456789012345678901234
         Parser p = new Parser("begin (1); (2); (-1) end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof BeginLang);
+        assertInstanceOf(BeginLang.class, sox);
         BeginLang beginLang = (BeginLang) sox;
 
         assertSourceSpan(beginLang, 0, 24);
 
-        assertTrue(beginLang.body.list.get(0) instanceof GroupExpr);
+        assertInstanceOf(GroupExpr.class, beginLang.body.list.get(0));
         assertEquals(Int32.I32_1, asIntAsExpr(asSingleExpr(beginLang.body.list.get(0))).int64());
 
-        assertTrue(beginLang.body.list.get(1) instanceof GroupExpr);
+        assertInstanceOf(GroupExpr.class, beginLang.body.list.get(1));
         assertEquals(Int32.I32_2, asIntAsExpr(asSingleExpr(beginLang.body.list.get(1))).int64());
 
-        assertTrue(beginLang.body.list.get(2) instanceof GroupExpr);
+        assertInstanceOf(GroupExpr.class, beginLang.body.list.get(2));
         UnaryExpr unaryExpr = asUnaryExpr(asSingleExpr(beginLang.body.list.get(2)));
         assertEquals(UnaryOper.NEGATE, unaryExpr.oper);
         assertEquals(Int32.of(1), asIntAsExpr(unaryExpr.arg).int64());
@@ -70,25 +70,25 @@ public class TestParserGroup {
         //                            0123456789012345678901234567
         Parser p = new Parser("begin (1 + 5) * (3 - 7) end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof BeginLang);
+        assertInstanceOf(BeginLang.class, sox);
         BeginLang beginLang = (BeginLang) sox;
 
         assertSourceSpan(beginLang, 0, 27);
         assertEquals(1, beginLang.body.list.size());
-        assertTrue(asSingleExpr(beginLang.body) instanceof ProductExpr);
+        assertInstanceOf(ProductExpr.class, asSingleExpr(beginLang.body));
 
         ProductExpr productExpr = (ProductExpr) beginLang.body.list.get(0);
         assertSourceSpan(productExpr, 6, 23);
 
-        assertTrue(productExpr.arg1 instanceof GroupExpr);
+        assertInstanceOf(GroupExpr.class, productExpr.arg1);
         assertSourceSpan(productExpr.arg1, 6, 13);
         assertSourceSpan(asSingleExpr(productExpr.arg1), 7, 12);
-        assertTrue(asSingleExpr(productExpr.arg1) instanceof SumExpr);
+        assertInstanceOf(SumExpr.class, asSingleExpr(productExpr.arg1));
 
-        assertTrue(productExpr.arg2 instanceof GroupExpr);
+        assertInstanceOf(GroupExpr.class, productExpr.arg2);
         assertSourceSpan(productExpr.arg2, 16, 23);
         assertSourceSpan(asSingleExpr(productExpr.arg2), 17, 22);
-        assertTrue(asSingleExpr(productExpr.arg2) instanceof SumExpr);
+        assertInstanceOf(SumExpr.class, asSingleExpr(productExpr.arg2));
     }
 
 }

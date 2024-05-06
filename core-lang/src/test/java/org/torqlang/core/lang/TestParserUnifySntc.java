@@ -7,12 +7,13 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Ident;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.torqlang.core.lang.CommonTools.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.torqlang.core.lang.CommonTools.asIdentAsExpr;
+import static org.torqlang.core.lang.CommonTools.assertSourceSpan;
 
 public class TestParserUnifySntc {
 
@@ -21,7 +22,7 @@ public class TestParserUnifySntc {
         //                            012345
         Parser p = new Parser("a = b");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof UnifySntc);
+        assertInstanceOf(UnifySntc.class, sox);
         UnifySntc unifySntc = (UnifySntc) sox;
         assertSourceSpan(unifySntc, 0, 5);
         // Test properties
@@ -45,13 +46,13 @@ public class TestParserUnifySntc {
         //                            012345678901234567
         Parser p = new Parser("a = act b c d end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof UnifySntc);
+        assertInstanceOf(UnifySntc.class, sox);
         UnifySntc unifySntc = (UnifySntc) sox;
         assertSourceSpan(unifySntc, 0, 17);
         // Test properties
         assertEquals(Ident.create("a"), asIdentAsExpr(unifySntc.leftSide).ident);
         assertSourceSpan(unifySntc.leftSide, 0, 1);
-        assertTrue(unifySntc.rightSide instanceof ActExpr);
+        assertInstanceOf(ActExpr.class, unifySntc.rightSide);
         assertSourceSpan(unifySntc.rightSide, 4, 17);
         // Test format
         String expectedFormat = """

@@ -7,12 +7,12 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Ident;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.torqlang.core.lang.CommonTools.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.torqlang.core.lang.CommonTools.assertSourceSpan;
 
 public class TestParserActorSntc {
 
@@ -71,8 +71,8 @@ public class TestParserActorSntc {
         assertEquals(expectedFormat, actualFormat);
         // Test initializer
         assertEquals(2, actorSntc.initializer().size());
-        assertTrue(actorSntc.initializer().get(0) instanceof VarSntc);
-        assertTrue(actorSntc.initializer().get(1) instanceof VarSntc);
+        assertInstanceOf(VarSntc.class, actorSntc.initializer().get(0));
+        assertInstanceOf(VarSntc.class, actorSntc.initializer().get(1));
         // Test handlers
         assertEquals(1, actorSntc.askHandlers().size());
         assertEquals(1, actorSntc.tellHandlers().size());

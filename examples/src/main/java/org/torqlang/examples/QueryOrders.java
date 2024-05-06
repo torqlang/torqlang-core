@@ -7,7 +7,6 @@
 
 package org.torqlang.examples;
 
-import org.torqlang.core.actor.ActorRef;
 import org.torqlang.core.klvm.Complete;
 import org.torqlang.core.klvm.CompleteRec;
 import org.torqlang.core.klvm.Rec;
@@ -32,8 +31,8 @@ public class QueryOrders extends AbstractExample {
             var orders = get_orders()
             handle ask 'GET'#{'headers': headers, 'query': query} in
                 func matches_query(order) in
-                    for pair in FieldIter.new(query) do
-                        if order[pair.0] != pair[1] then
+                    for field in FieldIter.new(query) do
+                        if order[field.0] != field.1 then
                             return false
                         end
                     end
@@ -62,7 +61,11 @@ public class QueryOrders extends AbstractExample {
         CompleteRec moduleRec = Rec.completeRecBuilder()
             .addField(Str.of("get_orders"), new AsyncMethod(methodHandle))
             .build();
-        ModuleSystem.register("examples.NorthwindCache", () -> moduleRec);
+
+        ActorSystem system = ActorSystem.builder()
+            .addDefaultModules()
+            .addModule("examples.NorthwindCache", moduleRec)
+            .build();
 
         ApiRouter router = ApiRouter.staticBuilder()
             .addRoute("/orders", Actor.builder().configure(SOURCE).actorCfg())
@@ -78,11 +81,15 @@ public class QueryOrders extends AbstractExample {
         );
 
         ApiRoute route = router.findRoute(new ApiPath("/orders"));
-        ActorRef actorRef = Actor.builder().setActorCfg(route.actorCfg).spawn().actorRef();
+        ActorRef actorRef = Actor.builder()
+            .setSystem(system)
+            .setActorCfg(route.actorCfg).spawn().actorRef();
+
         Object response = RequestClient.builder().sendAndAwaitResponse(
             actorRef,
             ValueTools.toKernelValue(requestMap),
             Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+
         checkNotFailedValue(response);
         List<?> nativeResponse = (List<?>) ValueTools.toNativeValue((Complete) response);
         checkExpectedResponse(4, nativeResponse.size());

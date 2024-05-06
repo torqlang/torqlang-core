@@ -7,7 +7,6 @@
 
 package org.torqlang.core.local;
 
-import org.torqlang.core.actor.ActorRef;
 import org.torqlang.core.klvm.*;
 import org.torqlang.core.lang.ValueTools;
 
@@ -68,7 +67,7 @@ public final class AsyncMethod implements CompleteProc {
             if (requestId != null) {
                 Complete kernelValue = ValueTools.toKernelValue(result);
                 ActorRef requester = machine.owner();
-                requester.send(ActorSystem.createResponse(kernelValue, requestId));
+                requester.send(Envelope.createResponse(kernelValue, requestId));
             }
         });
     }

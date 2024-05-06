@@ -14,7 +14,7 @@ import java.util.Set;
 public final class Str implements Literal {
 
     private static final ObjProcTable<Str> objProcTable = ObjProcTable.<Str>builder()
-        .addEntry(Str.of("substring"), StrMod::objSubstring)
+        .addEntry(Str.of("substring"), StrPack::objSubstring)
         .build();
 
     public final String value;

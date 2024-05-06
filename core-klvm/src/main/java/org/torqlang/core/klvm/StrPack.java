@@ -9,7 +9,7 @@ package org.torqlang.core.klvm;
 
 import java.util.List;
 
-public class StrMod {
+public class StrPack {
 
     static void objSubstring(Str obj, List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         int argCount = ys.size();

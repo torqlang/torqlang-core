@@ -7,12 +7,13 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Ident;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.torqlang.core.lang.CommonTools.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.torqlang.core.lang.CommonTools.asIdentAsExpr;
+import static org.torqlang.core.lang.CommonTools.assertSourceSpan;
 
 public class TestParserSpawnExpr {
 
@@ -21,7 +22,7 @@ public class TestParserSpawnExpr {
         //                            012345678
         Parser p = new Parser("spawn(x)");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof SpawnExpr);
+        assertInstanceOf(SpawnExpr.class, sox);
         SpawnExpr spawnExpr = (SpawnExpr) sox;
         assertSourceSpan(spawnExpr, 0, 8);
         assertEquals(1, spawnExpr.args.size());

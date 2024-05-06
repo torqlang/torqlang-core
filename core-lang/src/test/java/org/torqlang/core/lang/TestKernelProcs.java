@@ -7,10 +7,10 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /*
  * This test class should be in the kernel package, but we test from the lang package to use the Evaluator.
@@ -36,7 +36,7 @@ public class TestKernelProcs {
             $bind('success', y)""";
         assertEquals(expected, g.kernel().toString());
         MachineHaltError mhe = assertThrows(MachineHaltError.class, g::perform);
-        assertTrue(mhe.nativeCause() instanceof NotBoundError);
+        assertInstanceOf(NotBoundError.class, mhe.nativeCause());
         assertEquals("Not bound error", mhe.nativeCause().getMessage());
     }
 

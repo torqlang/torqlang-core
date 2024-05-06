@@ -7,7 +7,7 @@
 
 package org.torqlang.core.util;
 
-public class IntegerCounter {
+public final class IntegerCounter {
 
     private int value;
 
@@ -15,20 +15,20 @@ public class IntegerCounter {
         value = initialValue;
     }
 
-    public void add(int delta) {
+    public final void add(int delta) {
         value += delta;
     }
 
-    public int addAndGet(int delta) {
+    public final int addAndGet(int delta) {
         value += delta;
         return value;
     }
 
-    public int get() {
+    public final int get() {
         return value;
     }
 
-    public int getAndAdd(int delta) {
+    public final int getAndAdd(int delta) {
         int answer = value;
         value += delta;
         return answer;

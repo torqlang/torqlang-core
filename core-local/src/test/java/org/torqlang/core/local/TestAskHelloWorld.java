@@ -7,16 +7,15 @@
 
 package org.torqlang.core.local;
 
-import org.junit.Test;
-import org.torqlang.core.actor.ActorRef;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.*;
 import org.torqlang.core.lang.ActorSntc;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.torqlang.core.local.ActorSystem.createAddress;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.torqlang.core.local.Address.createAddress;
 
 public class TestAskHelloWorld {
 
@@ -176,7 +175,7 @@ public class TestAskHelloWorld {
             .setAddress(createAddress("HelloWorldClient"))
             .send(actorRef, Str.of("goodbye"))
             .awaitResponse(100, TimeUnit.MILLISECONDS);
-        assertTrue(response instanceof FailedValue);
+        assertInstanceOf(FailedValue.class, response);
         FailedValue failedValue = (FailedValue) response;
         assertEquals("FailedValue(error='error'#{'message': 'goodbye', 'name': 'org.torqlang.core.lang.AskNotHandledError'})", failedValue.toString());
     }

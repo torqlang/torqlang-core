@@ -7,6 +7,8 @@
 
 package org.torqlang.core.klvm;
 
+import org.torqlang.core.util.BinarySearchTools;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.IdentityHashMap;
@@ -47,21 +49,7 @@ final class BasicPartialRec implements PartialRec {
      * Undetermined fields (future fields) are not searched.
      */
     private int binarySearchFields(Feature feature) {
-        int low = 0;
-        int high = partialFields.size() - 1;
-        while (low <= high) {
-            int mid = low + (high - low) / 2;
-            PartialField partialField = partialFields.get(mid);
-            int compare = FEATURE_COMPARATOR.compare(feature, partialField.feature);
-            if (compare > 0) {
-                low = mid + 1;
-            } else if (compare < 0) {
-                high = mid - 1;
-            } else {
-                return mid;
-            }
-        }
-        return -(low + 1);
+        return BinarySearchTools.search(partialFields, (f) -> FEATURE_COMPARATOR.compare(feature, f.feature));
     }
 
     @Override

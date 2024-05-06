@@ -7,11 +7,11 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Ident;
 import org.torqlang.core.klvm.Int32;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.torqlang.core.lang.CommonTools.*;
 
 public class TestParserVarSntc {
@@ -21,11 +21,11 @@ public class TestParserVarSntc {
         //                            0123456789
         Parser p = new Parser("var x = 1");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof VarSntc);
+        assertInstanceOf(VarSntc.class, sox);
         VarSntc varSntc = (VarSntc) sox;
         assertSourceSpan(varSntc, 0, 9);
         assertEquals(1, varSntc.varDecls.size());
-        assertTrue(varSntc.varDecls.get(0) instanceof InitVarDecl);
+        assertInstanceOf(InitVarDecl.class, varSntc.varDecls.get(0));
         InitVarDecl initVarDecl = (InitVarDecl) varSntc.varDecls.get(0);
         assertSourceSpan(initVarDecl, 4, 9);
         assertSourceSpan(initVarDecl.varPat, 4, 5);
@@ -48,11 +48,11 @@ public class TestParserVarSntc {
         //                            0123456789012
         Parser p = new Parser("var x::Int32");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof VarSntc);
+        assertInstanceOf(VarSntc.class, sox);
         VarSntc varSntc = (VarSntc) sox;
         assertSourceSpan(varSntc, 0, 12);
         assertEquals(1, varSntc.varDecls.size());
-        assertTrue(varSntc.varDecls.get(0) instanceof IdentVarDecl);
+        assertInstanceOf(IdentVarDecl.class, varSntc.varDecls.get(0));
         IdentVarDecl identVarDecl = (IdentVarDecl) varSntc.varDecls.get(0);
         assertSourceSpan(identVarDecl, 4, 12);
         assertSourceSpan(identVarDecl.identAsPat, 4, 12);

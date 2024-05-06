@@ -7,9 +7,6 @@
 
 package org.torqlang.core.local;
 
-import org.torqlang.core.actor.ActorRef;
-import org.torqlang.core.actor.Address;
-import org.torqlang.core.actor.Envelope;
 import org.torqlang.core.util.GetStackTrace;
 
 import java.util.concurrent.Executor;

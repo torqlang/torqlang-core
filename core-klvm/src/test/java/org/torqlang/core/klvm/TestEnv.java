@@ -7,13 +7,13 @@
 
 package org.torqlang.core.klvm;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestEnv {
 
@@ -191,27 +191,21 @@ public class TestEnv {
 
         // Null pointer exceptions
 
-        //noinspection DataFlowIssue
         exc = assertThrows(NullPointerException.class, () -> Env.create((Env) null, (EnvEntry) null));
         assertNull(exc.getMessage());
 
-        //noinspection DataFlowIssue
         exc = assertThrows(NullPointerException.class, () -> Env.create(null, null, null));
         assertNull(exc.getMessage());
 
-        //noinspection DataFlowIssue
         exc = assertThrows(NullPointerException.class, () -> Env.create(null, new EnvEntry(a, new Var(testStr)), null));
         assertNull(exc.getMessage());
 
-        //noinspection DataFlowIssue
         exc = assertThrows(NullPointerException.class, () -> Env.create((EnvEntry) null));
         assertNull(exc.getMessage());
 
-        //noinspection DataFlowIssue
         exc = assertThrows(NullPointerException.class, () -> Env.create((EnvEntry) null, null));
         assertNull(exc.getMessage());
 
-        //noinspection DataFlowIssue
         exc = assertThrows(NullPointerException.class, () -> Env.create(new EnvEntry(a, new Var(testStr)), null));
         assertNull(exc.getMessage());
     }

@@ -7,12 +7,12 @@
 
 package org.torqlang.core.klvm;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.util.SourceSpan;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestRecPtn {
 
@@ -50,7 +50,7 @@ public class TestRecPtn {
         r = CompleteRec.create(testLabel, List.of());
         Env envWithMatch = Env.create(List.of(new EnvEntry(Ident.create("labelIdent"), new Var(testLabel))));
         match = rp.caseRecOfThis(r, envWithMatch);
-        assertTrue(match instanceof ResolvedRecPtn);
+        assertInstanceOf(ResolvedRecPtn.class, match);
         ResolvedRecPtn rrp = (ResolvedRecPtn) match;
         assertEquals("'test-label'#{}", rrp.toString());
 
@@ -92,7 +92,7 @@ public class TestRecPtn {
 
         r = CompleteRec.create(testLabel, List.of());
         match = rp.caseRecOfThis(r, Env.emptyEnv());
-        assertTrue(match instanceof ResolvedRecPtn);
+        assertInstanceOf(ResolvedRecPtn.class, match);
         ResolvedRecPtn rrp = (ResolvedRecPtn) match;
         assertEquals("'test-label'#{}", rrp.toString());
 
@@ -138,7 +138,7 @@ public class TestRecPtn {
 
         r = Rec.completeRecBuilder().setLabel(testLabel).addField(Int32.I32_0, a).build();
         match = rp.caseRecOfThis(r, Env.emptyEnv());
-        assertTrue(match instanceof ResolvedRecPtn);
+        assertInstanceOf(ResolvedRecPtn.class, match);
         rrp = (ResolvedRecPtn) match;
         assertEquals("'test-label'#{0: 'a'}", rrp.toString());
 
@@ -357,7 +357,7 @@ public class TestRecPtn {
             .addField(one, b)
             .build();
         match = rp.caseRecOfThis(r, Env.emptyEnv());
-        assertTrue(match instanceof ResolvedRecPtn);
+        assertInstanceOf(ResolvedRecPtn.class, match);
         rrp = (ResolvedRecPtn) match;
         assertEquals("'test-label'#{'0-zero': 'a', ...}", rrp.toString());
 
@@ -377,7 +377,7 @@ public class TestRecPtn {
             .addField(one, b)
             .build();
         match = rp.caseRecOfThis(r, Env.emptyEnv());
-        assertTrue(match instanceof ResolvedRecPtn);
+        assertInstanceOf(ResolvedRecPtn.class, match);
         rrp = (ResolvedRecPtn) match;
         assertEquals("'test-label'#{'1-one': 'b', ...}", rrp.toString());
     }

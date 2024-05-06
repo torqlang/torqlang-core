@@ -7,9 +7,10 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.torqlang.core.lang.CommonTools.asIdentAsExpr;
 
 public class TestParserIdentEncodings {
@@ -23,25 +24,25 @@ public class TestParserIdentEncodings {
 
         p = new Parser("`\\u0078`");
         sox = p.parse();
-        assertTrue(sox instanceof IdentAsExpr);
+        assertInstanceOf(IdentAsExpr.class, sox);
         v = asIdentAsExpr(sox).ident.name;
         assertEquals("x", v);
 
         p = new Parser("`\r`");
         sox = p.parse();
-        assertTrue(sox instanceof IdentAsExpr);
+        assertInstanceOf(IdentAsExpr.class, sox);
         v = asIdentAsExpr(sox).ident.name;
         assertEquals("\r", v);
 
         p = new Parser("` \r\t `");
         sox = p.parse();
-        assertTrue(sox instanceof IdentAsExpr);
+        assertInstanceOf(IdentAsExpr.class, sox);
         v = asIdentAsExpr(sox).ident.name;
         assertEquals(" \r\t ", v);
 
         p = new Parser("` `");
         sox = p.parse();
-        assertTrue(sox instanceof IdentAsExpr);
+        assertInstanceOf(IdentAsExpr.class, sox);
         v = asIdentAsExpr(sox).ident.name;
         assertEquals(" ", v);
     }

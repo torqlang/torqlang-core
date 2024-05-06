@@ -7,12 +7,13 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Ident;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.torqlang.core.lang.CommonTools.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.torqlang.core.lang.CommonTools.asIdentAsExpr;
+import static org.torqlang.core.lang.CommonTools.assertSourceSpan;
 
 public class TestParserApplyExpr {
 
@@ -21,7 +22,7 @@ public class TestParserApplyExpr {
         //                            0123
         Parser p = new Parser("x()");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof ApplyLang);
+        assertInstanceOf(ApplyLang.class, sox);
         ApplyLang applyLang = (ApplyLang) sox;
         assertSourceSpan(applyLang, 0, 3);
         assertEquals(Ident.create("x"), asIdentAsExpr(applyLang.proc).ident);
@@ -42,13 +43,13 @@ public class TestParserApplyExpr {
         //                            01234
         Parser p = new Parser("x(a)");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof ApplyLang);
+        assertInstanceOf(ApplyLang.class, sox);
         ApplyLang applyLang = (ApplyLang) sox;
         assertSourceSpan(applyLang, 0, 4);
         assertEquals(Ident.create("x"), asIdentAsExpr(applyLang.proc).ident);
         assertSourceSpan(applyLang.proc, 0, 1);
         assertEquals(1, applyLang.args.size());
-        assertTrue(applyLang.args.get(0) instanceof IdentAsExpr);
+        assertInstanceOf(IdentAsExpr.class, applyLang.args.get(0));
         assertSourceSpan(applyLang.args.get(0), 2, 3);
         // Test toString format
         String expectedFormat = "x(a)";
@@ -65,15 +66,15 @@ public class TestParserApplyExpr {
         //                            01234567
         Parser p = new Parser("x(a, 3)");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof ApplyLang);
+        assertInstanceOf(ApplyLang.class, sox);
         ApplyLang applyLang = (ApplyLang) sox;
         assertSourceSpan(applyLang, 0, 7);
         assertEquals(Ident.create("x"), asIdentAsExpr(applyLang.proc).ident);
         assertSourceSpan(applyLang.proc, 0, 1);
         assertEquals(2, applyLang.args.size());
-        assertTrue(applyLang.args.get(0) instanceof IdentAsExpr);
+        assertInstanceOf(IdentAsExpr.class, applyLang.args.get(0));
         assertSourceSpan(applyLang.args.get(0), 2, 3);
-        assertTrue(applyLang.args.get(1) instanceof IntAsExpr);
+        assertInstanceOf(IntAsExpr.class, applyLang.args.get(1));
         assertSourceSpan(applyLang.args.get(1), 5, 6);
         // Test toString format
         String expectedFormat = "x(a, 3)";

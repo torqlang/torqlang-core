@@ -9,6 +9,10 @@ package org.torqlang.core.local;
 
 public interface Logger {
 
+    static Logger createDefault() {
+        return ConsoleLogger.SINGLETON;
+    }
+
     void info(String message);
 
     void info(String caller, String message);

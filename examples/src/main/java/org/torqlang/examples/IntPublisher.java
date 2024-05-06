@@ -7,10 +7,10 @@
 
 package org.torqlang.examples;
 
-import org.torqlang.core.actor.ActorRef;
-import org.torqlang.core.actor.Envelope;
 import org.torqlang.core.klvm.*;
 import org.torqlang.core.local.Actor;
+import org.torqlang.core.local.ActorRef;
+import org.torqlang.core.local.Envelope;
 import org.torqlang.core.local.StreamClient;
 
 import java.util.List;
@@ -21,7 +21,8 @@ public final class IntPublisher extends AbstractExample {
 
     public static final String SOURCE = """
         actor IntPublisher(first, last, incr) in
-            import system[ArrayList, Cell, respond]
+            import system[ArrayList, Cell]
+            import system.Procs.respond
             var next_int = Cell.new(first)
             handle ask 'request'#{'count': n} in
                 func calculate_to() in

@@ -7,18 +7,15 @@
 
 package org.torqlang.examples;
 
-import org.torqlang.core.actor.ActorRef;
 import org.torqlang.core.klvm.CompleteRec;
 import org.torqlang.core.klvm.Int32;
 import org.torqlang.core.klvm.Rec;
 import org.torqlang.core.klvm.Str;
-import org.torqlang.core.local.Actor;
-import org.torqlang.core.local.ModuleSystem;
-import org.torqlang.core.local.RequestClient;
+import org.torqlang.core.local.*;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.torqlang.core.local.ActorSystem.createAddress;
+import static org.torqlang.core.local.Address.createAddress;
 
 public final class SumOddIntsStream extends AbstractExample {
 
@@ -45,12 +42,14 @@ public final class SumOddIntsStream extends AbstractExample {
     @Override
     public final void perform() throws Exception {
 
-        ModuleSystem.register("examples", ExamplesMod::moduleRec);
+        ActorSystem system = ActorSystem.builder()
+            .addDefaultModules()
+            .addModule("examples", ExamplesMod.moduleRec())
+            .build();
 
         ActorRef actorRef = Actor.builder()
-            .setAddress(createAddress(SumOddIntsStream.class.getName()))
-            .setSource(SOURCE)
-            .spawn()
+            .setSystem(system)
+            .spawn(SOURCE)
             .actorRef();
 
         // 1 + 3 + 5 + 7 + 9 = 25

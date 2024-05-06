@@ -13,15 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-final class ArrayListMod {
+final class ArrayListPack {
     public static final Ident ARRAY_LIST_IDENT = Ident.create("ArrayList");
     public static final CompleteObj ARRAY_LIST_CLS = ArrayListCls.SINGLETON;
 
     private static final ObjProcTable<ArrayListObj> objProcTable = ObjProcTable.<ArrayListObj>builder()
-        .addEntry(CommonFeatures.ADD, ArrayListMod::objAdd)
-        .addEntry(CommonFeatures.CLEAR, ArrayListMod::objClear)
-        .addEntry(CommonFeatures.SIZE, ArrayListMod::objSize)
-        .addEntry(CommonFeatures.TO_TUPLE, ArrayListMod::objToTuple)
+        .addEntry(CommonFeatures.ADD, ArrayListPack::objAdd)
+        .addEntry(CommonFeatures.CLEAR, ArrayListPack::objClear)
+        .addEntry(CommonFeatures.SIZE, ArrayListPack::objSize)
+        .addEntry(CommonFeatures.TO_TUPLE, ArrayListPack::objToTuple)
         .build();
 
     static void clsNew(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
@@ -101,7 +101,7 @@ final class ArrayListMod {
 
     static class ArrayListCls implements CompleteObj {
         private static final ArrayListCls SINGLETON = new ArrayListCls();
-        private static final CompleteProc ARRAY_LIST_CLS_NEW = ArrayListMod::clsNew;
+        private static final CompleteProc ARRAY_LIST_CLS_NEW = ArrayListPack::clsNew;
 
         private ArrayListCls() {
         }

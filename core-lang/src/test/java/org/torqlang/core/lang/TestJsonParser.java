@@ -7,12 +7,12 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestJsonParser {
 
@@ -23,7 +23,7 @@ public class TestJsonParser {
             [0, 1, -1, 0.0, 1.0, false, true, null, "my-string", [], {}]""";
         JsonParser p = new JsonParser(source);
         Object jv = p.parse();
-        assertTrue(jv instanceof List);
+        assertInstanceOf(List.class, jv);
         List a = (List) jv;
         assertEquals(11, a.size());
         assertEquals(0L, a.get(0));
@@ -44,7 +44,7 @@ public class TestJsonParser {
     public void testArrayEmpty() {
         JsonParser p = new JsonParser("[]");
         Object jv = p.parse();
-        assertTrue(jv instanceof List);
+        assertInstanceOf(List.class, jv);
         List a = (List) jv;
         assertTrue(a.isEmpty());
     }
@@ -54,10 +54,10 @@ public class TestJsonParser {
     public void testArrayEmptyArray() {
         JsonParser p = new JsonParser("[[]]");
         Object jv = p.parse();
-        assertTrue(jv instanceof List);
+        assertInstanceOf(List.class, jv);
         List a = (List) jv;
         assertEquals(1, a.size());
-        assertTrue(a.get(0) instanceof List);
+        assertInstanceOf(List.class, a.get(0));
         assertEquals(List.of(), a.get(0));
     }
 
@@ -65,12 +65,12 @@ public class TestJsonParser {
     public void testBoolean() {
         JsonParser p = new JsonParser("true");
         Object jv = p.parse();
-        assertTrue(jv instanceof Boolean);
+        assertInstanceOf(Boolean.class, jv);
         boolean b = (Boolean) jv;
         assertTrue(b);
         p = new JsonParser("false");
         jv = p.parse();
-        assertTrue(jv instanceof Boolean);
+        assertInstanceOf(Boolean.class, jv);
         b = (Boolean) jv;
         assertFalse(b);
     }
@@ -105,17 +105,17 @@ public class TestJsonParser {
     public void testInteger() {
         JsonParser p = new JsonParser("0");
         Object jv = p.parse();
-        assertTrue(jv instanceof Long);
+        assertInstanceOf(Long.class, jv);
         long i = (Long) jv;
         assertEquals(0, i);
         p = new JsonParser("1");
         jv = p.parse();
-        assertTrue(jv instanceof Long);
+        assertInstanceOf(Long.class, jv);
         i = (Long) jv;
         assertEquals(1, i);
         p = new JsonParser("-1");
         jv = p.parse();
-        assertTrue(jv instanceof Long);
+        assertInstanceOf(Long.class, jv);
         i = (Long) jv;
         assertEquals(-1, i);
     }
@@ -128,7 +128,7 @@ public class TestJsonParser {
             "i": "my-string", "j": [], "k": {}}""";
         JsonParser p = new JsonParser(source);
         Object jv = p.parse();
-        assertTrue(jv instanceof Map);
+        assertInstanceOf(Map.class, jv);
         Map m = (Map) jv;
         assertEquals(11, m.size());
         assertEquals(0L, m.get("a"));
@@ -149,7 +149,7 @@ public class TestJsonParser {
     public void testObjectEmpty() {
         JsonParser p = new JsonParser("{}");
         Object jv = p.parse();
-        assertTrue(jv instanceof Map);
+        assertInstanceOf(Map.class, jv);
         Map m = (Map) jv;
         assertTrue(m.isEmpty());
     }

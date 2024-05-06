@@ -7,12 +7,12 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Ident;
 import org.torqlang.core.klvm.Rec;
 import org.torqlang.core.klvm.Str;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.torqlang.core.lang.CommonTools.stripCircularSpecifics;
 
 public class TestEvalCircularRefs {
@@ -35,7 +35,7 @@ public class TestEvalCircularRefs {
                 $bind(employee, x)
             end""";
         assertEquals(expected, e.kernel().toString());
-        assertTrue(e.varAtName("x").valueOrVarSet() instanceof Rec);
+        assertInstanceOf(Rec.class, e.varAtName("x").valueOrVarSet());
         Rec x = (Rec) e.varAtName("x").valueOrVarSet();
         assertSame(x, x.findValue(Str.of("manager")).resolveValueOrVar());
     }
@@ -60,7 +60,7 @@ public class TestEvalCircularRefs {
                 $bind(a, x)
             end""";
         assertEquals(expected, e.kernel().toString());
-        assertTrue(e.varAtName("x").valueOrVarSet() instanceof Rec);
+        assertInstanceOf(Rec.class, e.varAtName("x").valueOrVarSet());
         Rec x = (Rec) e.varAtName("x").valueOrVarSet();
         Rec b = (Rec) x.findValue(Str.of("next")).resolveValueOrVar();
         Rec a = (Rec) x.findValue(Str.of("next")).resolveValueOrVar();
@@ -88,7 +88,7 @@ public class TestEvalCircularRefs {
                 $bind(b, a)
             end""";
         assertEquals(expected, e.kernel().toString());
-        assertTrue(e.varAtName("x").valueOrVarSet() instanceof Rec);
+        assertInstanceOf(Rec.class, e.varAtName("x").valueOrVarSet());
         Rec x = (Rec) e.varAtName("x").valueOrVarSet();
         // The only field in `x` refers to `x`
         assertSame(x, x.valueAt(0).resolveValueOrVar());

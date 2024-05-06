@@ -7,6 +7,8 @@
 
 package org.torqlang.core.klvm;
 
+import org.torqlang.core.util.BinarySearchTools;
+
 import java.util.Arrays;
 
 public abstract class AbstractCompleteRec implements CompleteRec {
@@ -20,21 +22,7 @@ public abstract class AbstractCompleteRec implements CompleteRec {
      * Return the index of the field if found, otherwise return -(low + 1).
      */
     private int binarySearchFields(Feature feature) {
-        int low = 0;
-        int high = completeFields.length - 1;
-        while (low <= high) {
-            int mid = low + (high - low) / 2;
-            CompleteField completeField = completeFields[mid];
-            int compare = FEATURE_COMPARATOR.compare(feature, completeField.feature);
-            if (compare > 0) {
-                low = mid + 1;
-            } else if (compare < 0) {
-                high = mid - 1;
-            } else {
-                return mid;
-            }
-        }
-        return -(low + 1);
+        return BinarySearchTools.search(completeFields, (f) -> FEATURE_COMPARATOR.compare(feature, f.feature));
     }
 
     private void checkForDuplicateFeatures() {

@@ -7,12 +7,12 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Str;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.torqlang.core.lang.CommonTools.assertSourceSpan;
 
 public class TestParserImportSntc {
@@ -23,7 +23,7 @@ public class TestParserImportSntc {
         //                            0123456789012345678901234567890
         Parser p = new Parser("import system.module.ArrayList");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof ImportSntc);
+        assertInstanceOf(ImportSntc.class, sox);
         ImportSntc importExpr = (ImportSntc) sox;
         assertSourceSpan(importExpr, 0, 30);
         assertEquals(Str.of("system.module"), importExpr.qualifier);
@@ -36,7 +36,7 @@ public class TestParserImportSntc {
         //                            01234567890123456789012345678901234567
         Parser p = new Parser("import system.module[ArrayList, Cell]");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof ImportSntc);
+        assertInstanceOf(ImportSntc.class, sox);
         ImportSntc importExpr = (ImportSntc) sox;
         assertSourceSpan(importExpr, 0, 37);
         assertEquals(Str.of("system.module"), importExpr.qualifier);
@@ -49,7 +49,7 @@ public class TestParserImportSntc {
         //                            01234567890123456
         Parser p = new Parser("import ArrayList");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof ImportSntc);
+        assertInstanceOf(ImportSntc.class, sox);
         ImportSntc importExpr = (ImportSntc) sox;
         assertSourceSpan(importExpr, 0, 16);
         assertEquals(Str.of(""), importExpr.qualifier);
@@ -71,7 +71,7 @@ public class TestParserImportSntc {
         //                            012345678901234567890123
         Parser p = new Parser("import system.ArrayList");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof ImportSntc);
+        assertInstanceOf(ImportSntc.class, sox);
         ImportSntc importSntc = (ImportSntc) sox;
         assertSourceSpan(importSntc, 0, 23);
         assertEquals(Str.of("system"), importSntc.qualifier);
@@ -84,7 +84,7 @@ public class TestParserImportSntc {
         //                            0123456789012345678901234567890
         Parser p = new Parser("import system[ArrayList, Cell]");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof ImportSntc);
+        assertInstanceOf(ImportSntc.class, sox);
         ImportSntc importSntc = (ImportSntc) sox;
         assertSourceSpan(importSntc, 0, 30);
         assertEquals(Str.of("system"), importSntc.qualifier);

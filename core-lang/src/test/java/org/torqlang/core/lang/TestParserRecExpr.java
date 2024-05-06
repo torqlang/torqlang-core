@@ -7,10 +7,10 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.torqlang.core.lang.CommonTools.*;
 
 public class TestParserRecExpr {
@@ -20,7 +20,7 @@ public class TestParserRecExpr {
         //                            012
         Parser p = new Parser("{}");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof RecExpr);
+        assertInstanceOf(RecExpr.class, sox);
         RecExpr recExpr = (RecExpr) sox;
         assertSourceSpan(recExpr, 0, 2);
         assertNull(recExpr.label());
@@ -47,7 +47,7 @@ public class TestParserRecExpr {
         //                            01234567890123
         Parser p = new Parser("{'0-feat': 0}");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof RecExpr);
+        assertInstanceOf(RecExpr.class, sox);
         RecExpr recExpr = (RecExpr) sox;
         assertSourceSpan(recExpr, 0, 13);
         assertNull(recExpr.label());
@@ -68,6 +68,33 @@ public class TestParserRecExpr {
     }
 
     @Test
+    public void testFeatures1WithLabel() {
+        Str zeroFeat = Str.of("0-feat");
+        //                                      1         2
+        //                            0123456789012345678901234
+        Parser p = new Parser("'my-label'#{'0-feat': 0}");
+        SntcOrExpr sox = p.parse();
+        assertInstanceOf(RecExpr.class, sox);
+        RecExpr recExpr = (RecExpr) sox;
+        assertSourceSpan(recExpr, 0, 24);
+        assertEquals(Str.of("my-label"), asStrAsExpr(recExpr.label()).str);
+        // Test features
+        assertEquals(1, recExpr.fields().size());
+        FieldExpr fieldExpr = recExpr.fields().get(0);
+        assertSourceSpan(fieldExpr, 12, 23);
+        assertEquals(zeroFeat, asStrAsExpr(fieldExpr.feature).str);
+        assertEquals(Int32.I32_0, asIntAsExpr(fieldExpr.value).int64());
+        // Test toString format
+        String expectedFormat = "'my-label'#{'0-feat': 0}";
+        String actualFormat = recExpr.toString();
+        assertEquals(expectedFormat, actualFormat);
+        // Test indented format
+        expectedFormat = "'my-label'#{'0-feat': 0}";
+        actualFormat = LangFormatter.SINGLETON.format(recExpr);
+        assertEquals(expectedFormat, actualFormat);
+    }
+
+    @Test
     public void testFeatures2() {
         Str zeroFeat = Str.of("0-feat");
         Str oneFeat = Str.of("1-feat");
@@ -75,7 +102,7 @@ public class TestParserRecExpr {
         //                            012345678901234567890123456
         Parser p = new Parser("{'0-feat': 0, '1-feat': 1}");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof RecExpr);
+        assertInstanceOf(RecExpr.class, sox);
         RecExpr recExpr = (RecExpr) sox;
         assertSourceSpan(recExpr, 0, 26);
         assertNull(recExpr.label());
@@ -100,33 +127,6 @@ public class TestParserRecExpr {
     }
 
     @Test
-    public void testFeatures1WithLabel() {
-        Str zeroFeat = Str.of("0-feat");
-        //                                      1         2
-        //                            0123456789012345678901234
-        Parser p = new Parser("'my-label'#{'0-feat': 0}");
-        SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof RecExpr);
-        RecExpr recExpr = (RecExpr) sox;
-        assertSourceSpan(recExpr, 0, 24);
-        assertEquals(Str.of("my-label"), asStrAsExpr(recExpr.label()).str);
-        // Test features
-        assertEquals(1, recExpr.fields().size());
-        FieldExpr fieldExpr = recExpr.fields().get(0);
-        assertSourceSpan(fieldExpr, 12, 23);
-        assertEquals(zeroFeat, asStrAsExpr(fieldExpr.feature).str);
-        assertEquals(Int32.I32_0, asIntAsExpr(fieldExpr.value).int64());
-        // Test toString format
-        String expectedFormat = "'my-label'#{'0-feat': 0}";
-        String actualFormat = recExpr.toString();
-        assertEquals(expectedFormat, actualFormat);
-        // Test indented format
-        expectedFormat = "'my-label'#{'0-feat': 0}";
-        actualFormat = LangFormatter.SINGLETON.format(recExpr);
-        assertEquals(expectedFormat, actualFormat);
-    }
-
-    @Test
     public void testStaticComplete() {
 
         // ValueAsExpr
@@ -134,7 +134,7 @@ public class TestParserRecExpr {
         SntcOrExpr sox = p.parse();
         IntAsExpr intAsExpr = CommonTools.asIntAsExpr(sox);
         Complete complete = RecExpr.checkComplete(intAsExpr);
-        assertTrue(complete instanceof Int32);
+        assertInstanceOf(Int32.class, complete);
 
         // An identifier that is an unknown value
         p = new Parser("a");
@@ -147,7 +147,7 @@ public class TestParserRecExpr {
         sox = p.parse();
         RecExpr recExpr = (RecExpr) sox;
         complete = RecExpr.checkComplete(recExpr);
-        assertTrue(complete instanceof CompleteRec);
+        assertInstanceOf(CompleteRec.class, complete);
 
         // RecExpr with label identifier
         p = new Parser("x#{'0-feat': 0}");
@@ -175,7 +175,7 @@ public class TestParserRecExpr {
         sox = p.parse();
         TupleExpr tupleExpr = (TupleExpr) sox;
         complete = RecExpr.checkComplete(tupleExpr);
-        assertTrue(complete instanceof CompleteTuple);
+        assertInstanceOf(CompleteTuple.class, complete);
 
         // TupleExpr with label identifier
         p = new Parser("x#[0]");

@@ -9,7 +9,7 @@ package org.torqlang.core.klvm;
 
 import java.util.List;
 
-public final class ValueIterMod {
+public final class ValueIterPack {
 
     public static final Ident VALUE_ITER_IDENT = Ident.create("ValueIter");
     public static final CompleteObj VALUE_ITER_CLS = ValueIterCls.SINGLETON;
@@ -31,7 +31,7 @@ public final class ValueIterMod {
 
     static final class ValueIterCls implements CompleteObj {
         private static final ValueIterCls SINGLETON = new ValueIterCls();
-        private static final CompleteProc VALUE_ITER_CLS_NEW = ValueIterMod::clsNew;
+        private static final CompleteProc VALUE_ITER_CLS_NEW = ValueIterPack::clsNew;
 
         private ValueIterCls() {
         }

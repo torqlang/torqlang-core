@@ -7,12 +7,12 @@
 
 package org.torqlang.core.klvm;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestStr {
 
@@ -163,7 +163,7 @@ public class TestStr {
     public void testSelect() {
         Value value = THREE.select(Str.of("substring"));
         assertNotNull(value);
-        assertTrue(value instanceof ObjProcBinding<?>);
+        assertInstanceOf(ObjProcBinding.class, value);
     }
 
     @Test

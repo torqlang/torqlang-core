@@ -7,12 +7,14 @@
 
 package org.torqlang.core.local;
 
-import org.torqlang.core.actor.Envelope;
-
 /**
  * A simple and minimal interface to the concept of a Mailbox.
  */
 public interface Mailbox {
+
+    static Mailbox createDefault() {
+        return new LinkedListMailbox(EnvelopeComparator.SINGLETON);
+    }
 
     void add(Envelope envelope);
 

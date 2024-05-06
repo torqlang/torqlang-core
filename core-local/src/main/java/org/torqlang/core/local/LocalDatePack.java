@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
-final class LocalDateMod {
+final class LocalDatePack {
     public static final Ident LOCAL_DATE_IDENT = Ident.create("LocalDate");
     public static final CompleteObj LOCAL_DATE_CLS = LocalDateCls.SINGLETON;
 
@@ -33,7 +33,7 @@ final class LocalDateMod {
 
     static class LocalDateCls implements CompleteObj {
         private static final LocalDateCls SINGLETON = new LocalDateCls();
-        private static final CompleteProc LOCAL_DATE_CLS_NEW = LocalDateMod::clsNew;
+        private static final CompleteProc LOCAL_DATE_CLS_NEW = LocalDatePack::clsNew;
 
         private LocalDateCls() {
         }

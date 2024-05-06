@@ -7,8 +7,6 @@
 
 package org.torqlang.core.local;
 
-import org.torqlang.core.actor.Address;
-
 final class LocalAddress implements Address {
 
     private static final String NAMESPACE = "local";

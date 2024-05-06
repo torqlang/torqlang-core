@@ -7,6 +7,8 @@
 
 package org.torqlang.core.local;
 
+import org.torqlang.core.util.BinarySearchTools;
+
 final class StaticApiRouter implements ApiRouter {
 
     private final ApiRoute[] routingTable;
@@ -16,21 +18,7 @@ final class StaticApiRouter implements ApiRouter {
     }
 
     private int binarySearchRoutes(ApiPath path) {
-        int low = 0;
-        int high = routingTable.length - 1;
-        while (low <= high) {
-            int mid = low + (high - low) / 2;
-            ApiRoute route = routingTable[mid];
-            int compare = path.compareTo(route.apiPath);
-            if (compare > 0) {
-                low = mid + 1;
-            } else if (compare < 0) {
-                high = mid - 1;
-            } else {
-                return mid;
-            }
-        }
-        return -(low + 1);
+        return BinarySearchTools.search(routingTable, (r) -> path.compareTo(r.apiPath));
     }
 
     @Override

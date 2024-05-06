@@ -7,14 +7,14 @@
 
 package org.torqlang.core.local;
 
-import org.junit.Test;
-import org.torqlang.core.actor.ActorRef;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.*;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.*;
-import static org.torqlang.core.local.ActorSystem.createAddress;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.torqlang.core.local.Address.createAddress;
 
 public class TestAskCompleteClosure {
 
@@ -189,9 +189,9 @@ public class TestAskCompleteClosure {
             .setAddress(createAddress("CompleteClosureClient"))
             .send(actorRef, Str.of("perform"))
             .awaitResponse(100, TimeUnit.MILLISECONDS);
-        assertTrue(response instanceof FailedValue);
+        assertInstanceOf(FailedValue.class, response);
         FailedValue failedValue = (FailedValue) response;
-        assertTrue(failedValue.nativeCause() instanceof CannotCompleteError);
+        assertInstanceOf(CannotCompleteError.class, failedValue.nativeCause());
     }
 
 }

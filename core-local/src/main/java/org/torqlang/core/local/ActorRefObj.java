@@ -7,13 +7,12 @@
 
 package org.torqlang.core.local;
 
-import org.torqlang.core.actor.ActorRef;
 import org.torqlang.core.klvm.*;
 
 import java.util.List;
 
-import static org.torqlang.core.local.ActorSystem.createNotify;
-import static org.torqlang.core.local.ActorSystem.createRequest;
+import static org.torqlang.core.local.Envelope.createNotify;
+import static org.torqlang.core.local.Envelope.createRequest;
 
 final class ActorRefObj implements CompleteObj {
 

@@ -7,13 +7,13 @@
 
 package org.torqlang.core.local;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.*;
 import org.torqlang.core.lang.Evaluator;
 import org.torqlang.core.lang.EvaluatorPerformed;
-import org.torqlang.core.local.HashMapMod.HashMapObj;
+import org.torqlang.core.local.HashMapPack.HashMapObj;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.torqlang.core.local.CommonTools.stripCircularSpecifics;
 
 public class TestEvalHashMaps {
@@ -27,7 +27,7 @@ public class TestEvalHashMaps {
                 y = ['one', 'two']
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(HashMapMod.HASH_MAP_IDENT, new Var(HashMapMod.HASH_MAP_CLS))
+            .addVar(HashMapPack.HASH_MAP_IDENT, new Var(HashMapPack.HASH_MAP_CLS))
             .addVar(Ident.create("x"))
             .addVar(Ident.create("y"))
             .setSource(source)
@@ -41,9 +41,9 @@ public class TestEvalHashMaps {
             end
             $bind(['one', 'two'], y)""";
         assertEquals(expected, e.kernel().toString());
-        assertTrue(e.varAtName("x").valueOrVarSet() instanceof HashMapObj);
+        assertInstanceOf(HashMapObj.class, e.varAtName("x").valueOrVarSet());
         HashMapObj x = (HashMapObj) e.varAtName("x").valueOrVarSet();
-        assertTrue(e.varAtName("y").valueOrVarSet() instanceof Rec);
+        assertInstanceOf(Rec.class, e.varAtName("y").valueOrVarSet());
         CompleteRec y = (CompleteRec) e.varAtName("y").valueOrVarSet();
         assertEquals(Str.of("My key is a record!"), x.state().get(y));
     }
@@ -58,7 +58,7 @@ public class TestEvalHashMaps {
                 x.put(a, 'My key is circular!')
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(HashMapMod.HASH_MAP_IDENT, new Var(HashMapMod.HASH_MAP_CLS))
+            .addVar(HashMapPack.HASH_MAP_IDENT, new Var(HashMapPack.HASH_MAP_CLS))
             .addVar(Ident.create("x"))
             .addVar(Ident.create("a"))
             .addVar(Ident.create("b"))
@@ -71,12 +71,12 @@ public class TestEvalHashMaps {
             $select_apply(HashMap, ['new'], x)
             $select_apply(x, ['put'], a, 'My key is circular!')""";
         assertEquals(expected, e.kernel().toString());
-        assertTrue(e.varAtName("x").valueOrVarSet() instanceof HashMapObj);
+        assertInstanceOf(HashMapObj.class, e.varAtName("x").valueOrVarSet());
         HashMapObj x = (HashMapObj) e.varAtName("x").valueOrVarSet();
         CompleteRec completeRec = (CompleteRec) x.state().keySet().iterator().next();
-        assertTrue(e.varAtName("a").valueOrVarSet() instanceof Rec);
+        assertInstanceOf(Rec.class, e.varAtName("a").valueOrVarSet());
         Rec a = (Rec) e.varAtName("a").valueOrVarSet();
-        assertTrue(e.varAtName("b").valueOrVarSet() instanceof Rec);
+        assertInstanceOf(Rec.class, e.varAtName("b").valueOrVarSet());
         Rec b = (Rec) e.varAtName("b").valueOrVarSet();
         // This test contains two partial records that reference each other, `a` and `b`.
         // Record `a` was used as a key, which caused it to be converted to a complete record.
@@ -102,8 +102,8 @@ public class TestEvalHashMaps {
                 z = value_iter()
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(HashMapMod.HASH_MAP_IDENT, new Var(HashMapMod.HASH_MAP_CLS))
-            .addVar(ValueIterMod.VALUE_ITER_IDENT, new Var(ValueIterMod.VALUE_ITER_CLS))
+            .addVar(HashMapPack.HASH_MAP_IDENT, new Var(HashMapPack.HASH_MAP_CLS))
+            .addVar(ValueIterPack.VALUE_ITER_IDENT, new Var(ValueIterPack.VALUE_ITER_CLS))
             .addVar(Ident.create("x"))
             .addVar(Ident.create("y"))
             .addVar(Ident.create("z"))

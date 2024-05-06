@@ -7,15 +7,11 @@
 
 package org.torqlang.examples;
 
-import org.torqlang.core.actor.ActorRef;
 import org.torqlang.core.klvm.CompleteRec;
 import org.torqlang.core.klvm.Int32;
 import org.torqlang.core.klvm.Rec;
 import org.torqlang.core.klvm.Str;
-import org.torqlang.core.local.Actor;
-import org.torqlang.core.local.AsyncMethod;
-import org.torqlang.core.local.ModuleSystem;
-import org.torqlang.core.local.RequestClient;
+import org.torqlang.core.local.*;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -57,12 +53,19 @@ public final class AsyncLoadStrings extends AbstractExample {
         CompleteRec moduleRec = Rec.completeRecBuilder()
             .addField(Str.of("load_strings"), new AsyncMethod(methodHandle))
             .build();
-        ModuleSystem.register("examples.Procs", () -> moduleRec);
 
-        ActorRef actorRef = Actor.builder().spawn(SOURCE).actorRef();
+        ActorSystem system = ActorSystem.builder()
+            .addDefaultModules()
+            .addModule("examples.Procs", moduleRec)
+            .build();
+
+        ActorRef actorRef = Actor.builder()
+            .setSystem(system)
+            .spawn(SOURCE).actorRef();
 
         Object response = RequestClient.builder()
             .sendAndAwaitResponse(actorRef, Str.of("details"), 100, TimeUnit.MILLISECONDS);
+
         CompleteRec expectedResponse = Rec.completeRecBuilder()
             .addField(Str.of("count"), Int32.of(6))
             .addField(Str.of("first"), Str.of("one"))

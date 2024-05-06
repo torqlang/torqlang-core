@@ -9,7 +9,7 @@ package org.torqlang.core.klvm;
 
 import java.util.List;
 
-public final class CellMod {
+public final class CellPack {
 
     public static final Ident CELL_IDENT = Ident.create("Cell");
     public static final CompleteObj CELL_CLS = CellCls.SINGLETON;
@@ -30,7 +30,7 @@ public final class CellMod {
 
     static class CellCls implements CompleteObj {
         private static final CellCls SINGLETON = new CellCls();
-        private static final CompleteProc CELL_CLS_NEW = CellMod::clsNew;
+        private static final CompleteProc CELL_CLS_NEW = CellPack::clsNew;
 
         private CellCls() {
         }

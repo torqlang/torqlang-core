@@ -7,11 +7,11 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Ident;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.torqlang.core.lang.CommonTools.asIdentAsExpr;
 import static org.torqlang.core.lang.CommonTools.assertSourceSpan;
 
@@ -22,7 +22,7 @@ public class TestParserSelectApplyExpr {
         //                            01234
         Parser p = new Parser("a(b)");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof ApplyLang);
+        assertInstanceOf(ApplyLang.class, sox);
         ApplyLang applyLang = (ApplyLang) sox;
         assertSourceSpan(applyLang, 0, 4);
         // Test properties
@@ -44,11 +44,11 @@ public class TestParserSelectApplyExpr {
         //                            01234567
         Parser p = new Parser("a(b)(c)");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof ApplyLang);
+        assertInstanceOf(ApplyLang.class, sox);
         ApplyLang applyLang = (ApplyLang) sox;
         assertSourceSpan(applyLang, 0, 7);
         // Test properties
-        assertTrue(applyLang.proc instanceof ApplyLang);
+        assertInstanceOf(ApplyLang.class, applyLang.proc);
         assertSourceSpan(applyLang.proc, 0, 4);
         assertEquals(1, applyLang.args.size());
         assertEquals(Ident.create("c"), asIdentAsExpr(applyLang.args.get(0)).ident);
@@ -75,11 +75,11 @@ public class TestParserSelectApplyExpr {
         //                            01234567
         Parser p = new Parser("a(b)[c]");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof IndexSelectExpr);
+        assertInstanceOf(IndexSelectExpr.class, sox);
         IndexSelectExpr indexSelectExpr = (IndexSelectExpr) sox;
         assertSourceSpan(indexSelectExpr, 0, 7);
         // Test properties
-        assertTrue(indexSelectExpr.recExpr instanceof ApplyLang);
+        assertInstanceOf(ApplyLang.class, indexSelectExpr.recExpr);
         ApplyLang leftApplyLang = (ApplyLang) indexSelectExpr.recExpr;
         assertSourceSpan(leftApplyLang, 0, 4);
         assertEquals(Ident.create("a"), asIdentAsExpr(leftApplyLang.proc).ident);
@@ -103,7 +103,7 @@ public class TestParserSelectApplyExpr {
         //                            0123
         Parser p = new Parser("a.b");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof DotSelectExpr);
+        assertInstanceOf(DotSelectExpr.class, sox);
         DotSelectExpr dotSelectExpr = (DotSelectExpr) sox;
         assertSourceSpan(dotSelectExpr, 0, 3);
         // Test properties
@@ -126,11 +126,11 @@ public class TestParserSelectApplyExpr {
         //                            0123456
         Parser p = new Parser("a.b(c)");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof SelectAndApplyLang);
+        assertInstanceOf(SelectAndApplyLang.class, sox);
         SelectAndApplyLang selectAndApplyLang = (SelectAndApplyLang) sox;
         assertSourceSpan(selectAndApplyLang, 0, 6);
         // Test properties
-        assertTrue(selectAndApplyLang.selectExpr instanceof DotSelectExpr);
+        assertInstanceOf(DotSelectExpr.class, selectAndApplyLang.selectExpr);
         assertEquals(1, selectAndApplyLang.args.size());
         assertEquals(Ident.create("c"), asIdentAsExpr(selectAndApplyLang.args.get(0)).ident);
         DotSelectExpr leftDotSelectExpr = (DotSelectExpr) selectAndApplyLang.selectExpr;
@@ -154,11 +154,11 @@ public class TestParserSelectApplyExpr {
         //                            012345
         Parser p = new Parser("a.b.c");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof DotSelectExpr);
+        assertInstanceOf(DotSelectExpr.class, sox);
         DotSelectExpr dotSelectExpr = (DotSelectExpr) sox;
         assertSourceSpan(dotSelectExpr, 0, 5);
         // Test properties (select is left associative)
-        assertTrue(dotSelectExpr.recExpr instanceof DotSelectExpr);
+        assertInstanceOf(DotSelectExpr.class, dotSelectExpr.recExpr);
         DotSelectExpr leftDotSelectExpr = (DotSelectExpr) dotSelectExpr.recExpr;
         assertSourceSpan(leftDotSelectExpr, 0, 3);
         assertEquals(Ident.create("a"), asIdentAsExpr(leftDotSelectExpr.recExpr).ident);
@@ -182,11 +182,11 @@ public class TestParserSelectApplyExpr {
         //                            0123456
         Parser p = new Parser("a.b[c]");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof IndexSelectExpr);
+        assertInstanceOf(IndexSelectExpr.class, sox);
         IndexSelectExpr indexSelectExpr = (IndexSelectExpr) sox;
         assertSourceSpan(indexSelectExpr, 0, 6);
         // Test properties (select is left associative)
-        assertTrue(indexSelectExpr.recExpr instanceof DotSelectExpr);
+        assertInstanceOf(DotSelectExpr.class, indexSelectExpr.recExpr);
         DotSelectExpr leftDotSelectExpr = (DotSelectExpr) indexSelectExpr.recExpr;
         assertSourceSpan(leftDotSelectExpr, 0, 3);
         assertEquals(Ident.create("a"), asIdentAsExpr(leftDotSelectExpr.recExpr).ident);
@@ -210,7 +210,7 @@ public class TestParserSelectApplyExpr {
         //                            01234
         Parser p = new Parser("a[b]");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof IndexSelectExpr);
+        assertInstanceOf(IndexSelectExpr.class, sox);
         IndexSelectExpr indexSelectExpr = (IndexSelectExpr) sox;
         assertSourceSpan(indexSelectExpr, 0, 4);
         // Test properties
@@ -233,11 +233,11 @@ public class TestParserSelectApplyExpr {
         //                            01234567
         Parser p = new Parser("a[b](c)");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof SelectAndApplyLang);
+        assertInstanceOf(SelectAndApplyLang.class, sox);
         SelectAndApplyLang selectAndApplyLang = (SelectAndApplyLang) sox;
         assertSourceSpan(selectAndApplyLang, 0, 7);
         // Test properties
-        assertTrue(selectAndApplyLang.selectExpr instanceof IndexSelectExpr);
+        assertInstanceOf(IndexSelectExpr.class, selectAndApplyLang.selectExpr);
         assertEquals(1, selectAndApplyLang.args.size());
         assertEquals(Ident.create("c"), asIdentAsExpr(selectAndApplyLang.args.get(0)).ident);
         assertSourceSpan(selectAndApplyLang.args.get(0), 5, 6);
@@ -262,11 +262,11 @@ public class TestParserSelectApplyExpr {
         //                            0123456
         Parser p = new Parser("a[b].c");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof DotSelectExpr);
+        assertInstanceOf(DotSelectExpr.class, sox);
         DotSelectExpr dotSelectExpr = (DotSelectExpr) sox;
         assertSourceSpan(dotSelectExpr, 0, 6);
         // Test properties (select is left associative)
-        assertTrue(dotSelectExpr.recExpr instanceof IndexSelectExpr);
+        assertInstanceOf(IndexSelectExpr.class, dotSelectExpr.recExpr);
         IndexSelectExpr leftIndexSelectExpr = (IndexSelectExpr) dotSelectExpr.recExpr;
         assertSourceSpan(leftIndexSelectExpr, 0, 4);
         assertEquals(Ident.create("a"), asIdentAsExpr(leftIndexSelectExpr.recExpr).ident);
@@ -290,11 +290,11 @@ public class TestParserSelectApplyExpr {
         //                            01234567
         Parser p = new Parser("a[b][c]");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof IndexSelectExpr);
+        assertInstanceOf(IndexSelectExpr.class, sox);
         IndexSelectExpr indexSelectExpr = (IndexSelectExpr) sox;
         assertSourceSpan(indexSelectExpr, 0, 7);
         // Test properties (select is left associative)
-        assertTrue(indexSelectExpr.recExpr instanceof IndexSelectExpr);
+        assertInstanceOf(IndexSelectExpr.class, indexSelectExpr.recExpr);
         IndexSelectExpr leftIndexSelectExpr = (IndexSelectExpr) indexSelectExpr.recExpr;
         assertSourceSpan(leftIndexSelectExpr, 0, 4);
         assertEquals(Ident.create("a"), asIdentAsExpr(leftIndexSelectExpr.recExpr).ident);

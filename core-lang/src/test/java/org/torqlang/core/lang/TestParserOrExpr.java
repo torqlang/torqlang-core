@@ -7,11 +7,10 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Ident;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.torqlang.core.lang.CommonTools.asIdentAsExpr;
 import static org.torqlang.core.lang.CommonTools.assertSourceSpan;
 
@@ -22,11 +21,11 @@ public class TestParserOrExpr {
         //                            0123456
         Parser p = new Parser("a || b");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof OrExpr);
+        assertInstanceOf(OrExpr.class, sox);
         OrExpr orExpr = (OrExpr) sox;
         assertSourceSpan(sox, 0, 6);
         assertEquals("a || b", orExpr.toString());
-        assertTrue(orExpr.arg1 instanceof IdentAsExpr);
+        assertInstanceOf(IdentAsExpr.class, orExpr.arg1);
         assertEquals(Ident.create("a"), asIdentAsExpr(orExpr.arg1).ident);
         assertSourceSpan(orExpr.arg1, 0, 1);
         assertEquals(Ident.create("b"), asIdentAsExpr(orExpr.arg2).ident);

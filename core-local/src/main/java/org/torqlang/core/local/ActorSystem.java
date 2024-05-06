@@ -7,69 +7,39 @@
 
 package org.torqlang.core.local;
 
-import org.torqlang.core.actor.ActorRef;
-import org.torqlang.core.actor.Address;
-import org.torqlang.core.actor.Envelope;
+import org.torqlang.core.klvm.CompleteRec;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
-public final class ActorSystem {
+public interface ActorSystem {
 
-    private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
-    private static final ExecutorService COMPUTATION_EXECUTOR = Executors.newFixedThreadPool(Math.max(4, AVAILABLE_PROCESSORS));
+    /*
+     * TODO:
+     *     An actor system should be accessible from Torqlang source, enabling discovery and invocation
+     *     of other actors and APIs.
+     *     -- Support "import system.Directory.lookup"
+     *     -- Add global actors to actor system
+     */
 
-    public static Executor computationExecutor() {
-        return COMPUTATION_EXECUTOR;
+    static ActorSystemBuilder builder() {
+        return new ActorSystemBuilder();
     }
 
-    public static Address createAddress(String path) {
-        return LocalAddress.create(path);
+    static Executor defaultExecutor() {
+        return ActorSystemDefaults.DEFAULT_EXECUTOR;
     }
 
-    static LocalAddress createAddress(Address parentAddress, String path) {
-        return LocalAddress.create((LocalAddress) parentAddress, path);
+    static ActorSystem defaultSystem() {
+        return ActorSystemDefaults.DEFAULT_SYSTEM;
     }
 
-    public static Envelope createControlNotify(Object message) {
-        return new LocalEnvelope(true, message, null, null);
-    }
+    Logger createLogger();
 
-    public static Envelope createControlRequest(Object message, ActorRef requester, Object requestId) {
-        return new LocalEnvelope(true, message, requester, requestId);
-    }
+    Mailbox createMailbox();
 
-    public static Envelope createControlResponse(Object message, Object requestId) {
-        return new LocalEnvelope(true, message, null, requestId);
-    }
+    Executor executor();
 
-    public static Logger createLogger() {
-        return ConsoleLogger.SINGLETON;
-    }
+    CompleteRec moduleAt(String path);
 
-    public static LinkedListMailbox createMailbox() {
-        return new LinkedListMailbox(EnvelopeComparator.SINGLETON);
-    }
-
-    public static Envelope createNotify(Object message) {
-        return new LocalEnvelope(false, message, null, null);
-    }
-
-    public static Envelope createRequest(Object message, ActorRef requester, Object requestId) {
-        return new LocalEnvelope(false, message, requester, requestId);
-    }
-
-    public static Envelope createResponse(Object message, Object requestId) {
-        return new LocalEnvelope(false, message, null, requestId);
-    }
-
-    public static void shutdownAndAwait(long millis) throws InterruptedException {
-        COMPUTATION_EXECUTOR.shutdown();
-        if (!COMPUTATION_EXECUTOR.awaitTermination(millis, TimeUnit.MILLISECONDS)) {
-            throw new IllegalStateException("Time expired awaiting termination");
-        }
-    }
-
+    String name();
 }

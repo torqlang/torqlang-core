@@ -7,12 +7,9 @@
 
 package org.torqlang.examples;
 
-import org.torqlang.core.actor.ActorRef;
 import org.torqlang.core.klvm.*;
 import org.torqlang.core.lang.ValueTools;
-import org.torqlang.core.local.Actor;
-import org.torqlang.core.local.ModuleSystem;
-import org.torqlang.core.local.RequestClient;
+import org.torqlang.core.local.*;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -58,9 +55,14 @@ public final class MergeIntStreams extends AbstractExample {
     @Override
     public final void perform() throws Exception {
 
-        ModuleSystem.register("examples", ExamplesMod::moduleRec);
+        ActorSystem system = ActorSystem.builder()
+            .addDefaultModules()
+            .addModule("examples", ExamplesMod.moduleRec())
+            .build();
 
-        ActorRef actorRef = Actor.builder().spawn(SOURCE).actorRef();
+        ActorRef actorRef = Actor.builder()
+            .setSystem(system)
+            .spawn(SOURCE).actorRef();
 
         Object response = RequestClient.builder()
             .sendAndAwaitResponse(actorRef, Str.of("merge"), 100, TimeUnit.MILLISECONDS);

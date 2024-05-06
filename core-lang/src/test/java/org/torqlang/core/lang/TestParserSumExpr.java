@@ -7,11 +7,11 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Int32;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.torqlang.core.lang.CommonTools.*;
 
 public class TestParserSumExpr {
@@ -21,11 +21,11 @@ public class TestParserSumExpr {
         //                            012345
         Parser p = new Parser("3 + 5");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof SumExpr);
+        assertInstanceOf(SumExpr.class, sox);
         SumExpr sumExpr = (SumExpr) sox;
         assertSourceSpan(sumExpr, 0, 5);
         assertEquals("3 + 5", sumExpr.toString());
-        assertTrue(sumExpr.arg1 instanceof IntAsExpr);
+        assertInstanceOf(IntAsExpr.class, sumExpr.arg1);
         assertEquals(Int32.I32_3, asIntAsExpr(sumExpr.arg1).int64());
         assertSourceSpan(asIntAsExpr(sumExpr.arg1), 0, 1);
         assertEquals(SumOper.ADD, sumExpr.oper);
@@ -38,11 +38,11 @@ public class TestParserSumExpr {
         //                            0123456
         Parser p = new Parser("3 + -5");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof SumExpr);
+        assertInstanceOf(SumExpr.class, sox);
         SumExpr sumExpr = (SumExpr) sox;
         assertSourceSpan(sumExpr, 0, 6);
         assertEquals("3 + -5", sumExpr.toString());
-        assertTrue(sumExpr.arg1 instanceof IntAsExpr);
+        assertInstanceOf(IntAsExpr.class, sumExpr.arg1);
         assertEquals(Int32.I32_3, asIntAsExpr(sumExpr.arg1).int64());
         assertSourceSpan(asIntAsExpr(sumExpr.arg1), 0, 1);
         assertEquals(SumOper.ADD, sumExpr.oper);

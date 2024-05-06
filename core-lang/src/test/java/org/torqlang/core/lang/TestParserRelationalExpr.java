@@ -7,11 +7,10 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Int32;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.torqlang.core.lang.CommonTools.asIntAsExpr;
 
 public class TestParserRelationalExpr {
@@ -21,11 +20,11 @@ public class TestParserRelationalExpr {
         //                            012345
         Parser p = new Parser("3 < 5");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof RelationalExpr);
+        assertInstanceOf(RelationalExpr.class, sox);
         RelationalExpr relExpr = (RelationalExpr) sox;
         CommonTools.assertSourceSpan(relExpr, 0, 5);
         assertEquals("3 < 5", relExpr.toString());
-        assertTrue(relExpr.arg1 instanceof IntAsExpr);
+        assertInstanceOf(IntAsExpr.class, relExpr.arg1);
         assertEquals(Int32.I32_3, asIntAsExpr(relExpr.arg1).int64());
         CommonTools.assertSourceSpan(asIntAsExpr(relExpr.arg1), 0, 1);
         assertEquals(RelationalOper.LESS_THAN, relExpr.oper);

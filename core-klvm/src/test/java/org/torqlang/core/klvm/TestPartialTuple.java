@@ -7,12 +7,12 @@
 
 package org.torqlang.core.klvm;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestPartialTuple {
 
@@ -144,7 +144,7 @@ public class TestPartialTuple {
         }
         aVar.bindToValue(a, null);
         Complete c = t.checkComplete();
-        assertTrue(c instanceof CompleteTuple);
+        assertInstanceOf(CompleteTuple.class, c);
         CompleteTuple ct = (CompleteTuple) c;
         assertEquals(a, ct.select(Int32.I32_0));
     }
@@ -182,7 +182,7 @@ public class TestPartialTuple {
         }
         bVar.bindToValue(b, null);
         Complete c = t.checkComplete();
-        assertTrue(c instanceof CompleteTuple);
+        assertInstanceOf(CompleteTuple.class, c);
         CompleteTuple ct = (CompleteTuple) c;
         assertEquals(a, ct.select(Int32.I32_0));
         assertEquals(b, ct.select(Int32.I32_1));

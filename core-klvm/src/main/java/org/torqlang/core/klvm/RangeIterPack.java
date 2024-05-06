@@ -9,7 +9,7 @@ package org.torqlang.core.klvm;
 
 import java.util.List;
 
-public final class RangeIterMod {
+public final class RangeIterPack {
 
     public static final Ident RANGE_ITER_IDENT = Ident.create("RangeIter");
     public static final CompleteObj RANGE_ITER_CLS = RangeIterCls.SINGLETON;
@@ -19,7 +19,7 @@ public final class RangeIterMod {
         if (ys.size() != expectedArgCount) {
             throw new InvalidArgCountError(expectedArgCount, ys, "RangeIter.new");
         }
-        // NOTE: RangeIter is not suspendable. Therefore, its arguments must be bound before we construct it.
+        // RangeIter is not suspendable. Therefore, its arguments must be bound before we construct it.
         Int64 fromInt = (Int64) ys.get(0).resolveValue(env);
         Int64 toInt = (Int64) ys.get(1).resolveValue(env);
         RangeIter rangeIter = new RangeIter(fromInt, toInt);
@@ -29,7 +29,7 @@ public final class RangeIterMod {
 
     static final class RangeIterCls implements CompleteObj {
         private static final RangeIterCls SINGLETON = new RangeIterCls();
-        private static final CompleteProc RANGE_ITER_CLS_NEW = RangeIterMod::clsNew;
+        private static final CompleteProc RANGE_ITER_CLS_NEW = RangeIterPack::clsNew;
 
         private RangeIterCls() {
         }

@@ -5,7 +5,7 @@
  * If not, see <http://torqlang.github.io/licensing/torqlang-license-v1_0>.
  */
 
-package org.torqlang.core.actor;
+package org.torqlang.core.local;
 
-public interface Address {
+final class StringBuilderPack {
 }

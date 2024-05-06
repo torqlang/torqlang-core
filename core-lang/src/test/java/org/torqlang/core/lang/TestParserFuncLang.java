@@ -7,12 +7,12 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Ident;
 import org.torqlang.core.klvm.Int32;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.torqlang.core.lang.CommonTools.*;
 
 public class TestParserFuncLang {
@@ -23,7 +23,7 @@ public class TestParserFuncLang {
         //                            01234567890123456
         Parser p = new Parser("func () in 0 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof FuncExpr);
+        assertInstanceOf(FuncExpr.class, sox);
         FuncExpr funcExpr = (FuncExpr) sox;
         assertSourceSpan(funcExpr, 0, 16);
         assertSourceSpan(funcExpr.body, 11, 12);
@@ -45,7 +45,7 @@ public class TestParserFuncLang {
         //                            012345678901234567
         Parser p = new Parser("func (a) in 0 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof FuncExpr);
+        assertInstanceOf(FuncExpr.class, sox);
         FuncExpr funcExpr = (FuncExpr) sox;
         assertSourceSpan(funcExpr, 0, 17);
         assertSourceSpan(funcExpr.body, 12, 13);
@@ -68,7 +68,7 @@ public class TestParserFuncLang {
         //                            012345678901234567890
         Parser p = new Parser("func (a, b) in 0 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof FuncExpr);
+        assertInstanceOf(FuncExpr.class, sox);
         FuncExpr funcExpr = (FuncExpr) sox;
         assertSourceSpan(funcExpr, 0, 20);
         assertSourceSpan(funcExpr.body, 15, 16);
@@ -92,7 +92,7 @@ public class TestParserFuncLang {
         //                            01234567890123456789012
         Parser p = new Parser("func MyFunc() in 0 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof FuncSntc);
+        assertInstanceOf(FuncSntc.class, sox);
         FuncSntc funcSntc = (FuncSntc) sox;
         assertSourceSpan(funcSntc, 0, 22);
         assertEquals(Ident.create("MyFunc"), funcSntc.name());
@@ -115,7 +115,7 @@ public class TestParserFuncLang {
         //                            012345678901234567890123
         Parser p = new Parser("func MyFunc(a) in 0 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof FuncSntc);
+        assertInstanceOf(FuncSntc.class, sox);
         FuncSntc funcSntc = (FuncSntc) sox;
         assertSourceSpan(funcSntc, 0, 23);
         assertEquals(Ident.create("MyFunc"), funcSntc.name());
@@ -139,7 +139,7 @@ public class TestParserFuncLang {
         //                            012345678901234567890123456
         Parser p = new Parser("func MyFunc(a, b) in 0 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof FuncSntc);
+        assertInstanceOf(FuncSntc.class, sox);
         FuncSntc funcSntc = (FuncSntc) sox;
         assertSourceSpan(funcSntc, 0, 26);
         assertEquals(Ident.create("MyFunc"), funcSntc.name());
@@ -164,7 +164,7 @@ public class TestParserFuncLang {
         //                            012345678901234567890123456789012345
         Parser p = new Parser("func MyFunc(a, b) -> Int32 in 0 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof FuncSntc);
+        assertInstanceOf(FuncSntc.class, sox);
         FuncSntc funcSntc = (FuncSntc) sox;
         assertSourceSpan(funcSntc, 0, 35);
         assertEquals(Ident.create("MyFunc"), funcSntc.name());

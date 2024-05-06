@@ -7,11 +7,12 @@
 
 package org.torqlang.core.klvm;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestCompleteRecBuilder {
 
@@ -60,23 +61,23 @@ public class TestCompleteRecBuilder {
 
         r = Rec.completeRecBuilder().build();
         assertTrue(CompleteRec.create(List.of()).entails(r, null));
-        assertTrue(r instanceof CompleteTuple);
+        assertInstanceOf(CompleteTuple.class, r);
 
         r = Rec.completeRecBuilder().addField(Int32.I32_0, a).build();
         assertTrue(CompleteRec.create(List.of(new CompleteField(Int32.I32_0, a))).entails(r, null));
-        assertTrue(r instanceof CompleteTuple);
+        assertInstanceOf(CompleteTuple.class, r);
 
         r = Rec.completeRecBuilder().setLabel(testLabel).addField(Int32.I32_0, a).build();
         assertTrue(CompleteRec.create(testLabel, List.of(new CompleteField(Int32.I32_0, a))).entails(r, null));
-        assertTrue(r instanceof CompleteTuple);
+        assertInstanceOf(CompleteTuple.class, r);
 
         r = Rec.completeRecBuilder().addField(Int32.I32_0, a).addField(Int32.I32_1, b).build();
         assertTrue(CompleteRec.create(List.of(new CompleteField(Int32.I32_0, a), new CompleteField(Int32.I32_1, b))).entails(r, null));
-        assertTrue(r instanceof CompleteTuple);
+        assertInstanceOf(CompleteTuple.class, r);
 
         r = Rec.completeRecBuilder().setLabel(testLabel).addField(Int32.I32_0, a).addField(Int32.I32_1, b).build();
         assertTrue(CompleteRec.create(testLabel, List.of(new CompleteField(Int32.I32_0, a), new CompleteField(Int32.I32_1, b))).entails(r, null));
-        assertTrue(r instanceof CompleteTuple);
+        assertInstanceOf(CompleteTuple.class, r);
     }
 
     @Test

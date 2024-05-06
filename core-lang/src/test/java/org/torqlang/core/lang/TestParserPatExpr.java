@@ -7,10 +7,10 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.torqlang.core.lang.CommonTools.*;
 
 public class TestParserPatExpr {
@@ -21,7 +21,7 @@ public class TestParserPatExpr {
         //                            012345678901234567890123456789012345678901234567890123456789012345678901234567
         Parser p = new Parser("case z of [a, 1, 1L, false, true, nothing, eof, 'x'] then true else false end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof CaseLang);
+        assertInstanceOf(CaseLang.class, sox);
         CaseLang caseLang = (CaseLang) sox;
         assertSourceSpan(caseLang, 0, 77);
         assertSourceSpan(caseLang.caseClause, 7, 62);
@@ -36,7 +36,7 @@ public class TestParserPatExpr {
         String actualFormat = caseLang.toString();
         assertEquals(expectedFormat, actualFormat);
         // Test tuple properties
-        assertTrue(caseLang.caseClause.pat instanceof TuplePat);
+        assertInstanceOf(TuplePat.class, caseLang.caseClause.pat);
         TuplePat tp = (TuplePat) caseLang.caseClause.pat;
         assertNull(tp.label());
         assertFalse(tp.partialArity());
@@ -58,7 +58,7 @@ public class TestParserPatExpr {
         //                             01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678
         Parser p = new Parser("case z of 'my-label'#[a, 1, 1L, false, true, nothing, eof, 'x'] then true else false end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof CaseLang);
+        assertInstanceOf(CaseLang.class, sox);
         CaseLang caseLang = (CaseLang) sox;
         assertSourceSpan(caseLang, 0, 88);
         assertSourceSpan(caseLang.caseClause, 7, 73);
@@ -73,7 +73,7 @@ public class TestParserPatExpr {
         String actualFormat = caseLang.toString();
         assertEquals(expectedFormat, actualFormat);
         // Test tuple properties
-        assertTrue(caseLang.caseClause.pat instanceof TuplePat);
+        assertInstanceOf(TuplePat.class, caseLang.caseClause.pat);
         TuplePat tp = (TuplePat) caseLang.caseClause.pat;
         assertEquals(Str.of("my-label"), asStrAsPat(tp.label()).value());
         assertFalse(tp.partialArity());

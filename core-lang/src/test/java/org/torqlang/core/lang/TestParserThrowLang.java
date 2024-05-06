@@ -7,12 +7,13 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Ident;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.torqlang.core.lang.CommonTools.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.torqlang.core.lang.CommonTools.asIdentAsExpr;
+import static org.torqlang.core.lang.CommonTools.assertSourceSpan;
 
 public class TestParserThrowLang {
 
@@ -21,7 +22,7 @@ public class TestParserThrowLang {
         //                            01234567
         Parser p = new Parser("throw x");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof ThrowLang);
+        assertInstanceOf(ThrowLang.class, sox);
         ThrowLang throwLang = (ThrowLang) sox;
         assertSourceSpan(throwLang, 0, 7);
         assertEquals(Ident.create("x"), asIdentAsExpr(throwLang.arg).ident);

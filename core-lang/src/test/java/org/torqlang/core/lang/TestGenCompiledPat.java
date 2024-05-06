@@ -7,11 +7,11 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.*;
 import org.torqlang.core.util.SourceSpan;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestGenCompiledPat {
 
@@ -22,7 +22,7 @@ public class TestGenCompiledPat {
         CompiledPat compiledPat = new CompiledPat(intAsPat, generator);
         assertEquals(intAsPat, compiledPat.source());
         compiledPat.compile();
-        assertTrue(compiledPat.root() instanceof Int32);
+        assertInstanceOf(Int32.class, compiledPat.root());
         assertEquals(0, compiledPat.children().size());
         Int32 result = (Int32) compiledPat.root();
         assertEquals(Int32.I32_0, result);
@@ -34,7 +34,7 @@ public class TestGenCompiledPat {
         IdentAsPat identAsPat = new IdentAsPat(Ident.create("x"), false, SourceSpan.emptySourceSpan());
         CompiledPat compiledPat = new CompiledPat(identAsPat, generator);
         compiledPat.compile();
-        assertTrue(compiledPat.root() instanceof IdentPtn);
+        assertInstanceOf(IdentPtn.class, compiledPat.root());
         assertEquals(0, compiledPat.children().size());
         IdentPtn result = (IdentPtn) compiledPat.root();
         assertEquals(Ident.create("x"), result.ident);
@@ -44,7 +44,7 @@ public class TestGenCompiledPat {
         identAsPat = new IdentAsPat(Ident.create("x"), true, SourceSpan.emptySourceSpan());
         compiledPat = new CompiledPat(identAsPat, generator);
         compiledPat.compile();
-        assertTrue(compiledPat.root() instanceof IdentPtn);
+        assertInstanceOf(IdentPtn.class, compiledPat.root());
         assertEquals(0, compiledPat.children().size());
         result = (IdentPtn) compiledPat.root();
         assertEquals(Ident.create("x"), result.ident);
@@ -77,7 +77,7 @@ public class TestGenCompiledPat {
         CompiledPat compiledPat = new CompiledPat(xRecPat, generator);
         compiledPat.compile();
 
-        assertTrue(compiledPat.root() instanceof RecPtn);
+        assertInstanceOf(RecPtn.class, compiledPat.root());
         assertEquals(1, compiledPat.children().size());
         RecPtn result = (RecPtn) compiledPat.root();
         assertEquals(1, result.fieldCount());
@@ -109,7 +109,7 @@ public class TestGenCompiledPat {
         CompiledPat compiledPat = new CompiledPat(recPat, generator);
         compiledPat.compile();
 
-        assertTrue(compiledPat.root() instanceof RecPtn);
+        assertInstanceOf(RecPtn.class, compiledPat.root());
         assertEquals(0, compiledPat.children().size());
         RecPtn result = (RecPtn) compiledPat.root();
         assertEquals(1, result.fieldCount());
@@ -137,7 +137,7 @@ public class TestGenCompiledPat {
         CompiledPat compiledPat = new CompiledPat(recPat, generator);
         compiledPat.compile();
 
-        assertTrue(compiledPat.root() instanceof RecPtn);
+        assertInstanceOf(RecPtn.class, compiledPat.root());
         assertEquals(0, compiledPat.children().size());
         RecPtn result = (RecPtn) compiledPat.root();
         assertEquals(1, result.fieldCount());
@@ -163,7 +163,7 @@ public class TestGenCompiledPat {
         CompiledPat compiledPat = new CompiledPat(recPat, generator);
         compiledPat.compile();
 
-        assertTrue(compiledPat.root() instanceof RecPtn);
+        assertInstanceOf(RecPtn.class, compiledPat.root());
         assertEquals(0, compiledPat.children().size());
         RecPtn result = (RecPtn) compiledPat.root();
         assertEquals(1, result.fieldCount());
@@ -202,7 +202,7 @@ public class TestGenCompiledPat {
         CompiledPat compiledPat = new CompiledPat(recPat, generator);
         compiledPat.compile();
 
-        assertTrue(compiledPat.root() instanceof RecPtn);
+        assertInstanceOf(RecPtn.class, compiledPat.root());
         assertEquals(0, compiledPat.children().size());
         RecPtn result = (RecPtn) compiledPat.root();
         assertEquals("{'0_zero': ~x}", result.toString());
@@ -231,7 +231,7 @@ public class TestGenCompiledPat {
         CompiledPat compiledPat = new CompiledPat(recPat, generator);
         compiledPat.compile();
 
-        assertTrue(compiledPat.root() instanceof RecPtn);
+        assertInstanceOf(RecPtn.class, compiledPat.root());
         assertEquals(0, compiledPat.children().size());
         RecPtn result = (RecPtn) compiledPat.root();
         assertEquals(1, result.fieldCount());
@@ -279,7 +279,7 @@ public class TestGenCompiledPat {
         CompiledPat compiledPat = new CompiledPat(xTuplePat, generator);
         compiledPat.compile();
 
-        assertTrue(compiledPat.root() instanceof RecPtn);
+        assertInstanceOf(RecPtn.class, compiledPat.root());
         assertEquals(1, compiledPat.children().size());
         RecPtn result = (RecPtn) compiledPat.root();
         assertEquals(2, result.fieldCount());
@@ -316,7 +316,7 @@ public class TestGenCompiledPat {
         CompiledPat compiledPat = new CompiledPat(tuplePat, generator);
         compiledPat.compile();
 
-        assertTrue(compiledPat.root() instanceof RecPtn);
+        assertInstanceOf(RecPtn.class, compiledPat.root());
         assertEquals(0, compiledPat.children().size());
         RecPtn result = (RecPtn) compiledPat.root();
         assertEquals(1, result.fieldCount());
@@ -341,7 +341,7 @@ public class TestGenCompiledPat {
         CompiledPat compiledPat = new CompiledPat(tuplePat, generator);
         compiledPat.compile();
 
-        assertTrue(compiledPat.root() instanceof RecPtn);
+        assertInstanceOf(RecPtn.class, compiledPat.root());
         assertEquals(0, compiledPat.children().size());
         RecPtn result = (RecPtn) compiledPat.root();
         assertEquals(1, result.fieldCount());
@@ -367,7 +367,7 @@ public class TestGenCompiledPat {
         CompiledPat compiledPat = new CompiledPat(tuplePat, generator);
         compiledPat.compile();
 
-        assertTrue(compiledPat.root() instanceof RecPtn);
+        assertInstanceOf(RecPtn.class, compiledPat.root());
         assertEquals(0, compiledPat.children().size());
         RecPtn result = (RecPtn) compiledPat.root();
         assertEquals(1, result.fieldCount());
@@ -389,7 +389,7 @@ public class TestGenCompiledPat {
         compiledPat = new CompiledPat(tuplePat, generator);
         compiledPat.compile();
 
-        assertTrue(compiledPat.root() instanceof RecPtn);
+        assertInstanceOf(RecPtn.class, compiledPat.root());
         assertEquals(0, compiledPat.children().size());
         result = (RecPtn) compiledPat.root();
         assertEquals(1, result.fieldCount());

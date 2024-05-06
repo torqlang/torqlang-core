@@ -7,14 +7,13 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.Ident;
 import org.torqlang.core.klvm.Int32;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.torqlang.core.lang.CommonTools.assertSourceSpan;
 
 public class TestParserBeginLang {
@@ -25,7 +24,7 @@ public class TestParserBeginLang {
         //                            012345678901
         Parser p = new Parser("begin 1 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof BeginLang);
+        assertInstanceOf(BeginLang.class, sox);
         BeginLang beginLang = (BeginLang) sox;
         assertSourceSpan(beginLang, 0, 11);
         assertSourceSpan(beginLang.body, 6, 7);
@@ -49,7 +48,7 @@ public class TestParserBeginLang {
         //                            0123456789012345
         Parser p = new Parser("begin 1 2 3 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof BeginLang);
+        assertInstanceOf(BeginLang.class, sox);
         BeginLang beginLang = (BeginLang) sox;
         assertSourceSpan(beginLang, 0, 15);
         assertSourceSpan(beginLang.body, 6, 11);
@@ -73,7 +72,7 @@ public class TestParserBeginLang {
         //                            012345678901234567
         Parser p = new Parser("begin a 1 b 2 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof BeginLang);
+        assertInstanceOf(BeginLang.class, sox);
         BeginLang beginLang = (BeginLang) sox;
         assertSourceSpan(beginLang, 0, 17);
         assertSourceSpan(beginLang.body, 6, 13);

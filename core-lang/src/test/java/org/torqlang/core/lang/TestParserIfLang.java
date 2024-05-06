@@ -7,9 +7,9 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.torqlang.core.lang.CommonTools.assertSourceSpan;
 
 public class TestParserIfLang {
@@ -20,7 +20,7 @@ public class TestParserIfLang {
         //                            0123456789012345678901234567890123456789012345678901234567
         Parser p = new Parser("if true then 1 2 3 elseif false then 4 5 6 else 7 8 9 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof IfLang);
+        assertInstanceOf(IfLang.class, sox);
         IfLang ifLang = (IfLang) sox;
         assertSourceSpan(ifLang, 0, 57);
         String expectedFormat = """
@@ -47,7 +47,7 @@ public class TestParserIfLang {
         //                            0123456789012345678901234
         Parser p = new Parser("if true then nothing end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof IfLang);
+        assertInstanceOf(IfLang.class, sox);
         IfLang ifLang = (IfLang) sox;
         assertSourceSpan(ifLang, 0, 24);
         // Test format
@@ -59,12 +59,12 @@ public class TestParserIfLang {
         assertEquals(expectedFormat, actualFormat);
         // Test part -- ifClause
         assertSourceSpan(ifLang.ifClause, 0, 20);
-        assertTrue(ifLang.ifClause.condition instanceof BoolAsExpr);
+        assertInstanceOf(BoolAsExpr.class, ifLang.ifClause.condition);
         assertSourceSpan(ifLang.ifClause.condition, 3, 7);
         // Test part -- ifClause body
         assertEquals(1, ifLang.ifClause.body.list.size());
         SntcOrExpr bodyExpr = ifLang.ifClause.body.list.get(0);
-        assertTrue(bodyExpr instanceof NothingAsExpr);
+        assertInstanceOf(NothingAsExpr.class, bodyExpr);
         assertSourceSpan(bodyExpr, 13, 20);
         // Test part -- altIfClauses
         assertEquals(0, ifLang.altIfClauses.size());
@@ -78,7 +78,7 @@ public class TestParserIfLang {
         //                            0123456789012345678901234567890123456789012345
         Parser p = new Parser("if true then 0 elseif false then 1 else 2 end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof IfLang);
+        assertInstanceOf(IfLang.class, sox);
         IfLang ifLang = (IfLang) sox;
         assertSourceSpan(ifLang, 0, 45);
         // Test format
@@ -94,24 +94,24 @@ public class TestParserIfLang {
         assertEquals(expectedFormat, actualFormat);
         // Test part -- ifClause
         assertSourceSpan(ifLang.ifClause, 0, 14);
-        assertTrue(ifLang.ifClause.condition instanceof BoolAsExpr);
+        assertInstanceOf(BoolAsExpr.class, ifLang.ifClause.condition);
         assertSourceSpan(ifLang.ifClause.condition, 3, 7);
         // Test part -- ifClause body
         assertEquals(1, ifLang.ifClause.body.list.size());
         SntcOrExpr bodyExpr = ifLang.ifClause.body.list.get(0);
-        assertTrue(bodyExpr instanceof IntAsExpr);
+        assertInstanceOf(IntAsExpr.class, bodyExpr);
         assertSourceSpan(bodyExpr, 13, 14);
         // Test part -- altIfClauses
         assertEquals(1, ifLang.altIfClauses.size());
         IfClause altIfClause = ifLang.altIfClauses.get(0);
         assertSourceSpan(altIfClause, 15, 34);
-        assertTrue(altIfClause.condition instanceof BoolAsExpr);
+        assertInstanceOf(BoolAsExpr.class, altIfClause.condition);
         assertSourceSpan(altIfClause.condition, 22, 27);
         // Test part -- elseSeq
         assertNotNull(ifLang.elseSeq);
         assertEquals(1, ifLang.elseSeq.list.size());
         SntcOrExpr elseExpr = ifLang.elseSeq.list.get(0);
-        assertTrue(elseExpr instanceof IntAsExpr);
+        assertInstanceOf(IntAsExpr.class, elseExpr);
         assertSourceSpan(elseExpr, 40, 41);
     }
 
@@ -121,7 +121,7 @@ public class TestParserIfLang {
         //                            012345678901234567890123456789012
         Parser p = new Parser("if true then true else false end");
         SntcOrExpr sox = p.parse();
-        assertTrue(sox instanceof IfLang);
+        assertInstanceOf(IfLang.class, sox);
         IfLang ifLang = (IfLang) sox;
         assertSourceSpan(ifLang, 0, 32);
         // Test format
@@ -135,12 +135,12 @@ public class TestParserIfLang {
         assertEquals(expectedFormat, actualFormat);
         // Test part -- ifClause
         assertSourceSpan(ifLang.ifClause, 0, 17);
-        assertTrue(ifLang.ifClause.condition instanceof BoolAsExpr);
+        assertInstanceOf(BoolAsExpr.class, ifLang.ifClause.condition);
         assertSourceSpan(ifLang.ifClause.condition, 3, 7);
         // Test part -- ifClause body
         assertEquals(1, ifLang.ifClause.body.list.size());
         SntcOrExpr bodyExpr = ifLang.ifClause.body.list.get(0);
-        assertTrue(bodyExpr instanceof BoolAsExpr);
+        assertInstanceOf(BoolAsExpr.class, bodyExpr);
         assertSourceSpan(bodyExpr, 13, 17);
         // Test part -- altIfClauses
         assertEquals(0, ifLang.altIfClauses.size());
@@ -148,7 +148,7 @@ public class TestParserIfLang {
         assertNotNull(ifLang.elseSeq);
         assertEquals(1, ifLang.elseSeq.list.size());
         SntcOrExpr elseExpr = ifLang.elseSeq.list.get(0);
-        assertTrue(elseExpr instanceof BoolAsExpr);
+        assertInstanceOf(BoolAsExpr.class, elseExpr);
         assertSourceSpan(elseExpr, 23, 28);
     }
 

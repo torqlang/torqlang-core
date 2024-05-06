@@ -7,9 +7,6 @@
 
 package org.torqlang.core.local;
 
-import org.torqlang.core.actor.ActorRef;
-import org.torqlang.core.actor.Address;
-import org.torqlang.core.actor.Envelope;
 import org.torqlang.core.klvm.Complete;
 import org.torqlang.core.klvm.CompleteRec;
 import org.torqlang.core.klvm.Eof;
@@ -21,7 +18,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.torqlang.core.local.ActorSystem.createRequest;
+import static org.torqlang.core.local.Envelope.createRequest;
 
 public class StreamClient implements StreamClientInit, StreamClientResponse {
     private static final AtomicInteger nextClientId = new AtomicInteger(0);
@@ -57,7 +54,7 @@ public class StreamClient implements StreamClientInit, StreamClientResponse {
     public StreamClientResponse send(ActorRef actorRef, Complete message) {
         if (streamClientActor == null) {
             if (address == null) {
-                address = ActorSystem.createAddress("anonymous-stream-client-" + nextClientId.getAndIncrement());
+                address = Address.createAddress("anonymous-stream-client-" + nextClientId.getAndIncrement());
             }
             eofLatch = new CountDownLatch(1);
             streamClientActor = new StreamClientActor();

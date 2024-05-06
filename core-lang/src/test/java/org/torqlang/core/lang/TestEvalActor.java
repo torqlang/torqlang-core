@@ -7,14 +7,13 @@
 
 package org.torqlang.core.lang;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.torqlang.core.klvm.ActorCfg;
 import org.torqlang.core.klvm.Ident;
 import org.torqlang.core.klvm.Str;
 import org.torqlang.core.klvm.Var;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestEvalActor {
 
@@ -107,7 +106,7 @@ public class TestEvalActor {
                 $select_apply(HelloFactorial, ['cfg'], hello_factorial_cfg)
             end""";
         assertEquals(expected, e.kernel().toString());
-        assertTrue(e.varAtName(configCtorIdent.name).valueOrVarSet() instanceof ActorCfg);
+        assertInstanceOf(ActorCfg.class, e.varAtName(configCtorIdent.name).valueOrVarSet());
     }
 
 }
