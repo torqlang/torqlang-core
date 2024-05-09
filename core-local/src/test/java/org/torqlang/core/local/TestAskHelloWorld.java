@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.torqlang.core.local.Address.createAddress;
 
 public class TestAskHelloWorld {
 
@@ -38,7 +37,7 @@ public class TestAskHelloWorld {
                 end
             end""";
         ActorBuilderGenerated g = Actor.builder()
-            .setAddress(createAddress(getClass().getName() + "Actor"))
+            .setAddress(Address.create(getClass().getName() + "Actor"))
             .setSource(source)
             .generate();
         String expected = """
@@ -104,7 +103,7 @@ public class TestAskHelloWorld {
         ActorRef actorRef = g.spawn().actorRef();
         CompleteRec m = Rec.completeRecBuilder().addField(Str.of("hello"), Dec128.of(10)).build();
         Object response = RequestClient.builder()
-            .setAddress(createAddress("HelloFactorialClient"))
+            .setAddress(Address.create("HelloFactorialClient"))
             .send(actorRef, m)
             .awaitResponse(100, TimeUnit.MILLISECONDS);
         assertEquals(Str.of("Hello, 10! is 3628800"), response);
@@ -119,7 +118,7 @@ public class TestAskHelloWorld {
                 end
             end""";
         ActorBuilderGenerated g = Actor.builder()
-            .setAddress(createAddress(getClass().getName() + "Actor"))
+            .setAddress(Address.create(getClass().getName() + "Actor"))
             .setSource(source)
             .generate();
         String expected = """
@@ -158,21 +157,21 @@ public class TestAskHelloWorld {
         assertEquals(expected, g.createActorRecStmt().toString());
         ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
-            .setAddress(createAddress("HelloWorldClient"))
+            .setAddress(Address.create("HelloWorldClient"))
             .send(actorRef, Str.of("hello"))
             .awaitResponse(100, TimeUnit.MILLISECONDS);
         assertEquals(Str.of("Hello, World!"), response);
 
         // Say 'hello' a second time
         response = RequestClient.builder()
-            .setAddress(createAddress("HelloWorldClient"))
+            .setAddress(Address.create("HelloWorldClient"))
             .send(actorRef, Str.of("hello"))
             .awaitResponse(100, TimeUnit.MILLISECONDS);
         assertEquals(Str.of("Hello, World!"), response);
 
         // Say 'goodbye' which will not be handled
         response = RequestClient.builder()
-            .setAddress(createAddress("HelloWorldClient"))
+            .setAddress(Address.create("HelloWorldClient"))
             .send(actorRef, Str.of("goodbye"))
             .awaitResponse(100, TimeUnit.MILLISECONDS);
         assertInstanceOf(FailedValue.class, response);
@@ -190,18 +189,18 @@ public class TestAskHelloWorld {
             end""";
         // Run a separate builder to get the ActorSntc
         ActorSntc actorSntc = Actor.builder()
-            .setAddress(createAddress(getClass().getName() + "Actor"))
+            .setAddress(Address.create(getClass().getName() + "Actor"))
             .setSource(source)
             .rewrite()
             .actorSntc();
         // Now, show we can create an actor from just an ActorSntc (no source)
         ActorRef actorRef = Actor.builder()
-            .setAddress(createAddress(getClass().getName() + "Actor"))
+            .setAddress(Address.create(getClass().getName() + "Actor"))
             .setActorSntc(actorSntc)
             .spawn().actorRef();
         // Send 'hello' and verify 'Hello, World!'
         Object response = RequestClient.builder()
-            .setAddress(createAddress("HelloWorldClient"))
+            .setAddress(Address.create("HelloWorldClient"))
             .send(actorRef, Str.of("hello"))
             .awaitResponse(100, TimeUnit.MILLISECONDS);
         assertEquals(Str.of("Hello, World!"), response);

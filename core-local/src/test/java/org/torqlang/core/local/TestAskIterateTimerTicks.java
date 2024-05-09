@@ -15,7 +15,6 @@ import org.torqlang.core.klvm.Str;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.torqlang.core.local.Address.createAddress;
 
 public class TestAskIterateTimerTicks {
 
@@ -35,7 +34,7 @@ public class TestAskIterateTimerTicks {
                 end
             end""";
         ActorBuilderGenerated g = Actor.builder()
-            .setAddress(createAddress(getClass().getName() + "Actor"))
+            .setAddress(Address.create(getClass().getName() + "Actor"))
             .setSource(source)
             .generate();
         String expected = """
@@ -104,7 +103,7 @@ public class TestAskIterateTimerTicks {
         assertEquals(expected, g.createActorRecStmt().toString());
         ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
-            .setAddress(createAddress("IterateTimerTicksClient"))
+            .setAddress(Address.create("IterateTimerTicksClient"))
             .send(actorRef, Str.of("iterate"))
             .awaitResponse(100, TimeUnit.MILLISECONDS);
         if (response instanceof FailedValue failedValue) {

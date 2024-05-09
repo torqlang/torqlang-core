@@ -68,7 +68,10 @@ public class QueryOrders extends AbstractExample {
             .build();
 
         ApiRouter router = ApiRouter.staticBuilder()
-            .addRoute("/orders", Actor.builder().configure(SOURCE).actorCfg())
+            .addRoute("/orders", Actor.builder()
+                .setSystem(system)
+                .spawn(SOURCE)
+                .actorRef())
             .build();
         Map<?, ?> requestMap = Map.of(
             "$label", "GET",
@@ -81,12 +84,9 @@ public class QueryOrders extends AbstractExample {
         );
 
         ApiRoute route = router.findRoute(new ApiPath("/orders"));
-        ActorRef actorRef = Actor.builder()
-            .setSystem(system)
-            .setActorCfg(route.actorCfg).spawn().actorRef();
 
         Object response = RequestClient.builder().sendAndAwaitResponse(
-            actorRef,
+            route.actorRef,
             ValueTools.toKernelValue(requestMap),
             Long.MAX_VALUE, TimeUnit.MILLISECONDS);
 

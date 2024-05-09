@@ -11,11 +11,10 @@ import org.torqlang.core.klvm.Int32;
 import org.torqlang.core.klvm.Str;
 import org.torqlang.core.local.Actor;
 import org.torqlang.core.local.ActorRef;
+import org.torqlang.core.local.Address;
 import org.torqlang.core.local.RequestClient;
 
 import java.util.concurrent.TimeUnit;
-
-import static org.torqlang.core.local.Address.createAddress;
 
 public final class NestedMathActs extends AbstractExample {
 
@@ -40,13 +39,13 @@ public final class NestedMathActs extends AbstractExample {
     public final void perform() throws Exception {
 
         ActorRef actorRef = Actor.builder()
-            .setAddress(createAddress(NestedMathActs.class.getName()))
+            .setAddress(Address.create(NestedMathActs.class.getName()))
             .setSource(SOURCE)
             .spawn()
             .actorRef();
 
         Object response = RequestClient.builder()
-            .setAddress(createAddress("NestedMathClient"))
+            .setAddress(Address.create("NestedMathClient"))
             .send(actorRef, Str.of("calculate"))
             .awaitResponse(100, TimeUnit.MILLISECONDS);
 

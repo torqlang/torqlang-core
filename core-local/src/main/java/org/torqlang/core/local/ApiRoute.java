@@ -7,17 +7,15 @@
 
 package org.torqlang.core.local;
 
-import org.torqlang.core.klvm.ActorCfg;
-
 @SuppressWarnings("ClassCanBeRecord")
 public final class ApiRoute {
 
     public final ApiPath apiPath;
-    public final ActorCfg actorCfg;
+    public final ActorRef actorRef;
 
-    public ApiRoute(ApiPath apiPath, ActorCfg actorCfg) {
+    public ApiRoute(ApiPath apiPath, ActorRef actorRef) {
         this.apiPath = apiPath;
-        this.actorCfg = actorCfg;
+        this.actorRef = actorRef;
     }
 
 }

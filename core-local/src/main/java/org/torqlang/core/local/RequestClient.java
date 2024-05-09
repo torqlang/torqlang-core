@@ -48,7 +48,7 @@ public class RequestClient implements RequestClientInit, RequestClientResponse {
             throw new IllegalStateException("Request already sent");
         }
         if (address == null) {
-            address = Address.createAddress("anonymous-request-client-" + nextClientId.getAndIncrement());
+            address = Address.create("anonymous-request-client-" + nextClientId.getAndIncrement());
         }
         futureResponse = new CompletableFuture<>();
         requestClientActor = new RequestClientActor();

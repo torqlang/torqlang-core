@@ -14,7 +14,6 @@ import org.torqlang.core.klvm.Str;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.torqlang.core.local.Address.createAddress;
 
 public class TestAskSingleAct {
 
@@ -27,7 +26,7 @@ public class TestAskSingleAct {
                 end
             end""";
         ActorBuilderGenerated g = Actor.builder()
-            .setAddress(createAddress(getClass().getName() + "Actor"))
+            .setAddress(Address.create(getClass().getName() + "Actor"))
             .setSource(source)
             .generate();
         String expected = """
@@ -68,7 +67,7 @@ public class TestAskSingleAct {
         assertEquals(expected, g.createActorRecStmt().toString());
         ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
-            .setAddress(createAddress("SingleActClient"))
+            .setAddress(Address.create("SingleActClient"))
             .send(actorRef, Str.of("perform"))
             .awaitResponse(100, TimeUnit.MILLISECONDS);
         assertEquals(Int32.I32_1, response);

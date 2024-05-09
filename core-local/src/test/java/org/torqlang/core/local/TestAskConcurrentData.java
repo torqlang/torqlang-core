@@ -16,7 +16,6 @@ import org.torqlang.core.klvm.Str;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.torqlang.core.local.Address.createAddress;
 
 public class TestAskConcurrentData {
 
@@ -29,7 +28,7 @@ public class TestAskConcurrentData {
                 end
             end""";
         ActorBuilderGenerated g = Actor.builder()
-            .setAddress(createAddress(getClass().getName() + "Actor"))
+            .setAddress(Address.create(getClass().getName() + "Actor"))
             .setSource(source)
             .generate();
         String expected = """
@@ -76,7 +75,7 @@ public class TestAskConcurrentData {
         assertEquals(expected, g.createActorRecStmt().toString());
         ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
-            .setAddress(createAddress("ConcurrentDataClient"))
+            .setAddress(Address.create("ConcurrentDataClient"))
             .send(actorRef, Str.of("perform"))
             .awaitResponse(100, TimeUnit.MILLISECONDS);
         CompleteRec expectedRec = Rec.completeRecBuilder()
@@ -99,7 +98,7 @@ public class TestAskConcurrentData {
                 end
             end""";
         ActorBuilderGenerated g = Actor.builder()
-            .setAddress(createAddress(getClass().getName() + "Actor"))
+            .setAddress(Address.create(getClass().getName() + "Actor"))
             .setSource(source)
             .generate();
         String expected = """
@@ -164,7 +163,7 @@ public class TestAskConcurrentData {
         assertEquals(expected, g.createActorRecStmt().toString());
         ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
-            .setAddress(createAddress("ConcurrentDataClient"))
+            .setAddress(Address.create("ConcurrentDataClient"))
             .send(actorRef, Str.of("perform"))
             .awaitResponse(100, TimeUnit.MILLISECONDS);
         CompleteTuple expectedTuple = Rec.completeTupleBuilder()

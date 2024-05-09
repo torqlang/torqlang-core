@@ -97,7 +97,7 @@
           },
           "details": {
             "type": "string",
-            "example": "A zero quantity is not allowed for an order iterm. Enter a positive order quantity or remove the item from the order."
+            "example": "A zero quantity is not allowed. Enter a non-zero quantity or remove the item."
           },
           "message": {
             "type": "string",

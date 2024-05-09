@@ -54,7 +54,7 @@ public class StreamClient implements StreamClientInit, StreamClientResponse {
     public StreamClientResponse send(ActorRef actorRef, Complete message) {
         if (streamClientActor == null) {
             if (address == null) {
-                address = Address.createAddress("anonymous-stream-client-" + nextClientId.getAndIncrement());
+                address = Address.create("anonymous-stream-client-" + nextClientId.getAndIncrement());
             }
             eofLatch = new CountDownLatch(1);
             streamClientActor = new StreamClientActor();

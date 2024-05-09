@@ -14,7 +14,6 @@ import org.torqlang.core.klvm.Str;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.torqlang.core.local.Address.createAddress;
 
 public class TestAskSumArrayList {
 
@@ -33,7 +32,7 @@ public class TestAskSumArrayList {
                 end
             end""";
         ActorBuilderGenerated g = Actor.builder()
-            .setAddress(createAddress(getClass().getName() + "Actor"))
+            .setAddress(Address.create(getClass().getName() + "Actor"))
             .setSource(source)
             .generate();
         String expected = """
@@ -98,7 +97,7 @@ public class TestAskSumArrayList {
         assertEquals(expected, g.createActorRecStmt().toString());
         ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
-            .setAddress(createAddress("SumArrayListClient"))
+            .setAddress(Address.create("SumArrayListClient"))
             .send(actorRef, Str.of("perform"))
             .awaitResponse(100, TimeUnit.MILLISECONDS);
         assertEquals(Int32.of(15), response);

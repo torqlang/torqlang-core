@@ -133,7 +133,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
 
     private void checkAddress() {
         if (address == null) {
-            address = Address.createAddress("anonymous-actor-" + nextActorId.getAndIncrement());
+            address = Address.create("anonymous-actor-" + nextActorId.getAndIncrement());
         }
     }
 

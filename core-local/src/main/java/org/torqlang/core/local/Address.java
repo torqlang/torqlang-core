@@ -9,11 +9,11 @@ package org.torqlang.core.local;
 
 public interface Address {
 
-    static Address createAddress(Address parentAddress, String path) {
+    static Address create(Address parentAddress, String path) {
         return LocalAddress.create((LocalAddress) parentAddress, path);
     }
 
-    static Address createAddress(String path) {
+    static Address create(String path) {
         return LocalAddress.create(path);
     }
 

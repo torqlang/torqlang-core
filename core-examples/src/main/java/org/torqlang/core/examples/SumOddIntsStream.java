@@ -15,8 +15,6 @@ import org.torqlang.core.local.*;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.torqlang.core.local.Address.createAddress;
-
 public final class SumOddIntsStream extends AbstractExample {
 
     public static final String SOURCE = """
@@ -60,7 +58,7 @@ public final class SumOddIntsStream extends AbstractExample {
             .addField(Str.of("last"), Int32.of(10))
             .build();
         Object response = RequestClient.builder()
-            .setAddress(createAddress("SumOddIntsClient"))
+            .setAddress(Address.create("SumOddIntsClient"))
             .send(actorRef, message)
             .awaitResponse(100, TimeUnit.MILLISECONDS);
         if (!response.equals(expected)) {
@@ -75,7 +73,7 @@ public final class SumOddIntsStream extends AbstractExample {
             .addField(Str.of("last"), Int32.of(11))
             .build();
         response = RequestClient.builder()
-            .setAddress(createAddress("SumOddIntsClient"))
+            .setAddress(Address.create("SumOddIntsClient"))
             .send(actorRef, message)
             .awaitResponse(100, TimeUnit.MILLISECONDS);
         if (!response.equals(expected)) {

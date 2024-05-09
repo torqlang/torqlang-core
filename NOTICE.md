@@ -1,5 +1,11 @@
 # NOTICE
 
+## Jetty
+
+### Attribution
+
+Torqlang server uses Jetty per the Apache License Version 2.0
+
 ## MongoDB Northwind
 
 ### Attribution

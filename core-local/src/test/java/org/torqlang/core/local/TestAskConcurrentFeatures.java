@@ -15,7 +15,6 @@ import org.torqlang.core.klvm.Str;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.torqlang.core.local.Address.createAddress;
 
 public class TestAskConcurrentFeatures {
 
@@ -34,7 +33,7 @@ public class TestAskConcurrentFeatures {
                 end
             end""";
         ActorBuilderGenerated g = Actor.builder()
-            .setAddress(createAddress(getClass().getName() + "Actor01"))
+            .setAddress(Address.create(getClass().getName() + "Actor01"))
             .setSource(source)
             .generate();
         String expected = """
@@ -88,7 +87,7 @@ public class TestAskConcurrentFeatures {
         assertEquals(expected, g.createActorRecStmt().toString());
         ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
-            .setAddress(createAddress("ConcurrentFeaturesClient"))
+            .setAddress(Address.create("ConcurrentFeaturesClient"))
             .send(actorRef, Str.of("perform"))
             .awaitResponse(100, TimeUnit.MILLISECONDS);
         assertEquals(Int32.I32_2, response);
@@ -131,12 +130,12 @@ public class TestAskConcurrentFeatures {
                 end
             end""";
         ActorBuilderGenerated g = Actor.builder()
-            .setAddress(createAddress(getClass().getName() + "Actor02"))
+            .setAddress(Address.create(getClass().getName() + "Actor02"))
             .setSource(source)
             .generate();
         ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
-            .setAddress(createAddress("ConcurrentFeaturesClient"))
+            .setAddress(Address.create("ConcurrentFeaturesClient"))
             .send(actorRef, Str.of("perform"))
             .awaitResponse(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
         if (response instanceof FailedValue failedValue) {
@@ -160,12 +159,12 @@ public class TestAskConcurrentFeatures {
                 end
             end""";
         ActorBuilderGenerated g = Actor.builder()
-            .setAddress(createAddress(getClass().getName() + "Actor03"))
+            .setAddress(Address.create(getClass().getName() + "Actor03"))
             .setSource(source)
             .generate();
         ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
-            .setAddress(createAddress("ConcurrentFeaturesClient"))
+            .setAddress(Address.create("ConcurrentFeaturesClient"))
             .send(actorRef, Str.of("perform"))
             .awaitResponse(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
         if (response instanceof FailedValue failedValue) {

@@ -19,15 +19,9 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>torqlang-core-examples</artifactId>
+    <artifactId>torqlang-core-server</artifactId>
 
     <dependencies>
-
-        <dependency>
-            <groupId>org.torqlang</groupId>
-            <artifactId>torqlang-core-server</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
 
         <dependency>
             <groupId>org.torqlang</groupId>
@@ -51,6 +45,12 @@
             <groupId>org.torqlang</groupId>
             <artifactId>torqlang-core-util</artifactId>
             <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>12.0.8</version>
         </dependency>
 
     </dependencies>

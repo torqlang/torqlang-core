@@ -27,11 +27,12 @@
     </properties>
 
     <modules>
-        <module>core-util</module>
-        <module>core-klvm</module>
-        <module>core-lang</module>
-        <module>core-local</module>
         <module>core-examples</module>
+        <module>core-server</module>
+        <module>core-local</module>
+        <module>core-lang</module>
+        <module>core-klvm</module>
+        <module>core-util</module>
     </modules>
 
     <distributionManagement>

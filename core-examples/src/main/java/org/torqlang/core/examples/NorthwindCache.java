@@ -20,6 +20,8 @@ import java.util.List;
 
 public class NorthwindCache {
 
+    private static volatile Complete ordersCache;
+
     public static String readStringFromUrl(URL url) throws IOException {
         try (InputStream inputStream = url.openStream()) {
             StringBuilder answer = new StringBuilder();
@@ -38,10 +40,13 @@ public class NorthwindCache {
     }
 
     public static Complete getOrders() throws IOException {
+        if (ordersCache != null) {
+            return ordersCache;
+        }
         URL ordersUrl = NorthwindCache.class.getResource("/northwind/orders.json");
         String ordersJsonText = readStringFromUrl(ordersUrl);
         List<?> ordersJsonList = (List<?>) new JsonParser(ordersJsonText).parse();
-        return ValueTools.toKernelValue(ordersJsonList);
+        return ordersCache = ValueTools.toKernelValue(ordersJsonList);
     }
 
     public static void main(String[] args) throws IOException {

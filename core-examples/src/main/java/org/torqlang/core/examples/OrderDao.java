@@ -13,11 +13,10 @@ import org.torqlang.core.klvm.Rec;
 import org.torqlang.core.klvm.Str;
 import org.torqlang.core.local.Actor;
 import org.torqlang.core.local.ActorRef;
+import org.torqlang.core.local.Address;
 import org.torqlang.core.local.RequestClient;
 
 import java.util.concurrent.TimeUnit;
-
-import static org.torqlang.core.local.Address.createAddress;
 
 /*
  * TODO: Delete OrderDao later when its value has been replaced by Northwind examples
@@ -92,7 +91,7 @@ public final class OrderDao extends AbstractExample {
     @Override
     public final void perform() throws Exception {
         ActorRef actorRef = Actor.builder()
-            .setAddress(createAddress(OrderDao.class.getName()))
+            .setAddress(Address.create(OrderDao.class.getName()))
             .setSource(SOURCE)
             .spawn()
             .actorRef();
@@ -104,7 +103,7 @@ public final class OrderDao extends AbstractExample {
             .addField(Str.of("order-id"), Str.of("ORDER-002"))
             .build();
         Object response = RequestClient.builder()
-            .setAddress(createAddress("OrderDaoClient"))
+            .setAddress(Address.create("OrderDaoClient"))
             .send(actorRef, message)
             .awaitResponse(100, TimeUnit.MILLISECONDS);
         if (!(response instanceof CompleteRec completeRec)) {
@@ -121,7 +120,7 @@ public final class OrderDao extends AbstractExample {
             .addField(Str.of("order-id"), Str.of("ORDER-999"))
             .build();
         response = RequestClient.builder()
-            .setAddress(createAddress("OrderDaoClient"))
+            .setAddress(Address.create("OrderDaoClient"))
             .send(actorRef, message)
             .awaitResponse(100, TimeUnit.MILLISECONDS);
         if (!(response instanceof FailedValue failedValue)) {
