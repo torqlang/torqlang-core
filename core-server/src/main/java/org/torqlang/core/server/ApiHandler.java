@@ -104,8 +104,9 @@ public final class ApiHandler extends Handler.Abstract.NonBlocking {
                     .addField(Str.of("headers"), headersRec)
                     .addField(Str.of("path"), ValueTools.toKernelValue(apiPath.segs))
                     .addField(Str.of("query"), queryRec);
-                if (requestText != null && !requestText.isBlank()) {
-                    Complete bodyValue = ValueTools.toKernelValue(new JsonParser(requestText).parse());
+                if (requestText != null) {
+                    Complete bodyValue = requestText.isBlank() ?
+                        Nothing.SINGLETON : ValueTools.toKernelValue(new JsonParser(requestText).parse());
                     requestRecBuilder.addField(Str.of("body"), bodyValue);
                 }
                 CompleteRec requestRec = requestRecBuilder.build();
