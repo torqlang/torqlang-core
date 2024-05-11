@@ -45,7 +45,7 @@ public class NorthwindCache {
         }
         URL ordersUrl = NorthwindCache.class.getResource("/northwind/orders.json");
         String ordersJsonText = readStringFromUrl(ordersUrl);
-        List<?> ordersJsonList = (List<?>) new JsonParser(ordersJsonText).parse();
+        List<?> ordersJsonList = (List<?>) JsonParser.parse(ordersJsonText);
         return ordersCache = ValueTools.toKernelValue(ordersJsonList);
     }
 

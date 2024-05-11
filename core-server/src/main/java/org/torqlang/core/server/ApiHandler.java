@@ -7,10 +7,7 @@
 
 package org.torqlang.core.server;
 
-import org.eclipse.jetty.http.HttpField;
-import org.eclipse.jetty.http.HttpFields;
-import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.http.*;
 import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
@@ -19,36 +16,40 @@ import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.Fields;
 import org.torqlang.core.klvm.*;
 import org.torqlang.core.lang.JsonFormatter;
+import org.torqlang.core.lang.JsonParser;
 import org.torqlang.core.lang.ValueTools;
 import org.torqlang.core.local.*;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public final class ApiHandler extends Handler.Abstract.NonBlocking {
 
+    public static final String APPLICATION_JSON_CHARSET_UTF_8 = "application/json; charset=utf-8";
     public static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=utf-8";
 
     private static final String RESPONSE_ADDRESS_PREFIX = "ApiHandler.ResponseAddress";
 
     private final ActorSystem system;
-    private final ApiRouter apiRouter;
+    private final ApiRouter router;
 
-    public ApiHandler(ActorSystem system, ApiRouter apiRouter) {
+    public ApiHandler(ActorSystem system, ApiRouter router) {
         this.system = system;
-        this.apiRouter = apiRouter;
+        this.router = router;
     }
 
     public static ApiHandlerBuilder builder() {
         return new ApiHandlerBuilder();
     }
 
-    public final ActorSystem actorSystem() {
-        return system;
-    }
-
-    public final ApiRouter apiRouter() {
-        return apiRouter;
+    private static CompleteRec extractParams(ApiRoute route, ApiPath apiPath) {
+        CompleteRecBuilder rb = Rec.completeRecBuilder();
+        List<ApiPathParam> formalParams = route.apiPath.extractParams();
+        for (ApiPathParam p : formalParams) {
+            rb.addField(Str.of(p.name()), Str.of(apiPath.segs.get(p.pos())));
+        }
+        return rb.build();
     }
 
     @Override
@@ -71,24 +72,55 @@ public final class ApiHandler extends Handler.Abstract.NonBlocking {
         }
         CompleteRec queryRec = queryRecBuilder.build();
 
+        if (method.equals(HttpMethod.GET.name())) {
+            sendRequestMessage(request, response, callback, pathInContext, method, headersRec, queryRec, null);
+        } else {
+            Content.Source.asStringAsync(request, StandardCharsets.UTF_8)
+                .thenAccept((requestText -> sendRequestMessage(request, response, callback, pathInContext, method,
+                    headersRec, queryRec, requestText)));
+        }
+
+        return true;
+    }
+
+    public final ApiRouter router() {
+        return router;
+    }
+
+    private void sendRequestMessage(Request request, Response response, Callback callback,
+                                    String pathInContext, String method, CompleteRec headersRec, CompleteRec queryRec,
+                                    String requestText)
+    {
         ApiPath apiPath = new ApiPath(pathInContext);
-        ApiRoute apiRoute = apiRouter.findRoute(apiPath);
-        if (apiRoute != null) {
+        ApiRoute route = router.findRoute(apiPath);
+        if (route != null) {
             try {
-                CompleteRec requestRec = Rec.completeRecBuilder()
+                ActorRef actorRef = Actor.builder()
+                    .setSystem(system)
+                    .spawn(route.actorCfg)
+                    .actorRef();
+                CompleteRecBuilder requestRecBuilder = Rec.completeRecBuilder()
                     .setLabel(Str.of(method))
                     .addField(Str.of("headers"), headersRec)
-                    .addField(Str.of("query"), queryRec)
-                    .build();
+                    .addField(Str.of("path"), ValueTools.toKernelValue(apiPath.segs))
+                    .addField(Str.of("query"), queryRec);
+                if (requestText != null && !requestText.isBlank()) {
+                    Complete bodyValue = ValueTools.toKernelValue(new JsonParser(requestText).parse());
+                    requestRecBuilder.addField(Str.of("body"), bodyValue);
+                }
+                CompleteRec requestRec = requestRecBuilder.build();
                 ActorRef responseActor = new ResponseActor(request, response, callback);
-                apiRoute.actorRef.send(Envelope.createRequest(requestRec, responseActor, Nothing.SINGLETON));
+                actorRef.send(Envelope.createRequest(requestRec, responseActor, Nothing.SINGLETON));
             } catch (Exception exc) {
                 Response.writeError(request, response, callback, exc);
             }
         } else {
             Response.writeError(request, response, callback, HttpStatus.NOT_FOUND_404);
         }
-        return true;
+    }
+
+    public final ActorSystem system() {
+        return system;
     }
 
     private static class ResponseActor implements ActorRef {
@@ -125,7 +157,7 @@ public final class ApiHandler extends Handler.Abstract.NonBlocking {
                     Object nativeResponseValue = ValueTools.toNativeValue(message);
                     String jsonResponseText = JsonFormatter.SINGLETON.format(nativeResponseValue);
                     response.setStatus(200);
-                    response.getHeaders().put(HttpHeader.CONTENT_TYPE, TEXT_PLAIN_CHARSET_UTF_8);
+                    response.getHeaders().put(HttpHeader.CONTENT_TYPE, APPLICATION_JSON_CHARSET_UTF_8);
                     Content.Sink.write(response, true, jsonResponseText, callback);
                 }
             } catch (Exception exc) {

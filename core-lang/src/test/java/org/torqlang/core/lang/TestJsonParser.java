@@ -21,8 +21,7 @@ public class TestJsonParser {
     public void testArray() {
         String source = """
             [0, 1, -1, 0.0, 1.0, false, true, null, "my-string", [], {}]""";
-        JsonParser p = new JsonParser(source);
-        Object jv = p.parse();
+        Object jv = JsonParser.parse(source);
         assertInstanceOf(List.class, jv);
         List a = (List) jv;
         assertEquals(11, a.size());
@@ -42,8 +41,7 @@ public class TestJsonParser {
     @SuppressWarnings("rawtypes")
     @Test
     public void testArrayEmpty() {
-        JsonParser p = new JsonParser("[]");
-        Object jv = p.parse();
+        Object jv = JsonParser.parse("[]");
         assertInstanceOf(List.class, jv);
         List a = (List) jv;
         assertTrue(a.isEmpty());
@@ -52,8 +50,7 @@ public class TestJsonParser {
     @SuppressWarnings("rawtypes")
     @Test
     public void testArrayEmptyArray() {
-        JsonParser p = new JsonParser("[[]]");
-        Object jv = p.parse();
+        Object jv = JsonParser.parse("[[]]");
         assertInstanceOf(List.class, jv);
         List a = (List) jv;
         assertEquals(1, a.size());
@@ -63,13 +60,11 @@ public class TestJsonParser {
 
     @Test
     public void testBoolean() {
-        JsonParser p = new JsonParser("true");
-        Object jv = p.parse();
+        Object jv = JsonParser.parse("true");
         assertInstanceOf(Boolean.class, jv);
         boolean b = (Boolean) jv;
         assertTrue(b);
-        p = new JsonParser("false");
-        jv = p.parse();
+        jv = JsonParser.parse("false");
         assertInstanceOf(Boolean.class, jv);
         b = (Boolean) jv;
         assertFalse(b);
@@ -103,18 +98,15 @@ public class TestJsonParser {
 
     @Test
     public void testInteger() {
-        JsonParser p = new JsonParser("0");
-        Object jv = p.parse();
+        Object jv = JsonParser.parse("0");
         assertInstanceOf(Long.class, jv);
         long i = (Long) jv;
         assertEquals(0, i);
-        p = new JsonParser("1");
-        jv = p.parse();
+        jv = JsonParser.parse("1");
         assertInstanceOf(Long.class, jv);
         i = (Long) jv;
         assertEquals(1, i);
-        p = new JsonParser("-1");
-        jv = p.parse();
+        jv = JsonParser.parse("-1");
         assertInstanceOf(Long.class, jv);
         i = (Long) jv;
         assertEquals(-1, i);
@@ -126,8 +118,7 @@ public class TestJsonParser {
         String source = """
             {"a": 0, "b": 1, "c": -1, "d": 0.0, "e": 1.0, "f": false, "g": true, "h": null,
             "i": "my-string", "j": [], "k": {}}""";
-        JsonParser p = new JsonParser(source);
-        Object jv = p.parse();
+        Object jv = JsonParser.parse(source);
         assertInstanceOf(Map.class, jv);
         Map m = (Map) jv;
         assertEquals(11, m.size());
@@ -147,8 +138,7 @@ public class TestJsonParser {
     @SuppressWarnings("rawtypes")
     @Test
     public void testObjectEmpty() {
-        JsonParser p = new JsonParser("{}");
-        Object jv = p.parse();
+        Object jv = JsonParser.parse("{}");
         assertInstanceOf(Map.class, jv);
         Map m = (Map) jv;
         assertTrue(m.isEmpty());
@@ -157,27 +147,27 @@ public class TestJsonParser {
     @SuppressWarnings("rawtypes")
     @Test
     public void testParseAndCast() {
-        long zero = new JsonParser("0").parseAndCast();
+        long zero = JsonParser.parseAndCast("0");
         assertEquals(0L, zero);
-        long one = new JsonParser("1").parseAndCast();
+        long one = JsonParser.parseAndCast("1");
         assertEquals(1L, one);
-        long negativeOne = new JsonParser("-1").parseAndCast();
+        long negativeOne = JsonParser.parseAndCast("-1");
         assertEquals(-1L, negativeOne);
-        double doubleZero = new JsonParser("0.0").parseAndCast();
+        double doubleZero = JsonParser.parseAndCast("0.0");
         assertEquals(0.0, doubleZero, 0.0001);
-        double doubleOne = new JsonParser("1.0").parseAndCast();
+        double doubleOne = JsonParser.parseAndCast("1.0");
         assertEquals(1.0, doubleOne, 0.0001);
-        boolean booleanFalse = new JsonParser("false").parseAndCast();
+        boolean booleanFalse = JsonParser.parseAndCast("false");
         assertFalse(booleanFalse);
-        boolean booleanTrue = new JsonParser("true").parseAndCast();
+        boolean booleanTrue = JsonParser.parseAndCast("true");
         assertTrue(booleanTrue);
-        Object jsonNull = new JsonParser("null").parseAndCast();
+        Object jsonNull = JsonParser.parseAndCast("null");
         assertEquals(JsonNull.SINGLETON, jsonNull);
-        String myString = new JsonParser("\"my-string\"").parseAndCast();
+        String myString = JsonParser.parseAndCast("\"my-string\"");
         assertEquals("my-string", myString);
-        List emptyList = new JsonParser("[]").parseAndCast();
+        List emptyList = JsonParser.parseAndCast("[]");
         assertEquals(List.of(), emptyList);
-        Map emptyObject = new JsonParser("{}").parseAndCast();
+        Map emptyObject = JsonParser.parseAndCast("{}");
         assertEquals(Map.of(), emptyObject);
     }
 

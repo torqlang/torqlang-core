@@ -30,5 +30,7 @@ public interface ActorBuilderInit {
 
     ActorBuilderInit setTrace(boolean trace);
 
+    ActorBuilderSpawned spawn(ActorCfg actorCfg) throws Exception;
+
     ActorBuilderSpawned spawn(String source) throws Exception;
 }

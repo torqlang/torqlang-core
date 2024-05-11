@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * ======================
  * INIT
  *   properties: (none)
- *   methods:    setSystem, setActorSntc, setSource, setAddress, setArgs, setTrace
+ *   methods:    setAddress, setArgs, setTrace, setSystem, setSource, setActorSntc, setActorCfg
  * READY
  *   properties: source
  *   methods:    parse, rewrite, generate, construct, configure, spawn
@@ -354,6 +354,13 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
             throw new IllegalStateException("Cannot setSystem at state: " + state);
         }
         this.system = system;
+        return this;
+    }
+
+    @Override
+    public final ActorBuilderSpawned spawn(ActorCfg actorCfg) throws Exception {
+        setActorCfg(actorCfg);
+        spawn();
         return this;
     }
 

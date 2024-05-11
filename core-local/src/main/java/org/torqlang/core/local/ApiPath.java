@@ -12,7 +12,6 @@ import java.util.List;
 
 public final class ApiPath implements Comparable<ApiPath> {
 
-    public final List<ApiPathParam> params;
     public final List<String> segs;
 
     public ApiPath(String path) {
@@ -28,14 +27,6 @@ public final class ApiPath implements Comparable<ApiPath> {
             List<String> segsParsed = List.of(path.split("/"));
             this.segs = segsParsed.subList(1, segsParsed.size());
         }
-        List<ApiPathParam> paramsList = new ArrayList<>();
-        for (int i = 0; i < segs.size(); i++) {
-            String seg = segs.get(i);
-            if (isWildcard(seg)) {
-                paramsList.add(new ApiPathParam(i, seg.substring(1, seg.length() - 1)));
-            }
-        }
-        this.params = List.copyOf(paramsList);
     }
 
     private static int compareSeg(String seg, String targetSeg) {
@@ -73,6 +64,17 @@ public final class ApiPath implements Comparable<ApiPath> {
     @Override
     public final int compareTo(ApiPath apiPath) {
         return compareSegs(apiPath.segs);
+    }
+
+    public final List<ApiPathParam> extractParams() {
+        List<ApiPathParam> params = new ArrayList<>();
+        for (int i = 0; i < segs.size(); i++) {
+            String seg = segs.get(i);
+            if (isWildcard(seg)) {
+                params.add(new ApiPathParam(i, seg.substring(1, seg.length() - 1)));
+            }
+        }
+        return params;
     }
 
 }

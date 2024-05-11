@@ -21,12 +21,12 @@ public class TestApiPath {
         ApiPath path;
 
         path = new ApiPath("/");
-        assertEquals(0, path.params.size());
+        assertEquals(0, path.extractParams().size());
         assertEquals(0, path.compareSegs(List.of()));
         assertEquals(0, path.compareTo(new ApiPath("/")));
 
         path = new ApiPath("/x");
-        assertEquals(0, path.params.size());
+        assertEquals(0, path.extractParams().size());
         assertEquals(0, path.compareSegs(List.of("x")));
         assertEquals(0, path.compareSegs(List.of("{}")));
         assertEquals(0, path.compareSegs(List.of("{id}")));
@@ -35,9 +35,9 @@ public class TestApiPath {
         assertEquals(0, path.compareTo(new ApiPath("/{id}")));
 
         path = new ApiPath("/{}");
-        assertEquals(1, path.params.size());
-        assertEquals(0, path.params.get(0).pos());
-        assertEquals("", path.params.get(0).name());
+        assertEquals(1, path.extractParams().size());
+        assertEquals(0, path.extractParams().get(0).pos());
+        assertEquals("", path.extractParams().get(0).name());
         assertEquals(0, path.compareSegs(List.of("x")));
         assertEquals(0, path.compareSegs(List.of("{}")));
         assertEquals(0, path.compareSegs(List.of("{id}")));
@@ -46,7 +46,7 @@ public class TestApiPath {
         assertEquals(0, path.compareTo(new ApiPath("/{id}")));
 
         path = new ApiPath("/x/y");
-        assertEquals(0, path.params.size());
+        assertEquals(0, path.extractParams().size());
         assertEquals(0, path.compareSegs(List.of("x", "y")));
         assertEquals(0, path.compareSegs(List.of("{}", "y")));
         assertEquals(0, path.compareSegs(List.of("x", "{}")));
@@ -59,9 +59,9 @@ public class TestApiPath {
         assertEquals(0, path.compareTo(new ApiPath("/x/{id}")));
 
         path = new ApiPath("/{foo}/y");
-        assertEquals(1, path.params.size());
-        assertEquals(0, path.params.get(0).pos());
-        assertEquals("foo", path.params.get(0).name());
+        assertEquals(1, path.extractParams().size());
+        assertEquals(0, path.extractParams().get(0).pos());
+        assertEquals("foo", path.extractParams().get(0).name());
         assertEquals(0, path.compareSegs(List.of("x", "y")));
         assertEquals(0, path.compareSegs(List.of("{}", "y")));
         assertEquals(0, path.compareSegs(List.of("x", "{}")));
@@ -74,9 +74,9 @@ public class TestApiPath {
         assertEquals(0, path.compareTo(new ApiPath("/x/{id}")));
 
         path = new ApiPath("/x/{bar}");
-        assertEquals(1, path.params.size());
-        assertEquals(1, path.params.get(0).pos());
-        assertEquals("bar", path.params.get(0).name());
+        assertEquals(1, path.extractParams().size());
+        assertEquals(1, path.extractParams().get(0).pos());
+        assertEquals("bar", path.extractParams().get(0).name());
         assertEquals(0, path.compareSegs(List.of("x", "y")));
         assertEquals(0, path.compareSegs(List.of("{}", "y")));
         assertEquals(0, path.compareSegs(List.of("x", "{}")));

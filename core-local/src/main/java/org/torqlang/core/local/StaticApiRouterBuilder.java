@@ -17,9 +17,9 @@ public final class StaticApiRouterBuilder {
 
     private final List<ApiRoute> routes = new ArrayList<>();
 
-    public final StaticApiRouterBuilder addRoute(String pathExpr, ActorRef actorRef) {
+    public final StaticApiRouterBuilder addRoute(String pathExpr, ActorCfg actorCfg) {
         ApiPath path = new ApiPath(pathExpr);
-        routes.add(new ApiRoute(path, actorRef));
+        routes.add(new ApiRoute(path, actorCfg));
         return this;
     }
 

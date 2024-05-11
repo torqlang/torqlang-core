@@ -7,10 +7,7 @@
 
 package org.torqlang.core.examples;
 
-import org.torqlang.core.klvm.Complete;
-import org.torqlang.core.klvm.CompleteRec;
-import org.torqlang.core.klvm.Rec;
-import org.torqlang.core.klvm.Str;
+import org.torqlang.core.klvm.*;
 import org.torqlang.core.local.Actor;
 import org.torqlang.core.local.ActorSystem;
 import org.torqlang.core.local.ApiRouter;
@@ -38,16 +35,19 @@ public class ExampleServer {
             .addModule("examples.NorthwindCache", moduleRec)
             .build();
 
+        ActorCfg ordersCfg = Actor.builder()
+            .setSystem(system)
+            .configure(QueryOrders.SOURCE)
+            .actorCfg();
+
         CoreServer server = CoreServer.builder()
             .setPort(8080)
             .addContextHandler(new EchoHandler(), "/echo")
             .addContextHandler(ApiHandler.builder()
                 .setSystem(system)
                 .setApiRouter(ApiRouter.staticBuilder()
-                    .addRoute("/orders", Actor.builder()
-                        .setSystem(system)
-                        .spawn(QueryOrders.SOURCE)
-                        .actorRef())
+                    .addRoute("/orders", ordersCfg)
+                    .addRoute("/orders/{id}", ordersCfg)
                     .build())
                 .build(), "/api")
             .build();

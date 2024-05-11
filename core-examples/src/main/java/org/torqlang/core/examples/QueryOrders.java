@@ -24,12 +24,15 @@ import java.util.concurrent.TimeUnit;
 public class QueryOrders extends AbstractExample {
 
     public static final String SOURCE = """
-        // meta#{'path': '/orders?{query}'}
+    
+        // meta#{'resource': '/orders'}
         actor Orders() in
             import system[ArrayList, FieldIter, ValueIter]
             import examples.NorthwindCache.get_orders
             var orders = get_orders()
-            handle ask 'GET'#{'headers': headers, 'query': query} in
+    
+            // meta#{'paths': ['/orders']}
+            handle ask 'GET'#{'headers': headers, 'path': path, 'query': query} in
                 func matches_query(order) in
                     for field in FieldIter.new(query) do
                         if order[field.0] != field.1 then
@@ -45,6 +48,16 @@ public class QueryOrders extends AbstractExample {
                     end
                 end
                 array_list.to_tuple()
+            end
+            // meta#{'paths': ['/orders/{id}']}
+            handle ask 'POST'#{'headers': headers, 'path': path, 'query': query, 'body': body} in
+                // For now, we just echo the params
+                'POST'#{
+                    'headers': headers,
+                    'path': path,
+                    'query': query,
+                    'body': body
+                }
             end
         end""";
 
@@ -70,13 +83,14 @@ public class QueryOrders extends AbstractExample {
         ApiRouter router = ApiRouter.staticBuilder()
             .addRoute("/orders", Actor.builder()
                 .setSystem(system)
-                .spawn(SOURCE)
-                .actorRef())
+                .configure(SOURCE)
+                .actorCfg())
             .build();
         Map<?, ?> requestMap = Map.of(
             "$label", "GET",
             "$rec", Map.of(
                 "headers", Map.of(),
+                "path", List.of("orders"),
                 "query", Map.of(
                     "ship_city", "Las Vegas"
                 )
@@ -84,11 +98,13 @@ public class QueryOrders extends AbstractExample {
         );
 
         ApiRoute route = router.findRoute(new ApiPath("/orders"));
+        ActorRef actorRef = Actor.builder()
+            .setSystem(system)
+            .spawn(route.actorCfg)
+            .actorRef();
 
-        Object response = RequestClient.builder().sendAndAwaitResponse(
-            route.actorRef,
-            ValueTools.toKernelValue(requestMap),
-            Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+        Object response = RequestClient.builder().sendAndAwaitResponse(actorRef,
+            ValueTools.toKernelValue(requestMap), Long.MAX_VALUE, TimeUnit.MILLISECONDS);
 
         checkNotFailedValue(response);
         List<?> nativeResponse = (List<?>) ValueTools.toNativeValue((Complete) response);

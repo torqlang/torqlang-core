@@ -8,6 +8,7 @@
 package org.torqlang.core.local;
 
 import org.junit.jupiter.api.Test;
+import org.torqlang.core.klvm.ActorCfg;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -24,10 +25,10 @@ public class TestStaticApiRouter {
     @Test
     public void test01() throws Exception {
 
-        ActorRef testActorRef = Actor.builder()
+        ActorCfg testActorCfg = Actor.builder()
             .setSystem(ActorSystem.defaultSystem())
-            .spawn(SOURCE)
-            .actorRef();
+            .configure(SOURCE)
+            .actorCfg();
 
         StaticApiRouter router;
 
@@ -35,26 +36,26 @@ public class TestStaticApiRouter {
         assertNull(router.findRoute(new ApiPath("/orders")));
 
         router = new StaticApiRouter(new ApiRoute[]{
-            new ApiRoute(new ApiPath("/orders"), testActorRef)
+            new ApiRoute(new ApiPath("/orders"), testActorCfg)
         });
         assertNotNull(router.findRoute(new ApiPath("/orders")));
 
         router = new StaticApiRouter(new ApiRoute[]{
-            new ApiRoute(new ApiPath("/orders"), testActorRef),
-            new ApiRoute(new ApiPath("/orders/{id})"), testActorRef)
+            new ApiRoute(new ApiPath("/orders"), testActorCfg),
+            new ApiRoute(new ApiPath("/orders/{id})"), testActorCfg)
         });
         assertNotNull(router.findRoute(new ApiPath("/orders")));
 
         router = new StaticApiRouter(new ApiRoute[]{
-            new ApiRoute(new ApiPath("/inventory"), testActorRef),
-            new ApiRoute(new ApiPath("/orders"), testActorRef)
+            new ApiRoute(new ApiPath("/inventory"), testActorCfg),
+            new ApiRoute(new ApiPath("/orders"), testActorCfg)
         });
         assertNotNull(router.findRoute(new ApiPath("/orders")));
 
         router = new StaticApiRouter(new ApiRoute[]{
-            new ApiRoute(new ApiPath("/inventory"), testActorRef),
-            new ApiRoute(new ApiPath("/orders"), testActorRef),
-            new ApiRoute(new ApiPath("/orders/{id}"), testActorRef)
+            new ApiRoute(new ApiPath("/inventory"), testActorCfg),
+            new ApiRoute(new ApiPath("/orders"), testActorCfg),
+            new ApiRoute(new ApiPath("/orders/{id}"), testActorCfg)
         });
         assertNotNull(router.findRoute(new ApiPath("/orders")));
     }

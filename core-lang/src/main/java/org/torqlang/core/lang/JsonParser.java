@@ -21,6 +21,14 @@ public class JsonParser {
         this.lexer = new JsonLexer(source);
     }
 
+    public static Object parse(String source) {
+        return new JsonParser(source).parse();
+    }
+
+    public static <T> T parseAndCast(String source) {
+        return new JsonParser(source).parseAndCast();
+    }
+
     private void nextToken() {
         currentToken = lexer.nextToken();
     }
