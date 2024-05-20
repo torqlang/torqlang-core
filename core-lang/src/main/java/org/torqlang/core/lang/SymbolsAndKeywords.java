@@ -51,6 +51,7 @@ public final class SymbolsAndKeywords {
 
     static final String ACT_VALUE = "act";
     static final String ACTOR_VALUE = "actor";
+    static final String AS_VALUE = "as";
     static final String ASK_VALUE = "ask";
     static final String BEGIN_VALUE = "begin";
     static final String BREAK_VALUE = "break";
@@ -120,8 +121,9 @@ public final class SymbolsAndKeywords {
 
     public static boolean isContextualKeyword(String source, int begin, int end) {
         return substringEquals(source, begin, end, HANDLE_VALUE) ||
-                substringEquals(source, begin, end, ASK_VALUE) ||
-                substringEquals(source, begin, end, TELL_VALUE);
+            substringEquals(source, begin, end, ASK_VALUE) ||
+            substringEquals(source, begin, end, TELL_VALUE) ||
+            substringEquals(source, begin, end, AS_VALUE);
     }
 
     public static boolean isKeyword(String source, int begin, int end) {
@@ -195,6 +197,9 @@ public final class SymbolsAndKeywords {
     }
 
     private static boolean substringEquals(String source, int begin, int end, String value) {
+        if (end - begin != value.length()) {
+            return false;
+        }
         int x = 0;
         for (int i = begin; i < end; i++) {
             if (source.charAt(i) != value.charAt(x)) {

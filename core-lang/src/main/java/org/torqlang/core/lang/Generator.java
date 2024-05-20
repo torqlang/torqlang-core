@@ -64,8 +64,12 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     public static final int CONTINUE_ID = 2;
     public static final int RETURN_ID = 3;
 
-    public static final String ASK_NOT_HANDLED_ERROR = "org.torqlang.core.lang.AskNotHandledError";
-    public static final String TELL_NOT_HANDLED_ERROR = "org.torqlang.core.lang.TellNotHandledError";
+    public static final String ASK_NOT_HANDLED_ERROR_NAME = "org.torqlang.core.lang.AskNotHandledError";
+    public static final String ASK_NOT_HANDLED_ERROR_MESSAGE = """
+        Actor could not match request message with an 'ask' handler.""";
+    public static final String TELL_NOT_HANDLED_ERROR_NAME = "org.torqlang.core.lang.TellNotHandledError";
+    public static final String TELL_NOT_HANDLED_ERROR_MESSAGE = """
+        Actor could not match notify message with a 'tell' handler.""";
 
     private int nextSystemAnonymousSuffix = 0;
     private int nextSystemVarSuffix = 0;
@@ -94,7 +98,9 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         }
     }
 
-    private static SeqLang createElseUnhandledSeq(ActorLang lang, Ident errorIdent, String errorName, SourceSpan endOfActorSpan) {
+    private static SeqLang createElseUnhandledSeq(ActorLang lang, Ident errorIdent, String errorName,
+                                                  String errorMessage, RecExpr errorDetails, SourceSpan endOfActorSpan)
+    {
         VarSntc errorVar = new VarSntc(
             List.of(
                 new IdentVarDecl(new IdentAsPat(errorIdent, false, endOfActorSpan), endOfActorSpan)
@@ -111,7 +117,12 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
                 ),
                 new FieldExpr(
                     new StrAsExpr(Str.of("message"), endOfActorSpan),
-                    new IdentAsExpr(Ident.$M, endOfActorSpan),
+                    new StrAsExpr(Str.of(errorMessage), endOfActorSpan),
+                    endOfActorSpan
+                ),
+                new FieldExpr(
+                    new StrAsExpr(Str.of("details"), endOfActorSpan),
+                    errorDetails,
                     endOfActorSpan
                 )
             ),
@@ -247,6 +258,41 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         caseBodyTarget.addStmt(ifStmt);
     }
 
+    @SuppressWarnings("unchecked")
+    private void createHandlersProc(ActorLang lang, Ident targetIdent, List<? extends MatchClause> handlers,
+                                    String notHandledErrorName, String notHandledErrorMessage,
+                                    RecExpr notHandledErrorDetails, LocalTarget target)
+        throws Exception
+    {
+        SourceSpan endOfActorSpan = lang.toSourceSpanEnd();
+        LocalTarget handlerBodyTarget = target.asSntcTargetWithNewScope();
+        // If there are no handlers, generate kernel statements to throw an error
+        if (handlers.isEmpty()) {
+            Ident errorIdent = allocateNextSystemVarIdent();
+            SeqLang unhandledSeq = createElseUnhandledSeq(lang, errorIdent, notHandledErrorName,
+                notHandledErrorMessage, notHandledErrorDetails, endOfActorSpan);
+            unhandledSeq.accept(this, handlerBodyTarget);
+            Stmt handlerThrowStmt = handlerBodyTarget.build();
+            target.addStmt(new CreateProcStmt(targetIdent, new ProcDef(List.of(Ident.$M),
+                handlerThrowStmt, lang), lang));
+        } else {
+            // Synthesize an "else" to throw an error if `$m` is not matched
+            Ident errorIdent = allocateNextSystemVarIdent();
+            SeqLang elseUnhandledSeq = createElseUnhandledSeq(lang, errorIdent, notHandledErrorName,
+                notHandledErrorMessage, notHandledErrorDetails, endOfActorSpan);
+            // Generate match logic using case statements
+            visitMatchClauses(Ident.$M, handlers.get(0), (List<MatchClause>) handlers, 1,
+                elseUnhandledSeq, null, handlerBodyTarget);
+            // Add a jump-catch if `return` was used during an `ask`
+            if (handlerBodyTarget.isReturnUsed()) {
+                handlerBodyTarget.addStmt(new JumpCatchStmt(RETURN_ID, endOfActorSpan));
+            }
+            Stmt handlerCaseStmt = handlerBodyTarget.build();
+            target.addStmt(new CreateProcStmt(targetIdent, new ProcDef(List.of(Ident.$M),
+                handlerCaseStmt, lang), lang));
+        }
+    }
+
     private ProcDef createProcDef(List<Pat> formalArgs, Ident returnArg, List<SntcOrExpr> bodyList, SourceSpan sourceSpan)
         throws Exception
     {
@@ -308,11 +354,31 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         // Ask handlers
         Ident askProcIdent = allocateNextSystemVarIdent();
         actorBodyTarget.addIdentDef(new IdentDef(askProcIdent));
-        createHandlersProc(lang, askProcIdent, lang.askHandlers(), ASK_NOT_HANDLED_ERROR, actorBodyTarget);
+        RecExpr askErrorDetails = new RecExpr(
+            List.of(
+                new FieldExpr(
+                    new StrAsExpr(Str.of("request"), endOfActorSpan),
+                    new IdentAsExpr(Ident.$M, endOfActorSpan),
+                    endOfActorSpan
+                )
+            ),
+            endOfActorSpan
+        );
+        createHandlersProc(lang, askProcIdent, lang.askHandlers(), ASK_NOT_HANDLED_ERROR_NAME, ASK_NOT_HANDLED_ERROR_MESSAGE, askErrorDetails, actorBodyTarget);
         // Tell handlers
         Ident tellProcIdent = allocateNextSystemVarIdent();
         actorBodyTarget.addIdentDef(new IdentDef(tellProcIdent));
-        createHandlersProc(lang, tellProcIdent, lang.tellHandlers(), TELL_NOT_HANDLED_ERROR, actorBodyTarget);
+        RecExpr tellErrorDetails = new RecExpr(
+            List.of(
+                new FieldExpr(
+                    new StrAsExpr(Str.of("notify"), endOfActorSpan),
+                    new IdentAsExpr(Ident.$M, endOfActorSpan),
+                    endOfActorSpan
+                )
+            ),
+            endOfActorSpan
+        );
+        createHandlersProc(lang, tellProcIdent, lang.tellHandlers(), TELL_NOT_HANDLED_ERROR_NAME, TELL_NOT_HANDLED_ERROR_MESSAGE, tellErrorDetails, actorBodyTarget);
         // Create and bind handlers tuple to result
         List<ValueDef> handlers = List.of(new ValueDef(askProcIdent, endOfActorSpan),
             new ValueDef(tellProcIdent, endOfActorSpan));
@@ -329,38 +395,6 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         childTarget.addStmt(new CreateRecStmt(exprIdent, actorRecDef, endOfActorSpan));
 
         target.addStmt(childTarget.build());
-    }
-
-    @SuppressWarnings("unchecked")
-    private void createHandlersProc(ActorLang lang, Ident targetIdent, List<? extends MatchClause> handlers,
-                                    String notHandledErrorName, LocalTarget target)
-        throws Exception
-    {
-        SourceSpan endOfActorSpan = lang.toSourceSpanEnd();
-        LocalTarget handlerBodyTarget = target.asSntcTargetWithNewScope();
-        // If there are no handlers, generate kernel statements to throw an error
-        if (handlers.isEmpty()) {
-            Ident errorIdent = allocateNextSystemVarIdent();
-            SeqLang unhandledSeq = createElseUnhandledSeq(lang, errorIdent, notHandledErrorName, endOfActorSpan);
-            unhandledSeq.accept(this, handlerBodyTarget);
-            Stmt handlerThrowStmt = handlerBodyTarget.build();
-            target.addStmt(new CreateProcStmt(targetIdent, new ProcDef(List.of(Ident.$M),
-                handlerThrowStmt, lang), lang));
-        } else {
-            // Synthesize an "else" to throw an error if `$m` is not matched
-            Ident errorIdent = allocateNextSystemVarIdent();
-            SeqLang elseUnhandledSeq = createElseUnhandledSeq(lang, errorIdent, notHandledErrorName, endOfActorSpan);
-            // Generate match logic using case statements
-            visitMatchClauses(Ident.$M, handlers.get(0), (List<MatchClause>) handlers, 1,
-                elseUnhandledSeq, null, handlerBodyTarget);
-            // Add a jump-catch if `return` was used during an `ask`
-            if (handlerBodyTarget.isReturnUsed()) {
-                handlerBodyTarget.addStmt(new JumpCatchStmt(RETURN_ID, endOfActorSpan));
-            }
-            Stmt handlerCaseStmt = handlerBodyTarget.build();
-            target.addStmt(new CreateProcStmt(targetIdent, new ProcDef(List.of(Ident.$M),
-                handlerCaseStmt, lang), lang));
-        }
     }
 
     @Override
@@ -732,10 +766,18 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         List<CompleteOrIdent> ys = new ArrayList<>();
         ys.add(lang.qualifier);
         CompleteTupleBuilder builder = Rec.completeTupleBuilder();
-        for (Str s : lang.selections) {
-            // Selections are added to the parent scope, not the child scope
-            target.addIdentDef(new IdentDef(Ident.create(s.value)));
-            builder.addValue(s);
+        // Imported names are added to the parent scope, not the child scope
+        for (ImportName in : lang.names) {
+            if (in.alias != null) {
+                target.addIdentDef(new IdentDef(Ident.create(in.alias.value)));
+                builder.addValue(Rec.completeTupleBuilder()
+                    .addValue(in.name)
+                    .addValue(in.alias)
+                    .build());
+            } else {
+                target.addIdentDef(new IdentDef(Ident.create(in.name.value)));
+                builder.addValue(in.name);
+            }
         }
         ys.add(builder.build());
         childTarget.addStmt(new ApplyStmt(Ident.$IMPORT, ys, lang));
@@ -811,9 +853,9 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
                                                            Ident exprIdent,
                                                            LocalTarget target) throws Exception
     {
-        ///////////////////////////////////////////////////
-        // TODO: FIX SOURCE RANGES -- THEY ARE LIKELY WRONG
-        ///////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        // TODO: FIX SOURCE RANGES -- THEY ARE CERTAINLY WRONG
+        //////////////////////////////////////////////////////
 
         LocalTarget childTarget;
         if (exprIdent != null) {
@@ -1171,9 +1213,9 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
             childTarget = target.asSntcTargetWithNewScope();
         }
 
-        ///////////////////////////////////////////////////
-        // TODO: FIX SOURCE RANGES -- THEY ARE LIKELY WRONG
-        ///////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        // TODO: FIX SOURCE RANGES -- THEY ARE CERTAINLY WRONG
+        //////////////////////////////////////////////////////
 
         // FINALLY
 

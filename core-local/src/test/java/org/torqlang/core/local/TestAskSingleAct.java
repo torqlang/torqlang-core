@@ -32,21 +32,24 @@ public class TestAskSingleAct {
         String expected = """
             local $actor_cfgtr in
                 $create_actor_cfgtr(proc ($r) in // free vars: $act, $respond
-                    local $v0, $v3 in
+                    local $v0, $v4 in
                         $create_proc(proc ($m) in // free vars: $act, $respond
                             local $else in
                                 $create_proc(proc () in // free vars: $m
                                     local $v1 in
-                                        $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': $m}, $v1)
+                                        local $v2 in
+                                            $create_rec({'request': $m}, $v2)
+                                            $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': 'Actor could not match request message with an \\'ask\\' handler.', 'details': $v2}, $v1)
+                                        end
                                         throw $v1
                                     end
                                 end, $else)
                                 case $m of 'perform' then
-                                    local $v2 in
+                                    local $v3 in
                                         $act
-                                            $bind(1, $v2)
+                                            $bind(1, $v3)
                                         end
-                                        $respond($v2)
+                                        $respond($v3)
                                     end
                                 else
                                     $else()
@@ -54,12 +57,15 @@ public class TestAskSingleAct {
                             end
                         end, $v0)
                         $create_proc(proc ($m) in
-                            local $v4 in
-                                $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': $m}, $v4)
-                                throw $v4
+                            local $v5 in
+                                local $v6 in
+                                    $create_rec({'notify': $m}, $v6)
+                                    $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': 'Actor could not match notify message with a \\'tell\\' handler.', 'details': $v6}, $v5)
+                                end
+                                throw $v5
                             end
-                        end, $v3)
-                        $create_tuple('handlers'#[$v0, $v3], $r)
+                        end, $v4)
+                        $create_tuple('handlers'#[$v0, $v4], $r)
                     end
                 end, $actor_cfgtr)
                 $create_rec('SingleAct'#{'cfg': $actor_cfgtr}, SingleAct)

@@ -12,12 +12,12 @@ import org.torqlang.core.klvm.Nothing;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.torqlang.core.local.Envelope.createRequest;
 
-public class RequestClient implements RequestClientInit, RequestClientResponse {
-    private static final AtomicInteger nextClientId = new AtomicInteger(0);
+public final class RequestClient implements RequestClientInit, RequestClientResponse {
+    private static final AtomicLong nextClientId = new AtomicLong(0);
 
     private Address address;
     private RequestClientActor requestClientActor;

@@ -13,14 +13,6 @@ import java.util.concurrent.Executor;
 
 public interface ActorSystem {
 
-    /*
-     * TODO:
-     *     An actor system should be accessible from Torqlang source, enabling discovery and invocation
-     *     of other actors and APIs.
-     *     -- Support "import system.Directory.lookup"
-     *     -- Add global actors to actor system
-     */
-
     static ActorSystemBuilder builder() {
         return new ActorSystemBuilder();
     }
@@ -32,6 +24,8 @@ public interface ActorSystem {
     static ActorSystem defaultSystem() {
         return ActorSystemDefaults.DEFAULT_SYSTEM;
     }
+
+    ActorRef actorAt(Address address);
 
     Logger createLogger();
 

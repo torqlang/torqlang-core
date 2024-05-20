@@ -9,54 +9,67 @@ package org.torqlang.core.local;
 
 final class LocalAddress implements Address {
 
-    private static final String NAMESPACE = "local";
-    private static final String NAMESPACE_COLON = NAMESPACE + ":";
-
-    private final String value;
+    private final String path;
 
     private LocalAddress(String path) {
-
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(NAMESPACE_COLON);
-
-        int lastIndex = path.length() - 1;
-        char prevChar = ':';
-
-        for (int i = 0; i < path.length(); i++) {
+        if (path == null || path.isEmpty()) {
+            throw new IllegalArgumentException("Invalid path: " + path);
+        }
+        // Trim beginning '/'
+        int begin = 0;
+        if (path.charAt(begin) == '/') {
+            begin = 1;
+        }
+        // Trim ending '/'
+        int length = path.length();
+        if (path.charAt(length - 1) == '/') {
+            length = length - 1;
+        }
+        if (begin >= length) {
+            throw new IllegalArgumentException("Invalid path: " + path);
+        }
+        for (int i = begin; i < length; i++) {
             char c = path.charAt(i);
-            if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9') {
-                sb.append(c);
-            } else if (c == '_' || c == '-' || c == '.') {
-                sb.append(c);
-            } else if (c == '/') {
-                // Empty path elements are not allowed
-                if (prevChar == '/') {
-                    throw new IllegalArgumentException("Invalid path: " + path);
-                }
-                // Trim leading and trailing '/'
-                if (i > 0 && i < lastIndex) {
-                    sb.append(c);
-                }
-            } else {
+            if (!isValidPathChar(c)) {
                 throw new IllegalArgumentException("Invalid path: " + path);
             }
-            prevChar = c;
+            if (c == '/') {
+                // Empty segments are not allowed. Recall that beginning and ending '/' have already been trimmed.
+                // Therefore, no range check is necessary because there must be preceding and succeeding characters.
+                if (path.charAt(i - 1) == '/') {
+                    throw new IllegalArgumentException("Invalid path: " + path);
+                }
+                if (path.charAt(i + 1) == '/') {
+                    throw new IllegalArgumentException("Invalid path: " + path);
+                }
+            }
         }
-
-        this.value = sb.toString();
+        this.path = path.substring(begin, length);
     }
 
     static LocalAddress create(String path) {
         return new LocalAddress(path);
     }
 
-    static LocalAddress create(LocalAddress parentAddress, String path) {
+    static LocalAddress create(Address parent, String path) {
         if (path.charAt(0) == '/') {
             path = path.substring(1);
         }
-        String parentPath = parentAddress.value.substring(NAMESPACE_COLON.length());
-        return new LocalAddress(parentPath + "/" + path);
+        return new LocalAddress(parent.path() + "/" + path);
+    }
+
+    private static boolean isValidPathChar(char c) {
+        // a-z
+        // A-Z
+        // 0-9
+        // _ - . /
+        return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' ||
+            c == '_' || c == '-' || c == '.' || c == '/';
+    }
+
+    @Override
+    public int compareTo(Address address) {
+        return path.compareTo(address.path());
     }
 
     @Override
@@ -68,17 +81,22 @@ final class LocalAddress implements Address {
             return false;
         }
         LocalAddress that = (LocalAddress) other;
-        return value.equals(that.value);
+        return path.equals(that.path);
     }
 
     @Override
     public final int hashCode() {
-        return value.hashCode();
+        return path.hashCode();
+    }
+
+    @Override
+    public final String path() {
+        return path;
     }
 
     @Override
     public final String toString() {
-        return value;
+        return path;
     }
 
 }

@@ -25,6 +25,10 @@ public final class RecExpr extends AbstractLang implements Expr {
         this.fields = nullSafeCopyOf(fields);
     }
 
+    public RecExpr(List<FieldExpr> fields, SourceSpan sourceSpan) {
+        this(null, fields, sourceSpan);
+    }
+
     public static Complete checkComplete(SntcOrExpr expr) {
         if (expr instanceof ValueAsExpr valueAsExpr) {
             return valueAsExpr.value();

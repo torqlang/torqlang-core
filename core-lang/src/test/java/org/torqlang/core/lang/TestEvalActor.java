@@ -48,7 +48,7 @@ public class TestEvalActor {
         String expected = """
             local HelloFactorial, $actor_cfgtr in
                 $create_actor_cfgtr(proc ($r) in // free vars: $respond
-                    local fact, $v3, $v9 in
+                    local fact, $v3, $v10 in
                         $create_proc(proc (x, $r) in
                             local fact_cps in
                                 $create_proc(proc (n, k, $r) in // free vars: fact_cps
@@ -72,21 +72,24 @@ public class TestEvalActor {
                             local $else in
                                 $create_proc(proc () in // free vars: $m
                                     local $v4 in
-                                        $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': $m}, $v4)
+                                        local $v5 in
+                                            $create_rec({'request': $m}, $v5)
+                                            $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': 'Actor could not match request message with an \\'ask\\' handler.', 'details': $v5}, $v4)
+                                        end
                                         throw $v4
                                     end
                                 end, $else)
                                 case $m of {'hello': num} then
-                                    local $v5 in
-                                        local $v6, $v8 in
-                                            local $v7 in
-                                                $add('Hello, ', num, $v7)
-                                                $add($v7, '! is ', $v6)
+                                    local $v6 in
+                                        local $v7, $v9 in
+                                            local $v8 in
+                                                $add('Hello, ', num, $v8)
+                                                $add($v8, '! is ', $v7)
                                             end
-                                            fact(num, $v8)
-                                            $add($v6, $v8, $v5)
+                                            fact(num, $v9)
+                                            $add($v7, $v9, $v6)
                                         end
-                                        $respond($v5)
+                                        $respond($v6)
                                     end
                                 else
                                     $else()
@@ -94,12 +97,15 @@ public class TestEvalActor {
                             end
                         end, $v3)
                         $create_proc(proc ($m) in
-                            local $v10 in
-                                $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': $m}, $v10)
-                                throw $v10
+                            local $v11 in
+                                local $v12 in
+                                    $create_rec({'notify': $m}, $v12)
+                                    $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': 'Actor could not match notify message with a \\'tell\\' handler.', 'details': $v12}, $v11)
+                                end
+                                throw $v11
                             end
-                        end, $v9)
-                        $create_tuple('handlers'#[$v3, $v9], $r)
+                        end, $v10)
+                        $create_tuple('handlers'#[$v3, $v10], $r)
                     end
                 end, $actor_cfgtr)
                 $create_rec('HelloFactorial'#{'cfg': $actor_cfgtr}, HelloFactorial)

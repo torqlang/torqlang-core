@@ -7,14 +7,16 @@
 
 package org.torqlang.core.local;
 
-public interface Address {
+public interface Address extends Comparable<Address> {
 
-    static Address create(Address parentAddress, String path) {
-        return LocalAddress.create((LocalAddress) parentAddress, path);
+    static Address create(Address parent, String path) {
+        return LocalAddress.create(parent, path);
     }
 
     static Address create(String path) {
         return LocalAddress.create(path);
     }
+
+    String path();
 
 }

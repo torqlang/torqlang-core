@@ -563,7 +563,7 @@ public final class Parser {
             throw new ParserError(IDENT_EXPECTED, current);
         }
         StringBuilder qualifier = new StringBuilder();
-        List<Str> selections = new ArrayList<>();
+        List<ImportName> names = new ArrayList<>();
         LexerToken previous = current;
         current = nextToken();
         // Parse qualifier
@@ -582,12 +582,23 @@ public final class Parser {
             previous = current;
             current = nextToken();
         }
-        // Current token is either the '[' or one past the single selection
+        // Current token is either the '[' or one token past a name
         if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
             current = nextToken(); // accept '['
             while (current.isIdent()) {
-                selections.add(Str.of(current.substring()));
+                Str name = Str.of(current.substring());
                 current = nextToken(); // accept Ident
+                if (current.isContextualKeyword(AS_VALUE)) {
+                    current = nextToken(); // accept 'as'
+                    if (!current.isIdent()) {
+                        throw new ParserError(IDENT_EXPECTED, current);
+                    }
+                    Str alias = Str.of(current.substring());
+                    current = nextToken(); // accept alias
+                    names.add(new ImportName(name, alias));
+                } else {
+                    names.add(new ImportName(name));
+                }
                 if (current.isOneCharSymbol(COMMA_CHAR)) {
                     current = nextToken();
                 }
@@ -597,10 +608,10 @@ public final class Parser {
             }
             current = nextToken(); // accept ']'
         } else {
-            selections.add(Str.of(previous.substring()));
+            names.add(new ImportName(Str.of(previous.substring())));
         }
         // Current token is now one past the import expression
-        return new ImportSntc(Str.of(qualifier.toString()), selections, importToken.adjoin(current));
+        return new ImportSntc(Str.of(qualifier.toString()), names, importToken.adjoin(current));
     }
 
     private LocalLang parseLocal() {

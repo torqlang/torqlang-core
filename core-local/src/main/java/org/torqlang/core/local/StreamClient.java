@@ -16,12 +16,12 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.torqlang.core.local.Envelope.createRequest;
 
-public class StreamClient implements StreamClientInit, StreamClientResponse {
-    private static final AtomicInteger nextClientId = new AtomicInteger(0);
+public final class StreamClient implements StreamClientInit, StreamClientResponse {
+    private static final AtomicLong nextClientId = new AtomicLong(0);
 
     private Address address;
     private StreamClientActor streamClientActor;

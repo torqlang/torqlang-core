@@ -18,14 +18,26 @@ public class BasicActorSystem implements ActorSystem {
 
     private final String name;
     private final Executor executor;
-    private final ModuleEntry[] entries;
+    private final ActorEntry[] actors;
+    private final ModuleEntry[] modules;
 
-    BasicActorSystem(String name, Executor executor, List<ModuleEntry> entries) {
+    BasicActorSystem(String name, Executor executor, List<ActorEntry> actors, List<ModuleEntry> modules) {
         this.name = name;
         this.executor = executor != null ?
             executor : ActorSystemDefaults.executor();
-        this.entries = entries.toArray(new ModuleEntry[0]);
-        Arrays.sort(this.entries);
+        this.actors = actors.toArray(new ActorEntry[0]);
+        Arrays.sort(this.actors);
+        this.modules = modules.toArray(new ModuleEntry[0]);
+        Arrays.sort(this.modules);
+    }
+
+    @Override
+    public final ActorRef actorAt(Address address) {
+        int i = BinarySearchTools.search(actors, (a) -> address.compareTo(a.address));
+        if (i < 0) {
+            throw new ActorNotFoundError(address);
+        }
+        return actors[i].actorRef;
     }
 
     @Override
@@ -45,11 +57,11 @@ public class BasicActorSystem implements ActorSystem {
 
     @Override
     public final CompleteRec moduleAt(String path) {
-        int i = BinarySearchTools.search(entries, (m) -> path.compareTo(m.path));
+        int i = BinarySearchTools.search(modules, (m) -> path.compareTo(m.path));
         if (i < 0) {
             throw new ModuleNotFoundError(path);
         }
-        return entries[i].moduleRec;
+        return modules[i].moduleRec;
     }
 
     @Override

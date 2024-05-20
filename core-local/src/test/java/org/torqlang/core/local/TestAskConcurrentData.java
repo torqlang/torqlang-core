@@ -34,27 +34,30 @@ public class TestAskConcurrentData {
         String expected = """
             local $actor_cfgtr in
                 $create_actor_cfgtr(proc ($r) in // free vars: $act, $respond
-                    local $v0, $v5 in
+                    local $v0, $v6 in
                         $create_proc(proc ($m) in // free vars: $act, $respond
                             local $else in
                                 $create_proc(proc () in // free vars: $m
                                     local $v1 in
-                                        $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': $m}, $v1)
+                                        local $v2 in
+                                            $create_rec({'request': $m}, $v2)
+                                            $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': 'Actor could not match request message with an \\'ask\\' handler.', 'details': $v2}, $v1)
+                                        end
                                         throw $v1
                                     end
                                 end, $else)
                                 case $m of 'perform' then
-                                    local $v2 in
-                                        local $v3, $v4 in
+                                    local $v3 in
+                                        local $v4, $v5 in
                                             $act
-                                                $bind('Alice and Bob', $v3)
+                                                $bind('Alice and Bob', $v4)
                                             end
                                             $act
-                                                $bind('20 pounds of Sugar', $v4)
+                                                $bind('20 pounds of Sugar', $v5)
                                             end
-                                            $create_rec({'customer': $v3, 'order': $v4}, $v2)
+                                            $create_rec({'customer': $v4, 'order': $v5}, $v3)
                                         end
-                                        $respond($v2)
+                                        $respond($v3)
                                     end
                                 else
                                     $else()
@@ -62,12 +65,15 @@ public class TestAskConcurrentData {
                             end
                         end, $v0)
                         $create_proc(proc ($m) in
-                            local $v6 in
-                                $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': $m}, $v6)
-                                throw $v6
+                            local $v7 in
+                                local $v8 in
+                                    $create_rec({'notify': $m}, $v8)
+                                    $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': 'Actor could not match notify message with a \\'tell\\' handler.', 'details': $v8}, $v7)
+                                end
+                                throw $v7
                             end
-                        end, $v5)
-                        $create_tuple('handlers'#[$v0, $v5], $r)
+                        end, $v6)
+                        $create_tuple('handlers'#[$v0, $v6], $r)
                     end
                 end, $actor_cfgtr)
                 $create_rec('ConcurrentData'#{'cfg': $actor_cfgtr}, ConcurrentData)
@@ -104,45 +110,48 @@ public class TestAskConcurrentData {
         String expected = """
             local $actor_cfgtr in
                 $create_actor_cfgtr(proc ($r) in // free vars: $act, $import, $respond
-                    local ArrayList, $v0, $v9 in
+                    local ArrayList, $v0, $v10 in
                         $import('system', ['ArrayList'])
                         $create_proc(proc ($m) in // free vars: $act, $respond, ArrayList
                             local $else in
                                 $create_proc(proc () in // free vars: $m
                                     local $v1 in
-                                        $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': $m}, $v1)
+                                        local $v2 in
+                                            $create_rec({'request': $m}, $v2)
+                                            $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': 'Actor could not match request message with an \\'ask\\' handler.', 'details': $v2}, $v1)
+                                        end
                                         throw $v1
                                     end
                                 end, $else)
                                 case $m of 'perform' then
-                                    local $v2, list in
+                                    local $v3, list in
                                         $select_apply(ArrayList, ['new'], list)
-                                        local $v3 in
-                                            local $v4, $v5 in
+                                        local $v4 in
+                                            local $v5, $v6 in
                                                 $act
-                                                    $bind('Alice and Bob', $v4)
+                                                    $bind('Alice and Bob', $v5)
                                                 end
                                                 $act
-                                                    $bind('20 pounds of Sugar', $v5)
+                                                    $bind('20 pounds of Sugar', $v6)
                                                 end
-                                                $create_rec({'customer': $v4, 'order': $v5}, $v3)
+                                                $create_rec({'customer': $v5, 'order': $v6}, $v4)
                                             end
-                                            $select_apply(list, ['add'], $v3)
+                                            $select_apply(list, ['add'], $v4)
                                         end
-                                        local $v6 in
-                                            local $v7, $v8 in
+                                        local $v7 in
+                                            local $v8, $v9 in
                                                 $act
-                                                    $bind('Charles and Debbie', $v7)
+                                                    $bind('Charles and Debbie', $v8)
                                                 end
                                                 $act
-                                                    $bind('50 pounds of Flour', $v8)
+                                                    $bind('50 pounds of Flour', $v9)
                                                 end
-                                                $create_rec({'customer': $v7, 'order': $v8}, $v6)
+                                                $create_rec({'customer': $v8, 'order': $v9}, $v7)
                                             end
-                                            $select_apply(list, ['add'], $v6)
+                                            $select_apply(list, ['add'], $v7)
                                         end
-                                        $select_apply(list, ['to_tuple'], $v2)
-                                        $respond($v2)
+                                        $select_apply(list, ['to_tuple'], $v3)
+                                        $respond($v3)
                                     end
                                 else
                                     $else()
@@ -150,12 +159,15 @@ public class TestAskConcurrentData {
                             end
                         end, $v0)
                         $create_proc(proc ($m) in
-                            local $v10 in
-                                $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': $m}, $v10)
-                                throw $v10
+                            local $v11 in
+                                local $v12 in
+                                    $create_rec({'notify': $m}, $v12)
+                                    $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': 'Actor could not match notify message with a \\'tell\\' handler.', 'details': $v12}, $v11)
+                                end
+                                throw $v11
                             end
-                        end, $v9)
-                        $create_tuple('handlers'#[$v0, $v9], $r)
+                        end, $v10)
+                        $create_tuple('handlers'#[$v0, $v10], $r)
                     end
                 end, $actor_cfgtr)
                 $create_rec('ConcurrentData'#{'cfg': $actor_cfgtr}, ConcurrentData)

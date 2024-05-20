@@ -15,14 +15,14 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TestAskSumArrayList {
+public class TestAskSumArrayListWithImportAlias {
 
     @Test
     public void test() throws Exception {
         String source = """
             actor SumArrayList() in
-                import system[ArrayList, Cell, ValueIter]
-                var one_thru_five = ArrayList.new([1, 2, 3, 4, 5])
+                import system[ArrayList as JavaArrayList, Cell, ValueIter]
+                var one_thru_five = JavaArrayList.new([1, 2, 3, 4, 5])
                 handle ask 'perform' in
                     var sum = Cell.new(0)
                     for i in ValueIter.new(one_thru_five) do
@@ -38,11 +38,11 @@ public class TestAskSumArrayList {
         String expected = """
             local $actor_cfgtr in
                 $create_actor_cfgtr(proc ($r) in // free vars: $import, $respond
-                    local ArrayList, Cell, ValueIter, one_thru_five, $v1, $v8 in
-                        $import('system', ['ArrayList', 'Cell', 'ValueIter'])
+                    local JavaArrayList, Cell, ValueIter, one_thru_five, $v1, $v8 in
+                        $import('system', [['ArrayList', 'JavaArrayList'], 'Cell', 'ValueIter'])
                         local $v0 in
                             $bind([1, 2, 3, 4, 5], $v0)
-                            $select_apply(ArrayList, ['new'], $v0, one_thru_five)
+                            $select_apply(JavaArrayList, ['new'], $v0, one_thru_five)
                         end
                         $create_proc(proc ($m) in // free vars: $respond, Cell, ValueIter, one_thru_five
                             local $else in

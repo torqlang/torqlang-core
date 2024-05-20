@@ -83,8 +83,11 @@ if: 'if' stmt_or_expr 'then' stmt_or_expr+
     ('elseif' stmt_or_expr 'then' stmt_or_expr+)*
     ('else' stmt_or_expr+)? 'end';
 
-// `import` is an ANTLR4 keyword, therefore we add an underscore
-import_: 'import' '(' arg_list ')';
+// `import` is already an ANTLR4 keyword, therefore we create our keyword
+// with a trailing underscore
+import_: 'import' ident ('.' ident)* ('[' import_alias (',' import_alias)* ']')?;
+
+import_alias: ident ('as' ident)?;
 
 local: 'local' var_decl (',' var_decl)*
        'in' stmt_or_expr+ 'end';

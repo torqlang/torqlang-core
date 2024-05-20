@@ -24,14 +24,10 @@ import java.util.concurrent.TimeUnit;
 public class QueryOrders extends AbstractExample {
 
     public static final String SOURCE = """
-    
-        // meta#{'resource': '/orders'}
         actor Orders() in
             import system[ArrayList, FieldIter, ValueIter]
             import examples.NorthwindCache.get_orders
             var orders = get_orders()
-    
-            // meta#{'paths': ['/orders']}
             handle ask 'GET'#{'headers': headers, 'path': path, 'query': query} in
                 func matches_query(order) in
                     for field in FieldIter.new(query) do
@@ -49,9 +45,8 @@ public class QueryOrders extends AbstractExample {
                 end
                 array_list.to_tuple()
             end
-            // meta#{'paths': ['/orders/{id}']}
             handle ask 'POST'#{'headers': headers, 'path': path, 'query': query, 'body': body} in
-                // For now, we just echo the params
+                // For now, just echo the params
                 'POST'#{
                     'headers': headers,
                     'path': path,

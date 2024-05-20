@@ -40,40 +40,43 @@ public class TestAskIterateTimerTicks {
         String expected = """
             local $actor_cfgtr in
                 $create_actor_cfgtr(proc ($r) in // free vars: $import, $respond, $spawn
-                    local Cell, Stream, Timer, ValueIter, $v0, $v9 in
+                    local Cell, Stream, Timer, ValueIter, $v0, $v10 in
                         $import('system', ['Cell', 'Stream', 'Timer', 'ValueIter'])
                         $create_proc(proc ($m) in // free vars: $respond, $spawn, Cell, Stream, Timer, ValueIter
                             local $else in
                                 $create_proc(proc () in // free vars: $m
                                     local $v1 in
-                                        $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': $m}, $v1)
+                                        local $v2 in
+                                            $create_rec({'request': $m}, $v2)
+                                            $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': 'Actor could not match request message with an \\'ask\\' handler.', 'details': $v2}, $v1)
+                                        end
                                         throw $v1
                                     end
                                 end, $else)
                                 case $m of 'iterate' then
-                                    local $v2, tick_count, timer_stream in
+                                    local $v3, tick_count, timer_stream in
                                         $select_apply(Cell, ['new'], 0, tick_count)
-                                        local $v3, $v5 in
-                                            local $v4 in
-                                                $select_apply(Timer, ['cfg'], 1, 'microseconds', $v4)
-                                                $spawn($v4, $v3)
+                                        local $v4, $v6 in
+                                            local $v5 in
+                                                $select_apply(Timer, ['cfg'], 1, 'microseconds', $v5)
+                                                $spawn($v5, $v4)
                                             end
-                                            $bind('request'#{'ticks': 5}, $v5)
-                                            $select_apply(Stream, ['new'], $v3, $v5, timer_stream)
+                                            $bind('request'#{'ticks': 5}, $v6)
+                                            $select_apply(Stream, ['new'], $v4, $v6, timer_stream)
                                         end
                                         local $iter, $for in
                                             $select_apply(ValueIter, ['new'], timer_stream, $iter)
                                             $create_proc(proc () in // free vars: $for, $iter, tick_count
-                                                local tick, $v6 in
+                                                local tick, $v7 in
                                                     $iter(tick)
-                                                    $ne(tick, eof, $v6)
-                                                    if $v6 then
-                                                        local $v7 in
-                                                            local $v8 in
-                                                                $get(tick_count, $v8)
-                                                                $add($v8, 1, $v7)
+                                                    $ne(tick, eof, $v7)
+                                                    if $v7 then
+                                                        local $v8 in
+                                                            local $v9 in
+                                                                $get(tick_count, $v9)
+                                                                $add($v9, 1, $v8)
                                                             end
-                                                            $set(tick_count, $v7)
+                                                            $set(tick_count, $v8)
                                                         end
                                                         $for()
                                                     end
@@ -81,8 +84,8 @@ public class TestAskIterateTimerTicks {
                                             end, $for)
                                             $for()
                                         end
-                                        $get(tick_count, $v2)
-                                        $respond($v2)
+                                        $get(tick_count, $v3)
+                                        $respond($v3)
                                     end
                                 else
                                     $else()
@@ -90,12 +93,15 @@ public class TestAskIterateTimerTicks {
                             end
                         end, $v0)
                         $create_proc(proc ($m) in
-                            local $v10 in
-                                $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': $m}, $v10)
-                                throw $v10
+                            local $v11 in
+                                local $v12 in
+                                    $create_rec({'notify': $m}, $v12)
+                                    $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': 'Actor could not match notify message with a \\'tell\\' handler.', 'details': $v12}, $v11)
+                                end
+                                throw $v11
                             end
-                        end, $v9)
-                        $create_tuple('handlers'#[$v0, $v9], $r)
+                        end, $v10)
+                        $create_tuple('handlers'#[$v0, $v10], $r)
                     end
                 end, $actor_cfgtr)
                 $create_rec('IterateTimerTicks'#{'cfg': $actor_cfgtr}, IterateTimerTicks)

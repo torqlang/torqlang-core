@@ -90,12 +90,24 @@ final class LocalActor extends AbstractActor {
         owner.performCallbackToAct(ys, env, machine);
     }
 
+    static void onCallbackToActorAt(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
+        LocalActor owner = machine.owner();
+        if (ys.size() != 2) {
+            throw new InvalidArgCountError(2, ys, "LocalActor.onCallbackForActorAt");
+        }
+        Str addressStr = (Str) ys.get(0).resolveValue(env);
+        Address address = Address.create(addressStr.value);
+        ActorRef actorRef = owner.system.actorAt(address);
+        ActorRefObj actorRefObj = new ActorRefObj(actorRef);
+        ys.get(1).resolveValueOrVar(env).bindToValue(actorRefObj, null);
+    }
+
     /*
      * Imports must be a type of `Complete`
      */
-    static void onCallbackToImport(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
-        // TODO: Support a third argument -- an alias
-        //       For example: import system[ArrayList as JavaArrayList]
+    static void onCallbackToImport(List<CompleteOrIdent> ys, Env env, Machine machine)
+        throws WaitException
+    {
         LocalActor owner = machine.owner();
         if (ys.size() != 2) {
             throw new InvalidArgCountError(2, ys, "LocalActor.onCallbackToImport");
@@ -106,18 +118,27 @@ final class LocalActor extends AbstractActor {
         }
         String qualifier = qualifierStr.value;
         CompleteRec moduleRec = owner.system.moduleAt(qualifier);
-        Value selectionsRes = ys.get(1).resolveValue(env);
-        if (!(selectionsRes instanceof CompleteTuple selectionsTuple)) {
-            throw new IllegalArgumentException("Not a CompleteTuple: " + selectionsRes);
+        Value namesRes = ys.get(1).resolveValue(env);
+        if (!(namesRes instanceof CompleteTuple namesTuple)) {
+            throw new IllegalArgumentException("Not a CompleteTuple: " + namesRes);
         }
-        for (int i = 0; i < selectionsTuple.fieldCount(); i++) {
-            Str selectionStr = (Str) selectionsTuple.valueAt(i);
-            Complete selection = moduleRec.findValue(selectionStr);
-            if (selection == null) {
-                throw new IllegalArgumentException("Component not found: " + selectionStr);
+        for (int i = 0; i < namesTuple.fieldCount(); i++) {
+            Str nameStr;
+            Str aliasStr;
+            Value nameValue = namesTuple.valueAt(i);
+            if (nameValue instanceof CompleteTuple nameTuple) {
+                nameStr = (Str) nameTuple.valueAt(0);
+                aliasStr = (Str) nameTuple.valueAt(1);
+            } else {
+                nameStr = (Str) nameValue;
+                aliasStr = nameStr;
             }
-            Ident selectionIdent = Ident.create(selectionStr.value);
-            env.get(selectionIdent).bindToValue(selection, null);
+            Complete component = moduleRec.findValue(nameStr);
+            if (component == null) {
+                throw new IllegalArgumentException("Component not found: " + nameStr);
+            }
+            Ident aliasIdent = Ident.create(aliasStr.value);
+            env.get(aliasIdent).bindToValue(component, null);
         }
     }
 

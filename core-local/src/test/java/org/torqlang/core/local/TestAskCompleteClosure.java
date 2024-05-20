@@ -39,7 +39,7 @@ public class TestAskCompleteClosure {
         String expected = """
             local $actor_cfgtr in
                 $create_actor_cfgtr(proc ($r) in // free vars: $act, $respond
-                    local echo, $v0, $v6 in
+                    local echo, $v0, $v7 in
                         $create_proc(proc (m, $r) in
                             $bind(m, $r)
                         end, echo)
@@ -47,25 +47,28 @@ public class TestAskCompleteClosure {
                             local $else in
                                 $create_proc(proc () in // free vars: $m
                                     local $v1 in
-                                        $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': $m}, $v1)
+                                        local $v2 in
+                                            $create_rec({'request': $m}, $v2)
+                                            $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': 'Actor could not match request message with an \\'ask\\' handler.', 'details': $v2}, $v1)
+                                        end
                                         throw $v1
                                     end
                                 end, $else)
                                 case $m of 'perform' then
-                                    local $v2 in
-                                        local $v3, $v4, $v5 in
+                                    local $v3 in
+                                        local $v4, $v5, $v6 in
                                             $act
-                                                echo(1, $v3)
+                                                echo(1, $v4)
                                             end
                                             $act
-                                                echo(2, $v4)
+                                                echo(2, $v5)
                                             end
                                             $act
-                                                echo(3, $v5)
+                                                echo(3, $v6)
                                             end
-                                            $create_tuple([$v3, $v4, $v5], $v2)
+                                            $create_tuple([$v4, $v5, $v6], $v3)
                                         end
-                                        $respond($v2)
+                                        $respond($v3)
                                     end
                                 else
                                     $else()
@@ -73,12 +76,15 @@ public class TestAskCompleteClosure {
                             end
                         end, $v0)
                         $create_proc(proc ($m) in
-                            local $v7 in
-                                $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': $m}, $v7)
-                                throw $v7
+                            local $v8 in
+                                local $v9 in
+                                    $create_rec({'notify': $m}, $v9)
+                                    $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': 'Actor could not match notify message with a \\'tell\\' handler.', 'details': $v9}, $v8)
+                                end
+                                throw $v8
                             end
-                        end, $v6)
-                        $create_tuple('handlers'#[$v0, $v6], $r)
+                        end, $v7)
+                        $create_tuple('handlers'#[$v0, $v7], $r)
                     end
                 end, $actor_cfgtr)
                 $create_rec('ConcurrentData'#{'cfg': $actor_cfgtr}, ConcurrentData)
@@ -126,7 +132,7 @@ public class TestAskCompleteClosure {
         String expected = """
             local $actor_cfgtr in
                 $create_actor_cfgtr(proc ($r) in // free vars: $act, $import, $respond
-                    local Cell, next_value, next, $v2, $v8 in
+                    local Cell, next_value, next, $v2, $v9 in
                         $import('system', ['Cell'])
                         $select_apply(Cell, ['new'], 0, next_value)
                         $create_proc(proc ($r) in // free vars: next_value
@@ -146,25 +152,28 @@ public class TestAskCompleteClosure {
                             local $else in
                                 $create_proc(proc () in // free vars: $m
                                     local $v3 in
-                                        $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': $m}, $v3)
+                                        local $v4 in
+                                            $create_rec({'request': $m}, $v4)
+                                            $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': 'Actor could not match request message with an \\'ask\\' handler.', 'details': $v4}, $v3)
+                                        end
                                         throw $v3
                                     end
                                 end, $else)
                                 case $m of 'perform' then
-                                    local $v4 in
-                                        local $v5, $v6, $v7 in
-                                            $act
-                                                next($v5)
-                                            end
+                                    local $v5 in
+                                        local $v6, $v7, $v8 in
                                             $act
                                                 next($v6)
                                             end
                                             $act
                                                 next($v7)
                                             end
-                                            $create_tuple([$v5, $v6, $v7], $v4)
+                                            $act
+                                                next($v8)
+                                            end
+                                            $create_tuple([$v6, $v7, $v8], $v5)
                                         end
-                                        $respond($v4)
+                                        $respond($v5)
                                     end
                                 else
                                     $else()
@@ -172,12 +181,15 @@ public class TestAskCompleteClosure {
                             end
                         end, $v2)
                         $create_proc(proc ($m) in
-                            local $v9 in
-                                $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': $m}, $v9)
-                                throw $v9
+                            local $v10 in
+                                local $v11 in
+                                    $create_rec({'notify': $m}, $v11)
+                                    $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': 'Actor could not match notify message with a \\'tell\\' handler.', 'details': $v11}, $v10)
+                                end
+                                throw $v10
                             end
-                        end, $v8)
-                        $create_tuple('handlers'#[$v2, $v8], $r)
+                        end, $v9)
+                        $create_tuple('handlers'#[$v2, $v9], $r)
                     end
                 end, $actor_cfgtr)
                 $create_rec('ConcurrentData'#{'cfg': $actor_cfgtr}, ConcurrentData)

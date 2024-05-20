@@ -91,10 +91,6 @@
         "type": "object",
         "required": ["code", "message", "type"],
         "properties": {
-          "code": {
-            "type": "string",
-            "example": "ERR-12345"
-          },
           "details": {
             "type": "string",
             "example": "A zero quantity is not allowed. Enter a non-zero quantity or remove the item."
@@ -103,14 +99,18 @@
             "type": "string",
             "example": "Zero quantity is not allowed"
           },
-          "type": {
+          "name": {
             "type": "string",
-            "enum": ["ERROR", "INFO", "WARN"],
-            "example": "ERROR"
+            "example": "com.my.application.ZeroQuantityError"
           },
           "trace_id": {
             "type": "string",
             "example": "19bc9126-6182-47f8-b799-a81ea54f8e8f"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["ERROR", "INFO", "WARN"],
+            "example": "ERROR"
           }
         }
       },

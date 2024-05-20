@@ -39,17 +39,20 @@ public class TestAskConcurrentFeatures {
         String expected = """
             local $actor_cfgtr in
                 $create_actor_cfgtr(proc ($r) in // free vars: $act, $respond
-                    local $v0, $v5 in
+                    local $v0, $v6 in
                         $create_proc(proc ($m) in // free vars: $act, $respond
                             local $else in
                                 $create_proc(proc () in // free vars: $m
                                     local $v1 in
-                                        $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': $m}, $v1)
+                                        local $v2 in
+                                            $create_rec({'request': $m}, $v2)
+                                            $create_rec('error'#{'name': 'org.torqlang.core.lang.AskNotHandledError', 'message': 'Actor could not match request message with an \\'ask\\' handler.', 'details': $v2}, $v1)
+                                        end
                                         throw $v1
                                     end
                                 end, $else)
                                 case $m of 'perform' then
-                                    local $v2, f, v, a, b in
+                                    local $v3, f, v, a, b in
                                         $create_rec({f: v}, a)
                                         $act
                                             $bind({'one': 1}, a)
@@ -61,12 +64,12 @@ public class TestAskConcurrentFeatures {
                                         $act
                                             $bind('one', f)
                                         end
-                                        local $v3, $v4 in
-                                            $select(a, 'one', $v3)
-                                            $select(b, 'one', $v4)
-                                            $add($v3, $v4, $v2)
+                                        local $v4, $v5 in
+                                            $select(a, 'one', $v4)
+                                            $select(b, 'one', $v5)
+                                            $add($v4, $v5, $v3)
                                         end
-                                        $respond($v2)
+                                        $respond($v3)
                                     end
                                 else
                                     $else()
@@ -74,12 +77,15 @@ public class TestAskConcurrentFeatures {
                             end
                         end, $v0)
                         $create_proc(proc ($m) in
-                            local $v6 in
-                                $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': $m}, $v6)
-                                throw $v6
+                            local $v7 in
+                                local $v8 in
+                                    $create_rec({'notify': $m}, $v8)
+                                    $create_rec('error'#{'name': 'org.torqlang.core.lang.TellNotHandledError', 'message': 'Actor could not match notify message with a \\'tell\\' handler.', 'details': $v8}, $v7)
+                                end
+                                throw $v7
                             end
-                        end, $v5)
-                        $create_tuple('handlers'#[$v0, $v5], $r)
+                        end, $v6)
+                        $create_tuple('handlers'#[$v0, $v6], $r)
                     end
                 end, $actor_cfgtr)
                 $create_rec('ConcurrentFeatures'#{'cfg': $actor_cfgtr}, ConcurrentFeatures)

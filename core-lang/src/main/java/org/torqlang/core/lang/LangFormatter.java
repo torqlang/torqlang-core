@@ -381,18 +381,27 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitImportSntc(ImportSntc lang, FormatterState state) throws Exception {
+        Str q = lang.qualifier;
+        List<ImportName> ins = lang.names;
         state.write("import ");
-        state.write(lang.qualifier.value);
-        if (lang.selections.size() == 1) {
-            state.write('.');
-            state.write(lang.selections.get(0).value);
+        state.write(q.value);
+        if (ins.size() == 1 && ins.get(0).alias == null) {
+            if (!q.value.isEmpty()) {
+                state.write('.');
+            }
+            state.write(ins.get(0).name.value);
         } else {
             state.write('[');
-            for (int i = 0; i < lang.selections.size(); i++) {
+            for (int i = 0; i < ins.size(); i++) {
+                ImportName in = ins.get(i);
                 if (i > 0) {
                     state.write(", ");
                 }
-                state.write(lang.selections.get(i).value);
+                state.write(in.name.value);
+                if (in.alias != null) {
+                    state.write(" as ");
+                    state.write(in.alias.value);
+                }
             }
             state.write(']');
         }

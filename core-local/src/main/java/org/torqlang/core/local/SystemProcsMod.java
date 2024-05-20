@@ -14,6 +14,7 @@ final class SystemProcsMod {
 
     private static CompleteRec createModuleRec() {
         return Rec.completeRecBuilder()
+            .addField(Str.of("actor_at"), (CompleteProc) LocalActor::onCallbackToActorAt)
             .addField(Str.of("assert_bound"), KernelProcs.ASSERT_BOUND_PROC)
             .addField(Str.of("is_bound"), KernelProcs.IS_BOUND_PROC)
             .addField(Str.of("is_det"), KernelProcs.IS_DET_PROC)

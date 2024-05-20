@@ -17,12 +17,12 @@ import static org.torqlang.core.util.ListTools.nullSafeCopyOf;
 public final class ImportSntc extends AbstractLang implements Sntc {
 
     public final Str qualifier;
-    public final List<Str> selections;
+    public final List<ImportName> names;
 
-    public ImportSntc(Str qualifier, List<Str> selections, SourceSpan sourceSpan) {
+    public ImportSntc(Str qualifier, List<ImportName> names, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.qualifier = qualifier;
-        this.selections = nullSafeCopyOf(selections);
+        this.names = nullSafeCopyOf(names);
     }
 
     @Override

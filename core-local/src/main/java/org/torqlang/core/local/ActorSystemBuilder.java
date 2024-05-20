@@ -26,8 +26,18 @@ public final class ActorSystemBuilder {
     }
 
     private final Map<String, CompleteRec> modulesMap = new HashMap<>();
+    private final Map<Address, ActorRef> actorsMap = new HashMap<>();
     private String name;
     private Executor executor;
+
+    public ActorSystemBuilder addActor(String path, ActorRef actorRef) {
+        LocalAddress address = LocalAddress.create(path);
+        if (actorsMap.containsKey(address)) {
+            throw new IllegalArgumentException("Actor already exists:" + path);
+        }
+        actorsMap.put(address, actorRef);
+        return this;
+    }
 
     public final ActorSystemBuilder addDefaultModules() {
         modulesMap.putAll(DEFAULT_MODULES_MAP);
@@ -43,12 +53,16 @@ public final class ActorSystemBuilder {
     }
 
     public final ActorSystem build() {
+        List<ActorEntry> actors = new ArrayList<>(actorsMap.size());
+        for (Map.Entry<Address, ActorRef> entry : actorsMap.entrySet()) {
+            actors.add(new ActorEntry(entry.getKey(), entry.getValue()));
+        }
         Map<String, CompleteRec> effectiveModulesMap = modulesMap.isEmpty() ? DEFAULT_MODULES_MAP : modulesMap;
         List<ModuleEntry> modules = new ArrayList<>(effectiveModulesMap.size());
         for (Map.Entry<String, CompleteRec> entry : effectiveModulesMap.entrySet()) {
             modules.add(new ModuleEntry(entry.getKey(), entry.getValue()));
         }
-        return new BasicActorSystem(name, executor, modules);
+        return new BasicActorSystem(name, executor, actors, modules);
     }
 
     public final Executor executor() {
