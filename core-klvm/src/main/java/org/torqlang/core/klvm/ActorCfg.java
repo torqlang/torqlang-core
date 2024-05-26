@@ -7,8 +7,6 @@
 
 package org.torqlang.core.klvm;
 
-import org.torqlang.core.util.NeedsImpl;
-
 import java.util.List;
 
 @SuppressWarnings("ClassCanBeRecord")
@@ -36,7 +34,7 @@ public final class ActorCfg implements Obj {
     }
 
     public final ValueOrVar select(Feature feature) throws WaitException {
-        throw new NeedsImpl();
+        throw new FeatureNotFoundError(this, feature);
     }
 
     @Override

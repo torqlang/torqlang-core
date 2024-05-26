@@ -1,6 +1,6 @@
 [
   {
-    "_id": 5,
+    "id": 5,
     "supplier_ids": [
       10
     ],
@@ -16,7 +16,7 @@
     "category": "Oil"
   },
   {
-    "_id": 3,
+    "id": 3,
     "supplier_ids": [
       10
     ],
@@ -32,7 +32,7 @@
     "category": "Condiments"
   },
   {
-    "_id": 6,
+    "id": 6,
     "supplier_ids": [
       2,
       6
@@ -49,7 +49,7 @@
     "category": "Jams, Preserves"
   },
   {
-    "_id": 7,
+    "id": 7,
     "supplier_ids": [
       2
     ],
@@ -65,7 +65,7 @@
     "category": "Dried Fruit & Nuts"
   },
   {
-    "_id": 8,
+    "id": 8,
     "supplier_ids": [
       8
     ],
@@ -81,7 +81,7 @@
     "category": "Sauces"
   },
   {
-    "_id": 14,
+    "id": 14,
     "supplier_ids": [
       2,
       6
@@ -98,7 +98,7 @@
     "category": "Dried Fruit & Nuts"
   },
   {
-    "_id": 17,
+    "id": 17,
     "supplier_ids": [
       6
     ],
@@ -114,7 +114,7 @@
     "category": "Canned Fruit & Vegetables"
   },
   {
-    "_id": 1,
+    "id": 1,
     "supplier_ids": [
       4
     ],
@@ -130,7 +130,7 @@
     "category": "Beverages"
   },
   {
-    "_id": 4,
+    "id": 4,
     "supplier_ids": [
       10
     ],
@@ -146,7 +146,7 @@
     "category": "Condiments"
   },
   {
-    "_id": 19,
+    "id": 19,
     "supplier_ids": [
       1
     ],
@@ -162,7 +162,7 @@
     "category": "Baked Goods & Mixes"
   },
   {
-    "_id": 20,
+    "id": 20,
     "supplier_ids": [
       2,
       6
@@ -179,7 +179,7 @@
     "category": "Jams, Preserves"
   },
   {
-    "_id": 21,
+    "id": 21,
     "supplier_ids": [
       1
     ],
@@ -195,7 +195,7 @@
     "category": "Baked Goods & Mixes"
   },
   {
-    "_id": 34,
+    "id": 34,
     "supplier_ids": [
       4
     ],
@@ -211,7 +211,7 @@
     "category": "Beverages"
   },
   {
-    "_id": 40,
+    "id": 40,
     "supplier_ids": [
       7
     ],
@@ -227,7 +227,7 @@
     "category": "Canned Meat"
   },
   {
-    "_id": 41,
+    "id": 41,
     "supplier_ids": [
       6
     ],
@@ -243,7 +243,7 @@
     "category": "Soups"
   },
   {
-    "_id": 43,
+    "id": 43,
     "supplier_ids": [
       3,
       4
@@ -260,7 +260,7 @@
     "category": "Beverages"
   },
   {
-    "_id": 48,
+    "id": 48,
     "supplier_ids": [
       10
     ],
@@ -276,7 +276,7 @@
     "category": "Candy"
   },
   {
-    "_id": 51,
+    "id": 51,
     "supplier_ids": [
       2
     ],
@@ -292,7 +292,7 @@
     "category": "Dried Fruit & Nuts"
   },
   {
-    "_id": 52,
+    "id": 52,
     "supplier_ids": [
       1
     ],
@@ -308,7 +308,7 @@
     "category": "Grains"
   },
   {
-    "_id": 56,
+    "id": 56,
     "supplier_ids": [
       1
     ],
@@ -324,7 +324,7 @@
     "category": "Pasta"
   },
   {
-    "_id": 57,
+    "id": 57,
     "supplier_ids": [
       1
     ],
@@ -340,7 +340,7 @@
     "category": "Pasta"
   },
   {
-    "_id": 65,
+    "id": 65,
     "supplier_ids": [
       8
     ],
@@ -356,7 +356,7 @@
     "category": "Sauces"
   },
   {
-    "_id": 72,
+    "id": 72,
     "supplier_ids": [
       5
     ],
@@ -372,7 +372,7 @@
     "category": "Dairy products"
   },
   {
-    "_id": 66,
+    "id": 66,
     "supplier_ids": [
       8
     ],
@@ -388,7 +388,7 @@
     "category": "Sauces"
   },
   {
-    "_id": 74,
+    "id": 74,
     "supplier_ids": [
       2,
       6
@@ -405,7 +405,7 @@
     "category": "Dried Fruit & Nuts"
   },
   {
-    "_id": 77,
+    "id": 77,
     "supplier_ids": [
       10
     ],
@@ -421,7 +421,7 @@
     "category": "Condiments"
   },
   {
-    "_id": 80,
+    "id": 80,
     "supplier_ids": [
       2
     ],
@@ -437,7 +437,7 @@
     "category": "Dried Fruit & Nuts"
   },
   {
-    "_id": 81,
+    "id": 81,
     "supplier_ids": [
       3
     ],
@@ -453,7 +453,7 @@
     "category": "Beverages"
   },
   {
-    "_id": 82,
+    "id": 82,
     "supplier_ids": [
       1
     ],
@@ -467,7 +467,7 @@
     "category": "Cereal"
   },
   {
-    "_id": 83,
+    "id": 83,
     "supplier_ids": [
       9
     ],
@@ -481,7 +481,7 @@
     "category": "Chips, Snacks"
   },
   {
-    "_id": 85,
+    "id": 85,
     "supplier_ids": [
       1
     ],
@@ -497,7 +497,7 @@
     "category": "Baked Goods & Mixes"
   },
   {
-    "_id": 86,
+    "id": 86,
     "supplier_ids": [
       1
     ],
@@ -513,7 +513,7 @@
     "category": "Baked Goods & Mixes"
   },
   {
-    "_id": 87,
+    "id": 87,
     "supplier_ids": [
       7
     ],
@@ -528,7 +528,7 @@
     "category": "Beverages"
   },
   {
-    "_id": 88,
+    "id": 88,
     "supplier_ids": [
       6
     ],
@@ -543,7 +543,7 @@
     "category": "Canned Fruit & Vegetables"
   },
   {
-    "_id": 89,
+    "id": 89,
     "supplier_ids": [
       6
     ],
@@ -558,7 +558,7 @@
     "category": "Canned Fruit & Vegetables"
   },
   {
-    "_id": 90,
+    "id": 90,
     "supplier_ids": [
       6
     ],
@@ -573,7 +573,7 @@
     "category": "Canned Fruit & Vegetables"
   },
   {
-    "_id": 92,
+    "id": 92,
     "supplier_ids": [
       6
     ],
@@ -588,7 +588,7 @@
     "category": "Canned Fruit & Vegetables"
   },
   {
-    "_id": 95,
+    "id": 95,
     "supplier_ids": [
       7
     ],
@@ -603,7 +603,7 @@
     "category": "Canned Meat"
   },
   {
-    "_id": 93,
+    "id": 93,
     "supplier_ids": [
       6
     ],
@@ -618,7 +618,7 @@
     "category": "Canned Fruit & Vegetables"
   },
   {
-    "_id": 97,
+    "id": 97,
     "supplier_ids": [
       1
     ],
@@ -632,7 +632,7 @@
     "category": "Cereal"
   },
   {
-    "_id": 91,
+    "id": 91,
     "supplier_ids": [
       6
     ],
@@ -647,7 +647,7 @@
     "category": "Canned Fruit & Vegetables"
   },
   {
-    "_id": 98,
+    "id": 98,
     "supplier_ids": [
       6
     ],
@@ -661,7 +661,7 @@
     "category": "Soups"
   },
   {
-    "_id": 99,
+    "id": 99,
     "supplier_ids": [
       6
     ],
@@ -675,7 +675,7 @@
     "category": "Soups"
   },
   {
-    "_id": 94,
+    "id": 94,
     "supplier_ids": [
       6
     ],
@@ -690,7 +690,7 @@
     "category": "Canned Fruit & Vegetables"
   },
   {
-    "_id": 96,
+    "id": 96,
     "supplier_ids": [
       7
     ],

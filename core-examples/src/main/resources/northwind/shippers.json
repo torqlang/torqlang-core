@@ -1,6 +1,6 @@
 [
   {
-    "_id": 1,
+    "id": 1,
     "company": "Shipping Company A",
     "address": "123 Any Street",
     "city": "Memphis",
@@ -9,7 +9,7 @@
     "country_region": "USA"
   },
   {
-    "_id": 2,
+    "id": 2,
     "company": "Shipping Company B",
     "address": "123 Any Street",
     "city": "Memphis",
@@ -18,7 +18,7 @@
     "country_region": "USA"
   },
   {
-    "_id": 3,
+    "id": 3,
     "company": "Shipping Company C",
     "address": "123 Any Street",
     "city": "Memphis",

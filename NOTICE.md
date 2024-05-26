@@ -10,11 +10,14 @@ Torqlang server uses Jetty per the Apache License Version 2.0
 
 ### Attribution
 
-Torqlang examples may use the Mongo DB Northwind files forked from:
-https://github.com/jasny/mongodb-northwind
+Some Torqlang examples use the Mongo DB Northwind data forked from <https://github.com/jasny/mongodb-northwind> and residing at <https://github.com/torqlang/mongodb-northwind>.
 
-Residing at:
-https://github.com/torqlang/mongodb-northwind
+Changes made in the core-examples module:
+1) Orders are normalized. Details are extracted from `orders.json` and placed into `order_details.json`.
+2) Purchase Orders are normalized. Details are extracted from `purchase_orders.json` and placed into `purchase_order_details.json`.
+3) Date properties, such as `"order_date": {"$date", "2006-04-25T17:26:53Z"}`, are simplified to `"order_date": "2006-04-25T17:26:53Z"` to match the OpenAPI metadata `"order_date": {"type": "string", "format": "date-time"}`.
+4) Identifiers are changed from "_id" to "id".
+5) Files `orders_status` and `orders_tax_status` are renamed to `order_status` and `order_tax_status`, respectively, to agree with the original Northwind ERD.
 
 ### MongoDB Northwind License
 

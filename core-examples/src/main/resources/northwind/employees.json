@@ -1,6 +1,6 @@
 [
   {
-    "_id": 1,
+    "id": 1,
     "company": "Northwind Traders",
     "last_name": "Freehafer",
     "first_name": "Nancy",
@@ -18,7 +18,7 @@
     "privileges": []
   },
   {
-    "_id": 4,
+    "id": 4,
     "company": "Northwind Traders",
     "last_name": "Sergienko",
     "first_name": "Mariya",
@@ -36,7 +36,7 @@
     "privileges": []
   },
   {
-    "_id": 5,
+    "id": 5,
     "company": "Northwind Traders",
     "last_name": "Thorpe",
     "first_name": "Steven",
@@ -55,7 +55,7 @@
     "privileges": []
   },
   {
-    "_id": 3,
+    "id": 3,
     "company": "Northwind Traders",
     "last_name": "Kotas",
     "first_name": "Jan",
@@ -74,7 +74,7 @@
     "privileges": []
   },
   {
-    "_id": 2,
+    "id": 2,
     "company": "Northwind Traders",
     "last_name": "Cencini",
     "first_name": "Andrew",
@@ -95,7 +95,7 @@
     ]
   },
   {
-    "_id": 6,
+    "id": 6,
     "company": "Northwind Traders",
     "last_name": "Neipper",
     "first_name": "Michael",
@@ -114,7 +114,7 @@
     "privileges": []
   },
   {
-    "_id": 7,
+    "id": 7,
     "company": "Northwind Traders",
     "last_name": "Zare",
     "first_name": "Robert",
@@ -132,7 +132,7 @@
     "privileges": []
   },
   {
-    "_id": 8,
+    "id": 8,
     "company": "Northwind Traders",
     "last_name": "Giussani",
     "first_name": "Laura",
@@ -151,7 +151,7 @@
     "privileges": []
   },
   {
-    "_id": 9,
+    "id": 9,
     "company": "Northwind Traders",
     "last_name": "Hellung-Larsen",
     "first_name": "Anne",
