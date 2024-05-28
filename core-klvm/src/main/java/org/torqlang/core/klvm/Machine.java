@@ -46,6 +46,10 @@ public final class Machine {
         }
     }
 
+    public static void compute(Stack stack, long timeSlice) {
+        compute(new Machine(stack), timeSlice);
+    }
+
     public final ComputeAdvice compute(long timeSlice) {
         if (stack == null) {
             return ComputeEnd.SINGLETON;

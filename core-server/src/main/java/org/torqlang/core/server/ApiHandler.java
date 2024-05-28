@@ -33,10 +33,12 @@ public final class ApiHandler extends Handler.Abstract.NonBlocking {
 
     private final ActorSystem system;
     private final ApiRouter router;
+    private final ArgsProvider argsProvider;
 
-    public ApiHandler(ActorSystem system, ApiRouter router) {
+    public ApiHandler(ActorSystem system, ApiRouter router, ArgsProvider argsProvider) {
         this.system = system;
         this.router = router;
+        this.argsProvider = argsProvider;
     }
 
     public static ApiHandlerBuilder builder() {
@@ -64,7 +66,7 @@ public final class ApiHandler extends Handler.Abstract.NonBlocking {
         }
         CompleteRec headersRec = headersRecBuilder.build();
 
-        // Jetty decodes query parameters to UTF-8
+        // Jetty will decode query parameters to UTF-8
         Fields queryFields = Request.extractQueryParameters(request);
         CompleteRecBuilder queryRecBuilder = Rec.completeRecBuilder();
         for (Fields.Field f : queryFields) {
@@ -93,30 +95,38 @@ public final class ApiHandler extends Handler.Abstract.NonBlocking {
     {
         ApiPath apiPath = new ApiPath(pathInContext);
         ApiRoute route = router.findRoute(apiPath);
-        if (route != null) {
-            try {
-                ActorRef actorRef = Actor.builder()
-                    .setSystem(system)
-                    .spawn(route.actorCfg)
-                    .actorRef();
-                CompleteRecBuilder requestRecBuilder = Rec.completeRecBuilder()
-                    .setLabel(Str.of(method))
-                    .addField(Str.of("headers"), headersRec)
-                    .addField(Str.of("path"), ValueTools.toKernelValue(apiPath.segs))
-                    .addField(Str.of("query"), queryRec);
-                if (requestText != null) {
-                    Complete bodyValue = requestText.isBlank() ?
-                        Nothing.SINGLETON : ValueTools.toKernelValue(new JsonParser(requestText).parse());
-                    requestRecBuilder.addField(Str.of("body"), bodyValue);
-                }
-                CompleteRec requestRec = requestRecBuilder.build();
-                ActorRef responseActor = new ResponseActor(request, response, callback);
-                actorRef.send(Envelope.createRequest(requestRec, responseActor, Nothing.SINGLETON));
-            } catch (Exception exc) {
-                Response.writeError(request, response, callback, exc);
-            }
-        } else {
+        if (route == null) {
             Response.writeError(request, response, callback, HttpStatus.NOT_FOUND_404);
+            return;
+        }
+        try {
+            ActorBuilderInit actorInit = Actor.builder().setSystem(system);
+            ActorRef actorRef;
+            if (route.apiTarget instanceof ApiTarget.ApiTargetActorRec apiTargetActorRec) {
+                if (argsProvider != null) {
+                    actorInit.setArgs(argsProvider.apply(request));
+                }
+                actorRef = actorInit.spawn(apiTargetActorRec.actorRec).actorRef();
+            } else if (route.apiTarget instanceof ApiTarget.ApiTargetActorCfg apiTargetActorCfg) {
+                actorRef = actorInit.spawn(apiTargetActorCfg.actorCfg).actorRef();
+            } else {
+                actorRef = ((ApiTarget.ApiTargetActorRef) route.apiTarget).actorRef;
+            }
+            CompleteRecBuilder requestRecBuilder = Rec.completeRecBuilder()
+                .setLabel(Str.of(method))
+                .addField(Str.of("headers"), headersRec)
+                .addField(Str.of("path"), ValueTools.toKernelValue(apiPath.segs))
+                .addField(Str.of("query"), queryRec);
+            if (requestText != null) {
+                Complete bodyValue = requestText.isBlank() ?
+                    Nothing.SINGLETON : ValueTools.toKernelValue(new JsonParser(requestText).parse());
+                requestRecBuilder.addField(Str.of("body"), bodyValue);
+            }
+            CompleteRec requestRec = requestRecBuilder.build();
+            ActorRef responseActor = new ResponseActor(request, response, callback);
+            actorRef.send(Envelope.createRequest(requestRec, responseActor, Nothing.SINGLETON));
+        } catch (Exception exc) {
+            Response.writeError(request, response, callback, exc);
         }
     }
 

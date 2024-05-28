@@ -150,8 +150,7 @@ public final class Evaluator implements EvaluatorInit, EvaluatorReady, Evaluator
         }
         env = Env.create(rootEnv, envEntries);
         Stack stack = new Stack((Stmt) kernel, env, null);
-        Machine machine = new Machine(stack);
-        Machine.compute(machine, maxTime);
+        Machine.compute(stack, maxTime);
         state = State.PERFORMED;
         return this;
     }

@@ -5,15 +5,13 @@
  * If not, see <http://torqlang.github.io/licensing/torqlang-license-v1_0>.
  */
 
-package org.torqlang.core.examples;
+package org.torqlang.core.server;
 
-import org.junit.jupiter.api.Test;
+import org.eclipse.jetty.server.Request;
+import org.torqlang.core.klvm.CompleteOrIdent;
 
-public class TestQueryOrderItems {
+import java.util.List;
 
-    @Test
-    public void test() throws Exception {
-        new QueryOrderItems().performWithErrorCheck();
-    }
-
+public interface ArgsProvider {
+    List<? extends CompleteOrIdent> apply(Request request);
 }

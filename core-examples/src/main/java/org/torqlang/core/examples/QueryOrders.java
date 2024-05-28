@@ -7,10 +7,7 @@
 
 package org.torqlang.core.examples;
 
-import org.torqlang.core.klvm.Complete;
-import org.torqlang.core.klvm.CompleteRec;
-import org.torqlang.core.klvm.Rec;
-import org.torqlang.core.klvm.Str;
+import org.torqlang.core.klvm.*;
 import org.torqlang.core.lang.ValueTools;
 import org.torqlang.core.local.*;
 
@@ -37,13 +34,25 @@ public class QueryOrders extends AbstractExample {
                     end
                     true
                 end
-                var array_list = ArrayList.new()
-                for order in ValueIter.new(orders) do
-                    if matches_query(order) then
-                        array_list.add(order);
-                    end
+                case path
+                    of ['orders'] then
+                        var array_list = ArrayList.new()
+                        for order in ValueIter.new(orders) do
+                            if matches_query(order) then
+                                array_list.add(order);
+                            end
+                        end
+                        array_list.to_tuple()
+                    of ['orders', order_id] then
+                        orders[order_id]
+                    else
+                        throw 'error'#{
+                            'message': 'Invalid request',
+                            'details': {
+                                'path': path
+                            }
+                        }
                 end
-                array_list.to_tuple()
             end
             handle ask 'POST'#{'headers': headers, 'path': path, 'query': query, 'body': body} in
                 // For now, just echo the params
@@ -95,7 +104,7 @@ public class QueryOrders extends AbstractExample {
         ApiRoute route = router.findRoute(new ApiPath("/orders"));
         ActorRef actorRef = Actor.builder()
             .setSystem(system)
-            .spawn(route.actorCfg)
+            .spawn((ActorCfg) route.apiTarget.value())
             .actorRef();
 
         Object response = RequestClient.builder().sendAndAwaitResponse(actorRef,
@@ -105,7 +114,7 @@ public class QueryOrders extends AbstractExample {
         List<?> nativeResponse = (List<?>) ValueTools.toNativeValue((Complete) response);
         checkExpectedResponse(4, nativeResponse.size());
         for (Object obj : nativeResponse) {
-            checkExpectedResponse("Las Vegas", ((Map<?,?>) obj).get("ship_city"));
+            checkExpectedResponse("Las Vegas", ((Map<?, ?>) obj).get("ship_city"));
         }
     }
 

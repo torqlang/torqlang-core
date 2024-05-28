@@ -28,10 +28,10 @@ import java.util.concurrent.atomic.AtomicLong;
  * INIT        setSource        READY
  * INIT        setActorSntc     PARSED
  * READY       parse            PARSED
- * PARSED      rewrite          REWRITTEN
- * REWRITTEN   generate         GENERATED
- * GENERATED   construct        CONSTRUCTED
- * CONSTRUCTED configure        CONFIGURED
+ * PARSED      rewrite          REWRITTEN      rewrite   --> actorExpr
+ * REWRITTEN   generate         GENERATED      generate  --> createActorRecStmt
+ * GENERATED   construct        CONSTRUCTED    construct --> actorRec
+ * CONSTRUCTED configure        CONFIGURED     configure --> actorCfg
  * CONFIGURED  spawn            SPAWNED
  * SPAWNED     (end)
  *
@@ -68,7 +68,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     ActorBuilderRewritten, ActorBuilderGenerated, ActorBuilderConstructed, ActorBuilderConfigured, ActorBuilderSpawned
 {
     private static final Str CFG = Str.of("cfg");
-    private static final int TIME_SLICE_1000 = 10_000;
+    private static final int TIME_SLICE_10_000 = 10_000;
 
     private static final AtomicLong nextActorId = new AtomicLong(0);
 
@@ -83,7 +83,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     private Ident actorIdent;
     private Stmt createActorRecStmt;
     private Rec actorRec;
-    private List<CompleteOrIdent> args = List.of();
+    private List<? extends CompleteOrIdent> args = List.of();
     private ActorCfg actorCfg;
     private LocalActor localActor;
 
@@ -178,7 +178,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
         localStmts.add(new ApplyStmt(Ident.$ACTOR_CFGTR, argsWithTarget, SourceSpan.emptySourceSpan()));
         SeqStmt seqStmt = new SeqStmt(localStmts, SourceSpan.emptySourceSpan());
         Stack stack = new Stack(seqStmt, env, null);
-        Machine.compute(new Machine(stack), TIME_SLICE_1000);
+        Machine.compute(stack, TIME_SLICE_10_000);
         try {
             actorCfg = (ActorCfg) env.get(Ident.$R).resolveValue();
         } catch (Exception exc) {
@@ -191,8 +191,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     @Override
     public final ActorBuilderConfigured configure(String source) throws Exception {
         setSource(source);
-        configure();
-        return this;
+        return configure();
     }
 
     @Override
@@ -211,7 +210,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
         }
         Env env = Env.create(LocalActor.rootEnv(), new EnvEntry(actorIdent, new Var()));
         Stack stack = new Stack(createActorRecStmt, env, null);
-        Machine.compute(new Machine(stack), TIME_SLICE_1000);
+        Machine.compute(stack, TIME_SLICE_10_000);
         try {
             actorRec = (Rec) env.get(actorIdent).resolveValue();
         } catch (Exception exc) {
@@ -219,6 +218,12 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
         }
         state = State.CONSTRUCTED;
         return this;
+    }
+
+    @Override
+    public final ActorBuilderConstructed construct(String source) throws Exception {
+        setSource(source);
+        return construct();
     }
 
     @Override
@@ -294,6 +299,16 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     }
 
     @Override
+    public final ActorBuilderConstructed setActorRec(Rec actorRec) {
+        if (state != State.INIT) {
+            throw new IllegalStateException("Cannot setActorRec at state: " + state);
+        }
+        this.actorRec = actorRec;
+        state = State.CONSTRUCTED;
+        return this;
+    }
+
+    @Override
     public final ActorBuilderParsed setActorSntc(ActorSntc actorSntc) {
         if (state != State.INIT) {
             throw new IllegalStateException("Cannot setActorSntc at state: " + state);
@@ -335,6 +350,15 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     }
 
     @Override
+    public final ActorBuilderInit setSystem(ActorSystem system) {
+        if (state != State.INIT) {
+            throw new IllegalStateException("Cannot setSystem at state: " + state);
+        }
+        this.system = system;
+        return this;
+    }
+
+    @Override
     public final ActorBuilderInit setTrace(boolean trace) {
         if (state != State.INIT) {
             throw new IllegalStateException("Cannot setTrace at state: " + state);
@@ -349,26 +373,21 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     }
 
     @Override
-    public final ActorBuilderInit setSystem(ActorSystem system) {
-        if (state != State.INIT) {
-            throw new IllegalStateException("Cannot setSystem at state: " + state);
-        }
-        this.system = system;
-        return this;
+    public final ActorBuilderSpawned spawn(ActorCfg actorCfg) throws Exception {
+        setActorCfg(actorCfg);
+        return spawn();
     }
 
     @Override
-    public final ActorBuilderSpawned spawn(ActorCfg actorCfg) throws Exception {
-        setActorCfg(actorCfg);
-        spawn();
-        return this;
+    public final ActorBuilderSpawned spawn(Rec actorRec) throws Exception {
+        setActorRec(actorRec);
+        return spawn();
     }
 
     @Override
     public final ActorBuilderSpawned spawn(String source) throws Exception {
         setSource(source);
-        spawn();
-        return this;
+        return spawn();
     }
 
     @Override

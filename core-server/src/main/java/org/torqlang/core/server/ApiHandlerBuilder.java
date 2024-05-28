@@ -14,13 +14,13 @@ public final class ApiHandlerBuilder {
 
     private ActorSystem system;
     private ApiRouter apiRouter;
+    private ArgsProvider argsProvider;
 
     ApiHandlerBuilder() {
     }
 
-    public final ApiHandlerBuilder setSystem(ActorSystem system) {
-        this.system = system;
-        return this;
+    public ApiHandler build() {
+        return new ApiHandler(system, apiRouter, argsProvider);
     }
 
     public final ApiHandlerBuilder setApiRouter(ApiRouter apiRouter) {
@@ -28,8 +28,14 @@ public final class ApiHandlerBuilder {
         return this;
     }
 
-    public ApiHandler build() {
-        return new ApiHandler(system, apiRouter);
+    public final ApiHandlerBuilder setArgsProvider(ArgsProvider argsProvider) {
+        this.argsProvider = argsProvider;
+        return this;
+    }
+
+    public final ApiHandlerBuilder setSystem(ActorSystem system) {
+        this.system = system;
+        return this;
     }
 
 }

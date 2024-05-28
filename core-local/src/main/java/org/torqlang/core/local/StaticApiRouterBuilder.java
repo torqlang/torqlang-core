@@ -8,6 +8,7 @@
 package org.torqlang.core.local;
 
 import org.torqlang.core.klvm.ActorCfg;
+import org.torqlang.core.klvm.Rec;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,6 +21,18 @@ public final class StaticApiRouterBuilder {
     public final StaticApiRouterBuilder addRoute(String pathExpr, ActorCfg actorCfg) {
         ApiPath path = new ApiPath(pathExpr);
         routes.add(new ApiRoute(path, actorCfg));
+        return this;
+    }
+
+    public final StaticApiRouterBuilder addRoute(String pathExpr, ActorRef actorRef) {
+        ApiPath path = new ApiPath(pathExpr);
+        routes.add(new ApiRoute(path, actorRef));
+        return this;
+    }
+
+    public final StaticApiRouterBuilder addRoute(String pathExpr, Rec actorRec) {
+        ApiPath path = new ApiPath(pathExpr);
+        routes.add(new ApiRoute(path, actorRec));
         return this;
     }
 
