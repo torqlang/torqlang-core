@@ -14,14 +14,14 @@ import java.util.List;
 import static org.torqlang.core.local.Envelope.createNotify;
 import static org.torqlang.core.local.Envelope.createRequest;
 
-final class ActorRefObj implements CompleteObj {
+public final class ActorRefObj implements CompleteObj {
 
     private final ActorRef referent;
 
     private final ObjProcBinding<ActorRefObj> PROC_ASK = new ObjProcBinding<>(this, ActorRefObj::objAsk);
     private final ObjProcBinding<ActorRefObj> PROC_TELL = new ObjProcBinding<>(this, ActorRefObj::objTell);
 
-    ActorRefObj(ActorRef referent) {
+    public ActorRefObj(ActorRef referent) {
         this.referent = referent;
     }
 
@@ -52,7 +52,7 @@ final class ActorRefObj implements CompleteObj {
         obj.referent.send(createNotify(message));
     }
 
-    final ActorRef referent() {
+    public final ActorRef referent() {
         return referent;
     }
 

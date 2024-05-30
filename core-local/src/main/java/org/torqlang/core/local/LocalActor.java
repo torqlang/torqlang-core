@@ -97,8 +97,7 @@ final class LocalActor extends AbstractActor {
         }
         Str addressStr = (Str) ys.get(0).resolveValue(env);
         Address address = Address.create(addressStr.value);
-        ActorRef actorRef = owner.system.actorAt(address);
-        ActorRefObj actorRefObj = new ActorRefObj(actorRef);
+        ActorRefObj actorRefObj = owner.system.actorAt(address);
         ys.get(1).resolveValueOrVar(env).bindToValue(actorRefObj, null);
     }
 

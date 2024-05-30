@@ -25,7 +25,7 @@ public interface ActorSystem {
         return ActorSystemDefaults.DEFAULT_SYSTEM;
     }
 
-    ActorRef actorAt(Address address);
+    ActorRefObj actorAt(Address address);
 
     Logger createLogger();
 

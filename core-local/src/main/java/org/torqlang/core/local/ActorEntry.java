@@ -12,11 +12,11 @@ import java.util.Objects;
 @SuppressWarnings("ClassCanBeRecord")
 public final class ActorEntry implements Comparable<ActorEntry> {
     public final Address address;
-    public final ActorRef actorRef;
+    public final ActorRefObj actorRefObj;
 
-    public ActorEntry(Address address, ActorRef actorRef) {
+    public ActorEntry(Address address, ActorRefObj actorRefObj) {
         this.address = address;
-        this.actorRef = actorRef;
+        this.actorRefObj = actorRefObj;
     }
 
     @Override

@@ -47,11 +47,11 @@ public final class GlobalCounter extends AbstractExample {
     @Override
     public void perform() throws Exception {
 
-        ActorRef globalCounterRef = Actor.builder().spawn(GLOBAL_COUNTER).actorRef();
+        ActorRefObj globalCounterRefObj = new ActorRefObj(Actor.builder().spawn(GLOBAL_COUNTER).actorRef());
 
         ActorSystem system = ActorSystem.builder()
             .addDefaultModules()
-            .addActor("examples.Counter.global", globalCounterRef)
+            .addActor("examples.Counter.global", globalCounterRefObj)
             .build();
 
         ActorRef testClientRef = Actor.builder()

@@ -32,12 +32,12 @@ public class BasicActorSystem implements ActorSystem {
     }
 
     @Override
-    public final ActorRef actorAt(Address address) {
+    public final ActorRefObj actorAt(Address address) {
         int i = BinarySearchTools.search(actors, (a) -> address.compareTo(a.address));
         if (i < 0) {
             throw new ActorNotFoundError(address);
         }
-        return actors[i].actorRef;
+        return actors[i].actorRefObj;
     }
 
     @Override
