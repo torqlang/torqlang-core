@@ -1194,7 +1194,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
 
     @Override
     public final CompleteOrIdent visitThrowLang(ThrowLang lang, LocalTarget target) throws Exception {
-        LocalTarget childTarget = target.asSntcTargetWithNewScope();
+        LocalTarget childTarget = target.asExprTargetWithNewScope();
         CompleteOrIdent arg = lang.arg.accept(this, childTarget);
         childTarget.addStmt(new ThrowStmt(arg, lang));
         target.addStmt(childTarget.build());
