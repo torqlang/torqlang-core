@@ -25,9 +25,9 @@ public class ExampleServer {
     public static void main(String[] args) throws Exception {
 
         MethodHandles.Lookup lookup = MethodHandles.lookup();
-        MethodHandle methodHandle = lookup.findStatic(NorthwindCache.class, "getOrders", MethodType.methodType(Complete.class));
+        MethodHandle getOrdersHandle = lookup.findStatic(NorthwindCache.class, "getOrders", MethodType.methodType(Complete.class));
         CompleteRec moduleRec = Rec.completeRecBuilder()
-            .addField(Str.of("get_orders"), new AsyncMethod(methodHandle))
+            .addField(Str.of("get_orders"), new AsyncMethod(getOrdersHandle))
             .build();
 
         ActorSystem system = ActorSystem.builder()
