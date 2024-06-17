@@ -39,7 +39,7 @@
         <repository>
             <id>github</id>
             <name>GitHub Torqlang Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/torqlang/torqlang</url>
+            <url>https://maven.pkg.github.com/torqlang/torqlang-core</url>
         </repository>
     </distributionManagement>
 
