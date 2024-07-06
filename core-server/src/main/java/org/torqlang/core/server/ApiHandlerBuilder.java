@@ -14,22 +14,16 @@ public final class ApiHandlerBuilder {
 
     private ActorSystem system;
     private ApiRouter apiRouter;
-    private ArgsProvider argsProvider;
 
     ApiHandlerBuilder() {
     }
 
     public ApiHandler build() {
-        return new ApiHandler(system, apiRouter, argsProvider);
+        return new ApiHandler(system, apiRouter);
     }
 
     public final ApiHandlerBuilder setApiRouter(ApiRouter apiRouter) {
         this.apiRouter = apiRouter;
-        return this;
-    }
-
-    public final ApiHandlerBuilder setArgsProvider(ArgsProvider argsProvider) {
-        this.argsProvider = argsProvider;
         return this;
     }
 

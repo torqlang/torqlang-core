@@ -69,7 +69,7 @@ public final class OrderDao extends AbstractExample {
             })
             handle ask 'find-order'#{'order-id': id} in
                 var order = orders.get(id)
-                if order == nothing then
+                if order == null then
                     throw 'error'#{'name': 'org.torqlang.examples.NotFoundError',
                                    'message': 'Order not found', 'order-id': id}
                 end

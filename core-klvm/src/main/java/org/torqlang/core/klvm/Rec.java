@@ -19,7 +19,7 @@ public interface Rec extends Composite, FieldIterSource, ValueIterSource {
     Collection<Var> EMPTY_VAR_COLLECTION = Collections.emptyList();
     FeatureComparator FEATURE_COMPARATOR = FeatureComparator.SINGLETON;
 
-    Nothing DEFAULT_LABEL = Nothing.SINGLETON;
+    Null DEFAULT_LABEL = Null.SINGLETON;
 
     String $LABEL = "$label";
     String $REC = "$rec";

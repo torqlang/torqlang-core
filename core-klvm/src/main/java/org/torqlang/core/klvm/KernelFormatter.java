@@ -553,7 +553,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public final Void visitNothing(Nothing kernel, FormatterState state) throws Exception {
+    public final Void visitNull(Null kernel, FormatterState state) throws Exception {
         state.write(kernel.formatValue());
         return null;
     }
@@ -622,7 +622,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
             memos = new IdentityHashMap<>();
         }
         memos.put(kernel, Value.PRESENT);
-        if (kernel.label() == Nothing.SINGLETON) {
+        if (kernel.label() == Null.SINGLETON) {
             state.write('{');
         } else {
             kernel.label().accept(this, state.inline());
@@ -864,7 +864,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
             memos = new IdentityHashMap<>();
         }
         memos.put(tuple, Value.PRESENT);
-        if (tuple.label() == Nothing.SINGLETON) {
+        if (tuple.label() == Null.SINGLETON) {
             state.write('[');
         } else {
             tuple.label().accept(this, state.inline());

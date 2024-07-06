@@ -7,48 +7,28 @@
 
 package org.torqlang.core.local;
 
-import org.torqlang.core.klvm.ActorCfg;
-import org.torqlang.core.klvm.Rec;
-
 public interface ApiTarget {
 
-    static ApiTarget create(ActorCfg actorCfg) {
-        return new ApiTargetActorCfg(actorCfg);
+    static ApiTarget create(ActorImage actorImage) {
+        return new ApiTargetActorImage(actorImage);
     }
 
     static ApiTarget create(ActorRef actorRef) {
         return new ApiTargetActorRef(actorRef);
     }
 
-    static ApiTarget create(Rec actorRec) {
-        return new ApiTargetActorRec(actorRec);
-    }
-
     Object value();
 
-    final class ApiTargetActorCfg implements ApiTarget {
-        public final ActorCfg actorCfg;
+    final class ApiTargetActorImage implements ApiTarget {
+        public final ActorImage actorImage;
 
-        ApiTargetActorCfg(ActorCfg actorCfg) {
-            this.actorCfg = actorCfg;
+        ApiTargetActorImage(ActorImage actorImage) {
+            this.actorImage = actorImage;
         }
 
         @Override
-        public final ActorCfg value() {
-            return actorCfg;
-        }
-    }
-
-    final class ApiTargetActorRec implements ApiTarget {
-        public final Rec actorRec;
-
-        ApiTargetActorRec(Rec actorRec) {
-            this.actorRec = actorRec;
-        }
-
-        @Override
-        public final Rec value() {
-            return actorRec;
+        public final ActorImage value() {
+            return actorImage;
         }
     }
 

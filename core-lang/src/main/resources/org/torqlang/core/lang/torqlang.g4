@@ -1,5 +1,8 @@
 grammar torqlang;
 
+// Although this grammar may be used to create parsers, it was derived from the hand-written
+// Torqlang lexer and parser for documentation purposes.
+
 //******************//
 //   PARSER RULES   //
 //******************//
@@ -118,7 +121,7 @@ pat: rec_pat | tuple_pat |
      (label_pat ('#' (rec_pat | tuple_pat))?) |
      INT_LITERAL | (ident var_type_anno?);
 
-label_pat: ('~' ident) | bool | STR_LITERAL | 'eof' | 'nothing';
+label_pat: ('~' ident) | bool | STR_LITERAL | 'eof' | 'null';
 
 rec_pat: '{' (field_pat (',' field_pat)* (',' '...')?)? '}';
 
@@ -127,13 +130,13 @@ tuple_pat: '[' (pat (',' pat)* (',' '...')?)? ']';
 field_pat: (feat_pat ':')? pat;
 
 feat_pat: ('~' ident) | bool | INT_LITERAL | STR_LITERAL |
-          'eof' | 'nothing';
+          'eof' | 'null';
 
 value: rec_value | tuple_value |
        (label_value ('#' (rec_value | tuple_value))?) |
        INT_LITERAL | CHAR_LITERAL | FLT_LITERAL | DEC_LITERAL;
 
-label_value: ident | bool | STR_LITERAL | 'eof' | 'nothing';
+label_value: ident | bool | STR_LITERAL | 'eof' | 'null';
 
 rec_value: '{' (field_value (',' field_value)*)? '}';
 
@@ -142,7 +145,7 @@ tuple_value: '[' (value (',' pat)*)? ']';
 field_value: (feat_value ':')? stmt_or_expr;
 
 feat_value: ident | bool | INT_LITERAL | STR_LITERAL |
-            'eof' | 'nothing';
+            'eof' | 'null';
 
 var_type_anno: '::' ident;
 

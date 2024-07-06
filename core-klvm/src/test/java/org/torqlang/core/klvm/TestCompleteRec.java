@@ -64,7 +64,7 @@ public class TestCompleteRec {
     @Test
     public void testArity() {
 
-        // Arity sort order: Int, Str, Bool (FALSE, TRUE), Eof, Nothing, Token
+        // Arity sort order: Int, Str, Bool (FALSE, TRUE), Eof, Null, Token
 
         CompleteRec r1;
 
@@ -108,35 +108,35 @@ public class TestCompleteRec {
         assertEquals(Bool.TRUE, r1.featureAt(4));
         assertEquals(Eof.SINGLETON, r1.featureAt(5));
 
-        r1 = CompleteRec.create(List.of(new CompleteField(Nothing.SINGLETON, a), new CompleteField(Eof.SINGLETON, a), new CompleteField(Bool.TRUE, a), new CompleteField(Bool.FALSE, a), new CompleteField(one, a), new CompleteField(zero, a), new CompleteField(Int32.I32_0, a)));
+        r1 = CompleteRec.create(List.of(new CompleteField(Null.SINGLETON, a), new CompleteField(Eof.SINGLETON, a), new CompleteField(Bool.TRUE, a), new CompleteField(Bool.FALSE, a), new CompleteField(one, a), new CompleteField(zero, a), new CompleteField(Int32.I32_0, a)));
         assertEquals(Int32.I32_0, r1.featureAt(0));
         assertEquals(zero, r1.featureAt(1));
         assertEquals(one, r1.featureAt(2));
         assertEquals(Bool.FALSE, r1.featureAt(3));
         assertEquals(Bool.TRUE, r1.featureAt(4));
         assertEquals(Eof.SINGLETON, r1.featureAt(5));
-        assertEquals(Nothing.SINGLETON, r1.featureAt(6));
+        assertEquals(Null.SINGLETON, r1.featureAt(6));
 
         final Token k1 = new Token();
-        r1 = CompleteRec.create(List.of(new CompleteField(k1, a), new CompleteField(Nothing.SINGLETON, a), new CompleteField(Eof.SINGLETON, a), new CompleteField(Bool.TRUE, a), new CompleteField(Bool.FALSE, a), new CompleteField(one, a), new CompleteField(zero, a), new CompleteField(Int32.I32_0, a)));
+        r1 = CompleteRec.create(List.of(new CompleteField(k1, a), new CompleteField(Null.SINGLETON, a), new CompleteField(Eof.SINGLETON, a), new CompleteField(Bool.TRUE, a), new CompleteField(Bool.FALSE, a), new CompleteField(one, a), new CompleteField(zero, a), new CompleteField(Int32.I32_0, a)));
         assertEquals(Int32.I32_0, r1.featureAt(0));
         assertEquals(zero, r1.featureAt(1));
         assertEquals(one, r1.featureAt(2));
         assertEquals(Bool.FALSE, r1.featureAt(3));
         assertEquals(Bool.TRUE, r1.featureAt(4));
         assertEquals(Eof.SINGLETON, r1.featureAt(5));
-        assertEquals(Nothing.SINGLETON, r1.featureAt(6));
+        assertEquals(Null.SINGLETON, r1.featureAt(6));
         assertEquals(k1, r1.featureAt(7));
 
         final Token k2 = new Token();
-        r1 = CompleteRec.create(List.of(new CompleteField(k2, a), new CompleteField(k1, a), new CompleteField(Nothing.SINGLETON, a), new CompleteField(Eof.SINGLETON, a), new CompleteField(Bool.TRUE, a), new CompleteField(Bool.FALSE, a), new CompleteField(one, a), new CompleteField(zero, a), new CompleteField(Int32.I32_0, a)));
+        r1 = CompleteRec.create(List.of(new CompleteField(k2, a), new CompleteField(k1, a), new CompleteField(Null.SINGLETON, a), new CompleteField(Eof.SINGLETON, a), new CompleteField(Bool.TRUE, a), new CompleteField(Bool.FALSE, a), new CompleteField(one, a), new CompleteField(zero, a), new CompleteField(Int32.I32_0, a)));
         assertEquals(Int32.I32_0, r1.featureAt(0));
         assertEquals(zero, r1.featureAt(1));
         assertEquals(one, r1.featureAt(2));
         assertEquals(Bool.FALSE, r1.featureAt(3));
         assertEquals(Bool.TRUE, r1.featureAt(4));
         assertEquals(Eof.SINGLETON, r1.featureAt(5));
-        assertEquals(Nothing.SINGLETON, r1.featureAt(6));
+        assertEquals(Null.SINGLETON, r1.featureAt(6));
         assertEquals(k1, r1.featureAt(7));
         assertEquals(k2, r1.featureAt(8));
     }

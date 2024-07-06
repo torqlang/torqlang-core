@@ -18,17 +18,17 @@ public class TestParserPatExpr {
     @Test
     public void test() {
         //                                      1         2         3         4         5         6         7
-        //                            012345678901234567890123456789012345678901234567890123456789012345678901234567
-        Parser p = new Parser("case z of [a, 1, 1L, false, true, nothing, eof, 'x'] then true else false end");
+        //                            012345678901234567890123456789012345678901234567890123456789012345678901234
+        Parser p = new Parser("case z of [a, 1, 1L, false, true, null, eof, 'x'] then true else false end");
         SntcOrExpr sox = p.parse();
         assertInstanceOf(CaseLang.class, sox);
         CaseLang caseLang = (CaseLang) sox;
-        assertSourceSpan(caseLang, 0, 77);
-        assertSourceSpan(caseLang.caseClause, 7, 62);
+        assertSourceSpan(caseLang, 0, 74);
+        assertSourceSpan(caseLang.caseClause, 7, 59);
         // Test format
         String expectedFormat = """
             case z
-                of [a, 1, 1L, false, true, nothing, eof, 'x'] then
+                of [a, 1, 1L, false, true, null, eof, 'x'] then
                     true
                 else
                     false
@@ -47,7 +47,7 @@ public class TestParserPatExpr {
         assertEquals(Int64.I64_1, asIntAsPat(tp.values().get(2)).value());
         assertEquals(Bool.FALSE, asBoolAsPat(tp.values().get(3)).value());
         assertEquals(Bool.TRUE, asBoolAsPat(tp.values().get(4)).value());
-        assertEquals(Nothing.SINGLETON, asNothingAsPat(tp.values().get(5)).value());
+        assertEquals(Null.SINGLETON, asNullAsPat(tp.values().get(5)).value());
         assertEquals(Eof.SINGLETON, asEofAsPat(tp.values().get(6)).value());
         assertEquals(Str.of("x"), asStrAsPat(tp.values().get(7)).value());
     }
@@ -55,17 +55,17 @@ public class TestParserPatExpr {
     @Test
     public void testWithLabel() {
         //                                      1         2         3         4         5         6         7         8
-        //                             01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678
-        Parser p = new Parser("case z of 'my-label'#[a, 1, 1L, false, true, nothing, eof, 'x'] then true else false end");
+        //                            01234567890123456789012345678901234567890123456789012345678901234567890123456789012345
+        Parser p = new Parser("case z of 'my-label'#[a, 1, 1L, false, true, null, eof, 'x'] then true else false end");
         SntcOrExpr sox = p.parse();
         assertInstanceOf(CaseLang.class, sox);
         CaseLang caseLang = (CaseLang) sox;
-        assertSourceSpan(caseLang, 0, 88);
-        assertSourceSpan(caseLang.caseClause, 7, 73);
+        assertSourceSpan(caseLang, 0, 85);
+        assertSourceSpan(caseLang.caseClause, 7, 70);
         // Test format
         String expectedFormat = """
             case z
-                of 'my-label'#[a, 1, 1L, false, true, nothing, eof, 'x'] then
+                of 'my-label'#[a, 1, 1L, false, true, null, eof, 'x'] then
                     true
                 else
                     false
@@ -84,7 +84,7 @@ public class TestParserPatExpr {
         assertEquals(Int64.I64_1, asIntAsPat(tp.values().get(2)).value());
         assertEquals(Bool.FALSE, asBoolAsPat(tp.values().get(3)).value());
         assertEquals(Bool.TRUE, asBoolAsPat(tp.values().get(4)).value());
-        assertEquals(Nothing.SINGLETON, asNothingAsPat(tp.values().get(5)).value());
+        assertEquals(Null.SINGLETON, asNullAsPat(tp.values().get(5)).value());
         assertEquals(Eof.SINGLETON, asEofAsPat(tp.values().get(6)).value());
         assertEquals(Str.of("x"), asStrAsPat(tp.values().get(7)).value());
     }

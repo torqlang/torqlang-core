@@ -62,9 +62,9 @@ public class TestFeatureComparator {
         assertTrue(c.compare(Int32.I32_5, Eof.SINGLETON) < 0);
         assertTrue(c.compare(Eof.SINGLETON, Int32.I32_5) > 0);
 
-        // Validate that an Int compares less than Nothing
-        assertTrue(c.compare(Int32.I32_5, Nothing.SINGLETON) < 0);
-        assertTrue(c.compare(Nothing.SINGLETON, Int32.I32_5) > 0);
+        // Validate that an Int compares less than Null
+        assertTrue(c.compare(Int32.I32_5, Null.SINGLETON) < 0);
+        assertTrue(c.compare(Null.SINGLETON, Int32.I32_5) > 0);
 
         // Validate that an Int compares less than a Token
         assertTrue(c.compare(Int32.I32_5, aToken1) < 0);
@@ -91,9 +91,9 @@ public class TestFeatureComparator {
         assertTrue(c.compare(aStr1, Eof.SINGLETON) < 0);
         assertTrue(c.compare(Eof.SINGLETON, aStr2) > 0);
 
-        // Validate that a Str compares less than Nothing
-        assertTrue(c.compare(aStr1, Nothing.SINGLETON) < 0);
-        assertTrue(c.compare(Nothing.SINGLETON, aStr2) > 0);
+        // Validate that a Str compares less than Null
+        assertTrue(c.compare(aStr1, Null.SINGLETON) < 0);
+        assertTrue(c.compare(Null.SINGLETON, aStr2) > 0);
 
         // Validate that a Str compares less than a Token
         assertTrue(c.compare(aStr1, aToken1) < 0);
@@ -119,11 +119,11 @@ public class TestFeatureComparator {
         assertTrue(c.compare(Eof.SINGLETON, Bool.FALSE) > 0);
         assertTrue(c.compare(Eof.SINGLETON, Bool.TRUE) > 0);
 
-        // Validate that a Bool compares less than Nothing
-        assertTrue(c.compare(Bool.FALSE, Nothing.SINGLETON) < 0);
-        assertTrue(c.compare(Bool.TRUE, Nothing.SINGLETON) < 0);
-        assertTrue(c.compare(Nothing.SINGLETON, Bool.FALSE) > 0);
-        assertTrue(c.compare(Nothing.SINGLETON, Bool.TRUE) > 0);
+        // Validate that a Bool compares less than Null
+        assertTrue(c.compare(Bool.FALSE, Null.SINGLETON) < 0);
+        assertTrue(c.compare(Bool.TRUE, Null.SINGLETON) < 0);
+        assertTrue(c.compare(Null.SINGLETON, Bool.FALSE) > 0);
+        assertTrue(c.compare(Null.SINGLETON, Bool.TRUE) > 0);
 
         // Validate that a Bool compares less than a Token
         assertTrue(c.compare(Bool.FALSE, aToken1) < 0);
@@ -139,25 +139,25 @@ public class TestFeatureComparator {
         //noinspection all
         assertEquals(0, c.compare(Eof.SINGLETON, Eof.SINGLETON));
 
-        // Validate that an Eof compares less than Nothing
-        assertTrue(c.compare(Eof.SINGLETON, Nothing.SINGLETON) < 0);
-        assertTrue(c.compare(Nothing.SINGLETON, Eof.SINGLETON) > 0);
+        // Validate that an Eof compares less than Null
+        assertTrue(c.compare(Eof.SINGLETON, Null.SINGLETON) < 0);
+        assertTrue(c.compare(Null.SINGLETON, Eof.SINGLETON) > 0);
 
         // Validate that an Eof compares less than a Token
         assertTrue(c.compare(Eof.SINGLETON, aToken1) < 0);
         assertTrue(c.compare(aToken2, Eof.SINGLETON) > 0);
 
         //
-        // Nothing
+        // Null
         //
 
-        // Validate that Nothing compares to Nothing
+        // Validate that Null compares to Null
         //noinspection all
-        assertEquals(0, c.compare(Nothing.SINGLETON, Nothing.SINGLETON));
+        assertEquals(0, c.compare(Null.SINGLETON, Null.SINGLETON));
 
-        // Validate that a Nothing compares less than a Token
-        assertTrue(c.compare(Nothing.SINGLETON, aToken1) < 0);
-        assertTrue(c.compare(aToken2, Nothing.SINGLETON) > 0);
+        // Validate that a Null compares less than a Token
+        assertTrue(c.compare(Null.SINGLETON, aToken1) < 0);
+        assertTrue(c.compare(aToken2, Null.SINGLETON) > 0);
 
         //
         // Token

@@ -456,13 +456,13 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitNothingAsExpr(NothingAsExpr lang, FormatterState state) throws Exception {
+    public final Void visitNullAsExpr(NullAsExpr lang, FormatterState state) throws Exception {
         state.write(lang.value().formatValue());
         return null;
     }
 
     @Override
-    public final Void visitNothingAsPat(NothingAsPat lang, FormatterState state) throws Exception {
+    public final Void visitNullAsPat(NullAsPat lang, FormatterState state) throws Exception {
         state.write(lang.value().formatValue());
         return null;
     }

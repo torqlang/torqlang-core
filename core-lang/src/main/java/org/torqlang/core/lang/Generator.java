@@ -55,7 +55,7 @@ import java.util.List;
  * -- visitFltAsExpr
  * -- visitIdentAsExpr
  * -- visitIntAsExpr
- * -- visitNothingAsExpr
+ * -- visitNullAsExpr
  * -- visitStrAsExpr
  */
 public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent> {
@@ -907,7 +907,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
-    public final CompleteOrIdent visitNothingAsExpr(NothingAsExpr lang, LocalTarget target) {
+    public final CompleteOrIdent visitNullAsExpr(NullAsExpr lang, LocalTarget target) {
         Ident exprIdent = acceptOfferedIdentOrNull(target);
         if (exprIdent == null) {
             return lang.value();
@@ -917,8 +917,8 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
-    public final CompleteOrIdent visitNothingAsPat(NothingAsPat lang, LocalTarget target) {
-        throw new IllegalStateException("NothingAsPat visited directly");
+    public final CompleteOrIdent visitNullAsPat(NullAsPat lang, LocalTarget target) {
+        throw new IllegalStateException("NullAsPat visited directly");
     }
 
     @Override

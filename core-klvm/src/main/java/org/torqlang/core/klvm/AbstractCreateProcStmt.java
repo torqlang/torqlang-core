@@ -41,7 +41,7 @@ public abstract class AbstractCreateProcStmt extends AbstractStmt implements Cre
         } else {
             capturedEnv = Env.emptyEnv();
         }
-        return new Closure(procDef, capturedEnv);
+        return new PartialClosure(procDef, capturedEnv);
     }
 
     public final ProcDef procDef() {

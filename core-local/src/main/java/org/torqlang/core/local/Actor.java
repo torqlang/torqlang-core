@@ -17,16 +17,28 @@ public final class Actor {
         return new ActorBuilder();
     }
 
+    public static ActorImage captureImage(String source) throws Exception {
+        return Actor.builder()
+            .setSource(source)
+            .generate()
+            .spawn()
+            .actorImage();
+    }
+
     public static CompleteRec compileForImport(String source) throws Exception {
         Rec actorRec = builder()
-                .setSource(source)
-                .construct()
-                .actorRec();
+            .setSource(source)
+            .construct()
+            .actorRec();
         actorRec.checkDetermined();
         PartialField actorField = (PartialField) actorRec.fieldAt(0);
         return Rec.completeRecBuilder()
-                .addField(actorField.feature, actorField.value.checkComplete())
-                .build();
+            .addField(actorField.feature, actorField.value.checkComplete())
+            .build();
+    }
+
+    public static ActorRef spawn(Address address, ActorImage image) {
+        return LocalActor.spawn(address, image);
     }
 
 }

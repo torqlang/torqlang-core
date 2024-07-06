@@ -91,6 +91,15 @@ public interface Env extends Kernel, Iterable<EnvEntry> {
         return new ArrayEnv(null, new EnvEntry[]{e1, e2});
     }
 
+    static Env createComplete(Map<Ident, Complete> bindings) {
+        EnvEntry[] completeEntries = new EnvEntry[bindings.size()];
+        int i = 0;
+        for (Map.Entry<Ident, Complete> e : bindings.entrySet()) {
+            completeEntries[i++] = new EnvEntry(e.getKey(), new Var(e.getValue()));
+        }
+        return new ArrayEnv(ArrayEnv.EMPTY_ENV, completeEntries);
+    }
+
     /*
      * Create an Env with these exact parameters. This method is KLVM internal-use-only that avoids creating an extra
      * collection instance when computing an Env for computing local statements, closures, and native statements.
@@ -118,8 +127,6 @@ public interface Env extends Kernel, Iterable<EnvEntry> {
 
     Var get(Ident ident);
 
-    EnvEntry getEnvEntry(int index);
-
     Env parentEnv();
 
     Env rootEnv();
@@ -128,6 +135,8 @@ public interface Env extends Kernel, Iterable<EnvEntry> {
      * Return a copy of the current environment but extended with 'rootEnv'
      */
     Env setRootEnv(Env rootEnv);
+
+    EnvEntry shallowEntryAt(int index);
 
     int shallowSize();
 
@@ -230,7 +239,7 @@ public interface Env extends Kernel, Iterable<EnvEntry> {
             Env currentEnv = this;
             while (currentEnv != null) {
                 for (int i = 0; i < currentEnv.shallowSize(); i++) {
-                    EnvEntry entry = currentEnv.getEnvEntry(i);
+                    EnvEntry entry = currentEnv.shallowEntryAt(i);
                     sb.append("env[");
                     sb.append(scope);
                     sb.append("]: ");
@@ -261,11 +270,6 @@ public interface Env extends Kernel, Iterable<EnvEntry> {
         }
 
         @Override
-        public final EnvEntry getEnvEntry(int index) {
-            return bindings[index];
-        }
-
-        @Override
         public final Iterator<EnvEntry> iterator() {
             return new ArrayEnvIterator();
         }
@@ -286,6 +290,11 @@ public interface Env extends Kernel, Iterable<EnvEntry> {
                 return new ArrayEnv(rootEnv, bindings);
             }
             return new ArrayEnv(parentEnv.setRootEnv(rootEnv), bindings);
+        }
+
+        @Override
+        public final EnvEntry shallowEntryAt(int index) {
+            return bindings[index];
         }
 
         @Override

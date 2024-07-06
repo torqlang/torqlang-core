@@ -19,7 +19,7 @@ public class TestKeywords {
 
         String source = """
             /*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if
-            import in local nothing of proc return self skip spawn then throw true try var when while /*stop*/""";
+            import in local null of proc return self skip spawn then throw true try var when while /*stop*/""";
         int begin, end;
 
         assertFalse(SymbolsAndKeywords.isKeyword(source, 0, 50)); // Invalid size test
@@ -105,58 +105,58 @@ public class TestKeywords {
         assertTrue(SymbolsAndKeywords.isKeyword(source, begin, end));
 
         begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local ".length();
-        end = begin + "nothing".length();
+        end = begin + "null".length();
         assertTrue(SymbolsAndKeywords.isKeyword(source, begin, end));
 
-        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local nothing ".length();
+        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local null ".length();
         end = begin + "of".length();
         assertTrue(SymbolsAndKeywords.isKeyword(source, begin, end));
 
-        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local of nothing ".length();
+        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local null of ".length();
         end = begin + "proc".length();
         assertTrue(SymbolsAndKeywords.isKeyword(source, begin, end));
 
-        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local of nothing proc ".length();
+        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local null of proc ".length();
         end = begin + "return".length();
         assertTrue(SymbolsAndKeywords.isKeyword(source, begin, end));
 
-        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local of nothing proc return ".length();
+        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local null of proc return ".length();
         end = begin + "self".length();
         assertTrue(SymbolsAndKeywords.isKeyword(source, begin, end));
 
-        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local of nothing proc return self ".length();
+        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local null of proc return self ".length();
         end = begin + "skip".length();
         assertTrue(SymbolsAndKeywords.isKeyword(source, begin, end));
 
-        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local of nothing proc return self skip ".length();
+        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local null of proc return self skip ".length();
         end = begin + "spawn".length();
         assertTrue(SymbolsAndKeywords.isKeyword(source, begin, end));
 
-        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local of nothing proc return self skip spawn ".length();
+        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local null of proc return self skip spawn ".length();
         end = begin + "then".length();
         assertTrue(SymbolsAndKeywords.isKeyword(source, begin, end));
 
-        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local of nothing proc return self skip spawn then ".length();
+        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local null of proc return self skip spawn then ".length();
         end = begin + "throw".length();
         assertTrue(SymbolsAndKeywords.isKeyword(source, begin, end));
 
-        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local of nothing proc return self skip spawn then throw ".length();
+        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local null of proc return self skip spawn then throw ".length();
         end = begin + "true".length();
         assertTrue(SymbolsAndKeywords.isKeyword(source, begin, end));
 
-        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local of nothing proc return self skip spawn then throw true ".length();
+        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local null of proc return self skip spawn then throw true ".length();
         end = begin + "try".length();
         assertTrue(SymbolsAndKeywords.isKeyword(source, begin, end));
 
-        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local of nothing proc return self skip spawn then throw true try ".length();
+        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local null of proc return self skip spawn then throw true try ".length();
         end = begin + "var".length();
         assertTrue(SymbolsAndKeywords.isKeyword(source, begin, end));
 
-        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local of nothing proc return self skip spawn then throw true try var ".length();
+        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local null of proc return self skip spawn then throw true try var ".length();
         end = begin + "when".length();
         assertTrue(SymbolsAndKeywords.isKeyword(source, begin, end));
 
-        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local of nothing proc return self skip spawn then throw true try var when ".length();
+        begin = "/*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if import in local null of proc return self skip spawn then throw true try var when ".length();
         end = begin + "while".length();
         assertTrue(SymbolsAndKeywords.isKeyword(source, begin, end));
     }

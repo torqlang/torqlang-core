@@ -50,12 +50,12 @@ public class TestParserCaseLang {
     @Test
     public void testCaseAltElseExpr() {
         //                                      1         2         3         4         5
-        //                            0123456789012345678901234567890123456789012345678901234
-        Parser p = new Parser("case 0 of 0 then true of 1 then false else nothing end");
+        //                            0123456789012345678901234567890123456789012345678901
+        Parser p = new Parser("case 0 of 0 then true of 1 then false else null end");
         SntcOrExpr sox = p.parse();
         assertInstanceOf(CaseLang.class, sox);
         CaseLang caseLang = (CaseLang) sox;
-        assertSourceSpan(caseLang, 0, 54);
+        assertSourceSpan(caseLang, 0, 51);
         assertSourceSpan(caseLang.arg, 5, 6);
         // Test format
         String expectedFormat = """
@@ -65,7 +65,7 @@ public class TestParserCaseLang {
                 of 1 then
                     false
                 else
-                    nothing
+                    null
             end""";
         String actualFormat = caseLang.toString();
         assertEquals(expectedFormat, actualFormat);
@@ -88,8 +88,8 @@ public class TestParserCaseLang {
         assertNotNull(caseLang.elseSeq);
         assertEquals(1, caseLang.elseSeq.list.size());
         SntcOrExpr elseExpr = caseLang.elseSeq.list.get(0);
-        assertInstanceOf(NothingAsExpr.class, elseExpr);
-        assertSourceSpan(elseExpr, 43, 50);
+        assertInstanceOf(NullAsExpr.class, elseExpr);
+        assertSourceSpan(elseExpr, 43, 47);
 
     }
 

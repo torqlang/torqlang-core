@@ -9,6 +9,8 @@ package org.torqlang.core.local;
 
 public interface Address extends Comparable<Address> {
 
+    Address UNDEFINED = create("undefined");
+
     static Address create(Address parent, String path) {
         return LocalAddress.create(parent, path);
     }

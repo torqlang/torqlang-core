@@ -17,7 +17,7 @@ import org.torqlang.core.util.SourceSpan;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.TimeUnit;
 
 /*
  * Note that as we transition forward in the process, we gain properties and loose methods.
@@ -70,11 +70,10 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     private static final Str CFG = Str.of("cfg");
     private static final int TIME_SLICE_10_000 = 10_000;
 
-    private static final AtomicLong nextActorId = new AtomicLong(0);
-
     private State state;
 
     private Address address;
+    private ActorImage actorImage;
     private ActorSystem system;
     private String source;
     private boolean trace;
@@ -107,6 +106,27 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     }
 
     @Override
+    public final ActorImage actorImage() {
+        if (actorImage == null) {
+            checkAddress();
+            Object response;
+            try {
+                response = RequestClient.builder()
+                    .setAddress(address)
+                    .send(actorRef(), CaptureImage.SINGLETON)
+                    .awaitResponse(10, TimeUnit.MILLISECONDS);
+                if (response instanceof FailedValue failedValue) {
+                    throw new IllegalStateException(failedValue.toString());
+                }
+            } catch (Exception exc) {
+                throw new IllegalStateException(exc);
+            }
+            actorImage = (ActorImage) response;
+        }
+        return actorImage;
+    }
+
+    @Override
     public final Rec actorRec() {
         return actorRec;
     }
@@ -133,7 +153,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
 
     private void checkAddress() {
         if (address == null) {
-            address = Address.create("anonymous-actor-" + nextActorId.getAndIncrement());
+            address = Address.UNDEFINED;
         }
     }
 

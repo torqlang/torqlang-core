@@ -44,28 +44,28 @@ public class TestParserIfLang {
     @Test
     public void testIf() {
         //                                      1         2
-        //                            0123456789012345678901234
-        Parser p = new Parser("if true then nothing end");
+        //                            0123456789012345678901
+        Parser p = new Parser("if true then null end");
         SntcOrExpr sox = p.parse();
         assertInstanceOf(IfLang.class, sox);
         IfLang ifLang = (IfLang) sox;
-        assertSourceSpan(ifLang, 0, 24);
+        assertSourceSpan(ifLang, 0, 21);
         // Test format
         String expectedFormat = """
             if true then
-                nothing
+                null
             end""";
         String actualFormat = ifLang.toString();
         assertEquals(expectedFormat, actualFormat);
         // Test part -- ifClause
-        assertSourceSpan(ifLang.ifClause, 0, 20);
+        assertSourceSpan(ifLang.ifClause, 0, 17);
         assertInstanceOf(BoolAsExpr.class, ifLang.ifClause.condition);
         assertSourceSpan(ifLang.ifClause.condition, 3, 7);
         // Test part -- ifClause body
         assertEquals(1, ifLang.ifClause.body.list.size());
         SntcOrExpr bodyExpr = ifLang.ifClause.body.list.get(0);
-        assertInstanceOf(NothingAsExpr.class, bodyExpr);
-        assertSourceSpan(bodyExpr, 13, 20);
+        assertInstanceOf(NullAsExpr.class, bodyExpr);
+        assertSourceSpan(bodyExpr, 13, 17);
         // Test part -- altIfClauses
         assertEquals(0, ifLang.altIfClauses.size());
         // Test part -- elseSeq

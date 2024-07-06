@@ -7,13 +7,10 @@
 
 package org.torqlang.core.examples;
 
-import org.torqlang.core.klvm.*;
+import org.torqlang.core.klvm.Complete;
 import org.torqlang.core.lang.ValueTools;
 import org.torqlang.core.local.*;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -23,8 +20,7 @@ public class QueryOrders extends AbstractExample {
     public static final String SOURCE = """
         actor Orders() in
             import system[ArrayList, FieldIter, ValueIter]
-            import examples.NorthwindCache.get_orders
-            var orders = get_orders()
+            var orders = ${1}
             handle ask 'GET'#{'headers': headers, 'path': path, 'query': query} in
                 func matches_query(order) in
                     for field in FieldIter.new(query) do
@@ -73,23 +69,20 @@ public class QueryOrders extends AbstractExample {
     @Override
     public final void perform() throws Exception {
 
-        MethodHandles.Lookup lookup = MethodHandles.lookup();
-        MethodHandle methodHandle = lookup.findStatic(NorthwindCache.class, "getOrders", MethodType.methodType(Complete.class));
-        CompleteRec moduleRec = Rec.completeRecBuilder()
-            .addField(Str.of("get_orders"), new AsyncMethod(methodHandle))
-            .build();
-
-        ActorSystem system = ActorSystem.builder()
-            .addDefaultModules()
-            .addModule("examples.NorthwindCache", moduleRec)
-            .build();
-
+        // Compile Orders API handler and capture its image. Usually, this is performed once at startup.
+        String queryOrdersSource = SOURCE.replace("${1}", NorthwindCache.ordersJsonText());
+        ActorImage ordersImage = Actor.captureImage(queryOrdersSource);
         ApiRouter router = ApiRouter.staticBuilder()
-            .addRoute("/orders", Actor.builder()
-                .setSystem(system)
-                .configure(SOURCE)
-                .actorCfg())
+            .addRoute("/orders", ordersImage)
             .build();
+
+        // Spawn orders API handler using an actor image. Usually, this is performed by a REST server each
+        // time a request is received. Spawning an actor using an image is fast.
+        ApiRoute route = router.findRoute(new ApiPath("/orders"));
+        ActorRef actorRef = Actor.spawn(Address.create(getClass().getName() + "Actor"),
+            (ActorImage) route.apiTarget.value());
+
+        // Test the orders API handler by sending it a request
         Map<?, ?> requestMap = Map.of(
             "$label", "GET",
             "$rec", Map.of(
@@ -100,16 +93,8 @@ public class QueryOrders extends AbstractExample {
                 )
             )
         );
-
-        ApiRoute route = router.findRoute(new ApiPath("/orders"));
-        ActorRef actorRef = Actor.builder()
-            .setSystem(system)
-            .spawn((ActorCfg) route.apiTarget.value())
-            .actorRef();
-
         Object response = RequestClient.builder().sendAndAwaitResponse(actorRef,
             ValueTools.toKernelValue(requestMap), Long.MAX_VALUE, TimeUnit.MILLISECONDS);
-
         checkNotFailedValue(response);
         List<?> nativeResponse = (List<?>) ValueTools.toNativeValue((Complete) response);
         checkExpectedResponse(4, nativeResponse.size());

@@ -27,7 +27,7 @@ public class TestValueTools {
         // Null
 
         v = ValueTools.toKernelValue(null);
-        assertEquals(Nothing.SINGLETON, v);
+        assertEquals(Null.SINGLETON, v);
         v = ValueTools.toNativeValue((Complete) v);
         assertNull(v);
 

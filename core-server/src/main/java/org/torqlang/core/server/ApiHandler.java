@@ -19,39 +19,29 @@ import org.torqlang.core.lang.JsonFormatter;
 import org.torqlang.core.lang.JsonParser;
 import org.torqlang.core.lang.ValueTools;
 import org.torqlang.core.local.*;
+import org.torqlang.core.local.ApiTarget.ApiTargetActorImage;
+import org.torqlang.core.local.ApiTarget.ApiTargetActorRef;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 public final class ApiHandler extends Handler.Abstract.NonBlocking {
 
-    public static final String APPLICATION_JSON_CHARSET_UTF_8 = "application/json; charset=utf-8";
-    public static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=utf-8";
+    private static final String APPLICATION_JSON_CHARSET_UTF_8 = "application/json; charset=utf-8";
+    private static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=utf-8";
 
     private static final String RESPONSE_ADDRESS_PREFIX = "ApiHandler.ResponseAddress";
 
     private final ActorSystem system;
     private final ApiRouter router;
-    private final ArgsProvider argsProvider;
 
-    public ApiHandler(ActorSystem system, ApiRouter router, ArgsProvider argsProvider) {
+    public ApiHandler(ActorSystem system, ApiRouter router) {
         this.system = system;
         this.router = router;
-        this.argsProvider = argsProvider;
     }
 
     public static ApiHandlerBuilder builder() {
         return new ApiHandlerBuilder();
-    }
-
-    private static CompleteRec extractParams(ApiRoute route, ApiPath apiPath) {
-        CompleteRecBuilder rb = Rec.completeRecBuilder();
-        List<ApiPathParam> formalParams = route.apiPath.extractParams();
-        for (ApiPathParam p : formalParams) {
-            rb.addField(Str.of(p.name()), Str.of(apiPath.segs.get(p.pos())));
-        }
-        return rb.build();
     }
 
     @Override
@@ -102,15 +92,10 @@ public final class ApiHandler extends Handler.Abstract.NonBlocking {
         try {
             ActorBuilderInit actorInit = Actor.builder().setSystem(system);
             ActorRef actorRef;
-            if (route.apiTarget instanceof ApiTarget.ApiTargetActorRec apiTargetActorRec) {
-                if (argsProvider != null) {
-                    actorInit.setArgs(argsProvider.apply(request));
-                }
-                actorRef = actorInit.spawn(apiTargetActorRec.actorRec).actorRef();
-            } else if (route.apiTarget instanceof ApiTarget.ApiTargetActorCfg apiTargetActorCfg) {
-                actorRef = actorInit.spawn(apiTargetActorCfg.actorCfg).actorRef();
+            if (route.apiTarget instanceof ApiTargetActorImage targetActorImage) {
+                actorRef = Actor.spawn(Address.create("api-handler"), targetActorImage.value());
             } else {
-                actorRef = ((ApiTarget.ApiTargetActorRef) route.apiTarget).actorRef;
+                actorRef = ((ApiTargetActorRef) route.apiTarget).actorRef;
             }
             CompleteRecBuilder requestRecBuilder = Rec.completeRecBuilder()
                 .setLabel(Str.of(method))
@@ -119,12 +104,12 @@ public final class ApiHandler extends Handler.Abstract.NonBlocking {
                 .addField(Str.of("query"), queryRec);
             if (requestText != null) {
                 Complete bodyValue = requestText.isBlank() ?
-                    Nothing.SINGLETON : ValueTools.toKernelValue(new JsonParser(requestText).parse());
+                    Null.SINGLETON : ValueTools.toKernelValue(new JsonParser(requestText).parse());
                 requestRecBuilder.addField(Str.of("body"), bodyValue);
             }
             CompleteRec requestRec = requestRecBuilder.build();
             ActorRef responseActor = new ResponseActor(request, response, callback);
-            actorRef.send(Envelope.createRequest(requestRec, responseActor, Nothing.SINGLETON));
+            actorRef.send(Envelope.createRequest(requestRec, responseActor, Null.SINGLETON));
         } catch (Exception exc) {
             Response.writeError(request, response, callback, exc);
         }
@@ -165,6 +150,7 @@ public final class ApiHandler extends Handler.Abstract.NonBlocking {
                     response.getHeaders().put(HttpHeader.CONTENT_TYPE, TEXT_PLAIN_CHARSET_UTF_8);
                     Content.Sink.write(response, true, failedValue.toDetailsString(), callback);
                 } else {
+                    // TODO: Replace with a kernel-to-json instead of kernel-to-native-to-json
                     Object nativeResponseValue = ValueTools.toNativeValue(message);
                     String jsonResponseText = JsonFormatter.SINGLETON.format(nativeResponseValue);
                     response.setStatus(200);

@@ -83,9 +83,9 @@ public interface LangVisitor<T, R> {
 
     R visitLocalLang(LocalLang lang, T state) throws Exception;
 
-    R visitNothingAsExpr(NothingAsExpr lang, T state) throws Exception;
+    R visitNullAsExpr(NullAsExpr lang, T state) throws Exception;
 
-    R visitNothingAsPat(NothingAsPat lang, T state) throws Exception;
+    R visitNullAsPat(NullAsPat lang, T state) throws Exception;
 
     R visitOrExpr(OrExpr lang, T state) throws Exception;
 

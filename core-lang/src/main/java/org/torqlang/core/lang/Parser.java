@@ -709,13 +709,13 @@ public final class Parser {
             }
             return boolAsPat;
         }
-        if (current.substringEquals(NOTHING_VALUE)) {
-            LexerToken next = nextToken(); // accept 'nothing' token
-            NothingAsPat nothingAsPat = new NothingAsPat(current);
+        if (current.substringEquals(NULL_VALUE)) {
+            LexerToken next = nextToken(); // accept 'null' token
+            NullAsPat nullAsPat = new NullAsPat(current);
             if (next.isOneCharSymbol(HASH_TAG_CHAR)) {
-                return parseRecOrTuplePat(nothingAsPat);
+                return parseRecOrTuplePat(nullAsPat);
             }
-            return nothingAsPat;
+            return nullAsPat;
         }
         if (current.substringEquals(EOF_VALUE)) {
             LexerToken next = nextToken(); // accept 'eof' token
@@ -1209,13 +1209,13 @@ public final class Parser {
                 }
                 return boolAsExpr;
             }
-            if (current.substringEquals(NOTHING_VALUE)) {
-                LexerToken next = nextToken(); // accept 'nothing' token
-                NothingAsExpr nothingAsExpr = new NothingAsExpr(current);
+            if (current.substringEquals(NULL_VALUE)) {
+                LexerToken next = nextToken(); // accept 'null' token
+                NullAsExpr nullAsExpr = new NullAsExpr(current);
                 if (next.isOneCharSymbol(HASH_TAG_CHAR)) {
-                    return parseRecOrTupleExpr(nothingAsExpr);
+                    return parseRecOrTupleExpr(nullAsExpr);
                 }
-                return nothingAsExpr;
+                return nullAsExpr;
             }
             if (current.substringEquals(EOF_VALUE)) {
                 LexerToken next = nextToken(); // accept 'EOF' token

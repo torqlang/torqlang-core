@@ -8,16 +8,15 @@
 package org.torqlang.core.local;
 
 import org.torqlang.core.klvm.Complete;
-import org.torqlang.core.klvm.Nothing;
+import org.torqlang.core.klvm.Null;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
+import static org.torqlang.core.local.Envelope.createControlRequest;
 import static org.torqlang.core.local.Envelope.createRequest;
 
 public final class RequestClient implements RequestClientInit, RequestClientResponse {
-    private static final AtomicLong nextClientId = new AtomicLong(0);
 
     private Address address;
     private RequestClientActor requestClientActor;
@@ -37,6 +36,17 @@ public final class RequestClient implements RequestClientInit, RequestClientResp
         return futureResponse.get(timeout, unit).message();
     }
 
+    private void checkRequestClientActor() {
+        if (requestClientActor != null) {
+            throw new IllegalStateException("Request already sent");
+        }
+        if (address == null) {
+            address = Address.UNDEFINED;
+        }
+        futureResponse = new CompletableFuture<>();
+        requestClientActor = new RequestClientActor();
+    }
+
     @Override
     public final CompletableFuture<Envelope> futureResponse() {
         return futureResponse;
@@ -44,16 +54,23 @@ public final class RequestClient implements RequestClientInit, RequestClientResp
 
     @Override
     public final RequestClientResponse send(ActorRef actorRef, Complete message) {
-        if (requestClientActor != null) {
-            throw new IllegalStateException("Request already sent");
-        }
-        if (address == null) {
-            address = Address.create("anonymous-request-client-" + nextClientId.getAndIncrement());
-        }
-        futureResponse = new CompletableFuture<>();
-        requestClientActor = new RequestClientActor();
-        actorRef.send(createRequest(message, requestClientActor, Nothing.SINGLETON));
+        checkRequestClientActor();
+        send(actorRef, createRequest(message, requestClientActor, Null.SINGLETON));
         return this;
+    }
+
+    @Override
+    public final RequestClientResponse send(ActorRef actorRef, CaptureImage captureImage) {
+        checkRequestClientActor();
+        send(actorRef, createControlRequest(captureImage, requestClientActor, Null.SINGLETON));
+        return this;
+    }
+
+    private void send(ActorRef actorRef, Envelope envelope) {
+        if (!envelope.isRequest()) {
+            throw new IllegalStateException("Envelope is not a request");
+        }
+        actorRef.send(envelope);
     }
 
     @Override

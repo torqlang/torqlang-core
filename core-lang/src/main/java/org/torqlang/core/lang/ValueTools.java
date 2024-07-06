@@ -26,7 +26,7 @@ public class ValueTools {
 
     private static Complete toKernelValue(Object label, Object value) {
         if (value == null || value == JsonNull.SINGLETON) {
-            return Nothing.SINGLETON;
+            return Null.SINGLETON;
         }
         if (value instanceof Complete) {
             return (Complete) value;

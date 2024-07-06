@@ -58,7 +58,7 @@ final class BasicPartialRec implements PartialRec {
     }
 
     @Override
-    public final Complete checkComplete(IdentityHashMap<Rec, Complete> memos) throws WaitVarException {
+    public final Complete checkComplete(IdentityHashMap<Partial, Complete> memos) throws WaitVarException {
         Complete previous = memos.get(this);
         if (previous != null) {
             return previous;

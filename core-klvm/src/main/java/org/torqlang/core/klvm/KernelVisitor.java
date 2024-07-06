@@ -107,7 +107,7 @@ public interface KernelVisitor<T, R> {
 
     R visitNotStmt(NotStmt kernel, T state) throws Exception;
 
-    R visitNothing(Nothing kernel, T state) throws Exception;
+    R visitNull(Null kernel, T state) throws Exception;
 
     R visitObj(Obj kernel, T state) throws Exception;
 

@@ -57,9 +57,20 @@ final class LocalActor extends AbstractActor {
     private List<Envelope> selectableResponses = Collections.emptyList();
     private List<Envelope> suspendedResponses = Collections.emptyList();
 
+    LocalActor(Address address, ActorImage image, boolean trace) {
+        this(address, image.system, image.askHandlerEntry, image.tellHandlerEntry, trace);
+        machine = new Machine(this, null);
+    }
+
     LocalActor(Address address, ActorSystem system, boolean trace) {
+        this(address, system, null, null, trace);
+    }
+
+    private LocalActor(Address address, ActorSystem system, EnvEntry askHandlerEntry, EnvEntry tellHandlerEntry, boolean trace) {
         super(address, system.createMailbox(), system.executor(), system.createLogger());
         this.system = system;
+        this.askHandlerEntry = askHandlerEntry;
+        this.tellHandlerEntry = tellHandlerEntry;
         this.trace = trace;
         if (trace) {
             logInfo("Created");
@@ -167,10 +178,14 @@ final class LocalActor extends AbstractActor {
         return ROOT_ENV;
     }
 
+    static ActorRef spawn(Address address, ActorImage image) {
+        return new LocalActor(address, image, false);
+    }
+
     private void addParentVarDependency(Var triggerVar, Var parentVar, Var childVar, LocalActor child) {
         if (trace) {
             logInfo("Adding bind dependency on var " + triggerVar + " to synchronize parent var " +
-                parentVar + " with child var: " + childVar + " at child " + child.address());
+                    parentVar + " with child var: " + childVar + " at child " + child.address());
         }
         List<ChildVar> childVars = triggers.get(triggerVar);
         if (childVars == null) {
@@ -317,7 +332,7 @@ final class LocalActor extends AbstractActor {
 
     private void logRespondingWithValue(Complete value) {
         logInfo("Responding to " + activeRequest.requester().address() + " target " +
-            activeRequest.requestId() + " with " + value);
+                activeRequest.requestId() + " with " + value);
     }
 
     private LocalAddress nextChildAddress() {
@@ -333,6 +348,49 @@ final class LocalActor extends AbstractActor {
         machine = new Machine(LocalActor.this, new Stack(act.seq, actEnv, null));
         computeTimeSlice();
         return NOT_FINISHED;
+    }
+
+    private OnMessageResult onCaptureImageRequest(Envelope envelope) {
+
+        activeRequest = envelope;
+
+        if (!triggers.isEmpty()) {
+            throw new IllegalStateException("Triggers exist");
+        }
+        if (machine.stack() != null) {
+            throw new IllegalStateException("Machine stack exists");
+        }
+        try {
+            ((Value) askHandlerEntry.var.valueOrVarSet()).checkComplete();
+        } catch (WaitException exc) {
+            throw new IllegalStateException("Ask handler is not complete");
+        }
+        try {
+            ((Value) tellHandlerEntry.var.valueOrVarSet()).checkComplete();
+        } catch (WaitException exc) {
+            throw new IllegalStateException("Tell handler is not complete");
+        }
+        if (waitState != null) {
+            throw new IllegalStateException("Wait state is present");
+        }
+        if (childCount != 0) {
+            throw new IllegalStateException("Child count is not zero");
+        }
+        if (failedValue != null) {
+            throw new IllegalStateException("Actor is failed");
+        }
+        if (!selectableResponses.isEmpty()) {
+            throw new IllegalStateException("Selectable responses are present");
+        }
+        if (!suspendedResponses.isEmpty()) {
+            throw new IllegalStateException("Suspended responses are present");
+        }
+
+        ActorImage image = new ActorImage(system, askHandlerEntry, tellHandlerEntry);
+        envelope.requester().send(Envelope.createResponse(image, envelope.requestId()));
+
+        // An actor that serves its image is complete after serving.
+        return FINISHED;
     }
 
     private OnMessageResult onConfigure(Envelope envelope) {
@@ -397,6 +455,9 @@ final class LocalActor extends AbstractActor {
         if (envelope.message() instanceof Configure) {
             return onConfigure(envelope);
         }
+        if (envelope.message() instanceof CaptureImage) {
+            return onCaptureImageRequest(envelope);
+        }
         if (envelope.message() == Stop.SINGLETON) {
             return onStop(envelope);
         }
@@ -417,7 +478,7 @@ final class LocalActor extends AbstractActor {
                 try {
                     if (trace) {
                         logInfo("Received response for target: " + envelope.requestId() +
-                            " with value: " + envelope.message());
+                                " with value: " + envelope.message());
                     }
                     bindResponseValue(envelope);
                 } catch (WaitException exc) {
@@ -484,7 +545,7 @@ final class LocalActor extends AbstractActor {
                 } catch (WaitVarException wx) {
                     if (trace) {
                         logInfo("Cannot synchronize parent var " + childVar.parentVar +
-                            " because we are waiting to bind " + wx.barrier());
+                                " because we are waiting to bind " + wx.barrier());
                     }
                     // The parentVar is not yet complete. Therefore, we need to create a new trigger to try again
                     // when the next part of parentVar is completed.
@@ -501,8 +562,8 @@ final class LocalActor extends AbstractActor {
                 }
                 if (trace) {
                     logInfo("Synchronizing from parent var " + childVar.parentVar +
-                        " to child var " + childVar.childVar + " at actor: " + childVar.child.address() +
-                        " with value: " + parentComplete);
+                            " to child var " + childVar.childVar + " at actor: " + childVar.child.address() +
+                            " with value: " + parentComplete);
                 }
                 childVar.child.send(Envelope.createControlNotify(new SyncVar(childVar.childVar, parentComplete)));
             }
@@ -696,41 +757,27 @@ final class LocalActor extends AbstractActor {
 
     private ActorRefObj spawnActorCfg(ActorCfg parentCfg) throws WaitException {
 
-        /*
-            (The following was copied, see `Value.java` for more information.)
+        // Only complete values are shared across process boundaries.
 
-            There is one exception to all of the above. When an actor spawns another actor, we delay verifying the
-            actor configuration for as long as possible to opportunistically increase concurrency. During the spawn
-            callback, we dynamically verify that the `ActorCfg` is effectively complete by verifying that its free
-            variables are complete.
-         */
+        HashMap<Ident, Complete> childCapturedEnvMap = new HashMap<>();
 
-        // Map each captured environment entry from the parent environment to the child environment.
+        for (EnvEntry rootEntry : ROOT_ENV) {
+            childCapturedEnvMap.put(rootEntry.ident, (Complete) rootEntry.var.valueOrVarSet());
+        }
 
         Closure parentHandlersCtor = parentCfg.handlersCtor();
         Env parentCapturedEnv = parentHandlersCtor.capturedEnv();
-        HashMap<Ident, Var> childCapturedEnvMap = new HashMap<>();
         for (EnvEntry parentEntry : parentCapturedEnv) {
-            // We can skip free variables that reference root env entries because the root env is static (and Complete)
-            // and in many cases, its entries simply callback to the invoking actor.
+            // Root env entries have already been added.
             if (ROOT_ENV.contains(parentEntry.ident)) {
                 continue;
             }
-            // INVARIANT: All other free vars must be complete values because we only communicate complete and
-            // immutable values across actor boundaries.
             ValueOrVar parentValueOrVar = parentEntry.var.resolveValueOrVar();
-            // CRITICAL: If 'checkComplete()' throws a WaitException, the KLVM will suspend and then retry this entire
-            // method once the unbound var becomes bound.
-            childCapturedEnvMap.put(parentEntry.ident, new Var(parentValueOrVar.checkComplete()));
+            childCapturedEnvMap.put(parentEntry.ident, parentValueOrVar.checkComplete());
         }
-        Env childCapturedEnv = Env.create(ROOT_ENV, childCapturedEnvMap);
 
-        // We now have complete values (we are past the point of a potential WaitException) and are ready to create and
-        // spawn the child actor.
-
-        Closure childHandlersCtor = new Closure(parentHandlersCtor.procDef(), childCapturedEnv);
-        ActorCfg childConfig = new ActorCfg(parentCfg.args(), childHandlersCtor);
-        Configure configure = new Configure(childConfig);
+        Closure childHandlersCtor = new CompleteClosure(parentHandlersCtor.procDef(), childCapturedEnvMap);
+        Configure configure = new Configure(new ActorCfg(parentCfg.args(), childHandlersCtor));
         LocalActor childActor = new LocalActor(nextChildAddress(), system, trace);
 
         childActor.send(Envelope.createControlNotify(configure));
@@ -793,7 +840,7 @@ final class LocalActor extends AbstractActor {
 
         @Override
         public final Object message() {
-            return Nothing.SINGLETON;
+            return Null.SINGLETON;
         }
 
         @Override

@@ -11,10 +11,10 @@ import java.util.Comparator;
 
 /*
  * Int features sort before all other features in ascending order. Following the Int features are Str features in
- * lexicographic order. Following Str features are Bool features in FALSE, TRUE order. Following Bool features is
- * the Nothing feature. Following the Nothing feature are Token features in unforgeable id order.
+ * lexicographic order. Following Str features are Bool features in FALSE, TRUE order. Following Bool features is the
+ * Null feature. Following the Null feature are Token features in unforgeable id order.
  *
- * Basically, the sort preferences is: Int, Str, Bool, Eof, Nothing, Token
+ * Basically, the sort preferences is: Int, Str, Bool, Eof, Null, Token
  */
 public final class FeatureComparator implements Comparator<Feature> {
 
@@ -65,13 +65,13 @@ public final class FeatureComparator implements Comparator<Feature> {
             return 1;
         }
         // We know the remaining combinations exclude Int, Str, Bool and Eof
-        if (f1 == Nothing.SINGLETON) {
-            // f1 = f2 when f2 is Nothing
-            // f1 < f2 when f2 is not (Int, Str, Bool, Eof, Nothing)
-            return f2 == Nothing.SINGLETON ? 0 : -1;
+        if (f1 == Null.SINGLETON) {
+            // f1 = f2 when f2 is Null
+            // f1 < f2 when f2 is not (Int, Str, Bool, Eof, Null)
+            return f2 == Null.SINGLETON ? 0 : -1;
         }
-        if (f2 == Nothing.SINGLETON) {
-            // f1 > f2 when f1 is not (Int, Str, Bool, Eof, Nothing)
+        if (f2 == Null.SINGLETON) {
+            // f1 > f2 when f1 is not (Int, Str, Bool, Eof, Null)
             return 1;
         }
         // Compare tokens

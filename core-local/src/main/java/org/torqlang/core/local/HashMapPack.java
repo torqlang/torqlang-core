@@ -42,9 +42,9 @@ final class HashMapPack {
             throw new NotValidKeyError(key);
         }
         ValueOrVar elem = obj.state.get(key);
-        // An element not found results in the Nothing value
+        // An element not found results in the Null value
         if (elem == null) {
-            elem = Nothing.SINGLETON;
+            elem = Null.SINGLETON;
         }
         ValueOrVar target = ys.get(1).resolveValueOrVar(env);
         target.bindToValueOrVar(elem, null);

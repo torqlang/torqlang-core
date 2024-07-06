@@ -7,12 +7,12 @@
 
 package org.torqlang.core.lang;
 
-import org.torqlang.core.klvm.Nothing;
+import org.torqlang.core.klvm.Null;
 import org.torqlang.core.util.SourceSpan;
 
-public final class NothingAsExpr extends AbstractLang implements ValueAsExpr, LabelExpr {
+public final class NullAsPat extends AbstractLang implements LiteralAsPat {
 
-    public NothingAsExpr(SourceSpan sourceSpan) {
+    public NullAsPat(SourceSpan sourceSpan) {
         super(sourceSpan);
     }
 
@@ -20,12 +20,12 @@ public final class NothingAsExpr extends AbstractLang implements ValueAsExpr, La
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitNothingAsExpr(this, state);
+        return visitor.visitNullAsPat(this, state);
     }
 
     @Override
-    public final Nothing value() {
-        return Nothing.SINGLETON;
+    public final Null value() {
+        return Null.SINGLETON;
     }
 
 }

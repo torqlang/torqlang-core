@@ -10,18 +10,16 @@ package org.torqlang.core.local;
 import org.torqlang.core.klvm.Complete;
 import org.torqlang.core.klvm.CompleteRec;
 import org.torqlang.core.klvm.Eof;
-import org.torqlang.core.klvm.Nothing;
+import org.torqlang.core.klvm.Null;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static org.torqlang.core.local.Envelope.createRequest;
 
 public final class StreamClient implements StreamClientInit, StreamClientResponse {
-    private static final AtomicLong nextClientId = new AtomicLong(0);
 
     private Address address;
     private StreamClientActor streamClientActor;
@@ -54,7 +52,7 @@ public final class StreamClient implements StreamClientInit, StreamClientRespons
     public StreamClientResponse send(ActorRef actorRef, Complete message) {
         if (streamClientActor == null) {
             if (address == null) {
-                address = Address.create("anonymous-stream-client-" + nextClientId.getAndIncrement());
+                address = Address.UNDEFINED;
             }
             eofLatch = new CountDownLatch(1);
             streamClientActor = new StreamClientActor();
@@ -65,7 +63,7 @@ public final class StreamClient implements StreamClientInit, StreamClientRespons
             eofLatch = new CountDownLatch(1);
         }
         mailbox = new ConcurrentLinkedQueue<>();
-        actorRef.send(createRequest(message, streamClientActor, Nothing.SINGLETON));
+        actorRef.send(createRequest(message, streamClientActor, Null.SINGLETON));
         return this;
     }
 

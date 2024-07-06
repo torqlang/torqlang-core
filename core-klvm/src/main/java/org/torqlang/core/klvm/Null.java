@@ -7,29 +7,29 @@
 
 package org.torqlang.core.klvm;
 
-public final class Nothing implements Literal {
+public final class Null implements Literal {
 
-    public static final String NOTHING_NAME = "nothing";
-    public static final Nothing SINGLETON = new Nothing();
+    public static final String NULL_NAME = "null";
+    public static final Null SINGLETON = new Null();
 
-    private Nothing() {
+    private Null() {
     }
 
     @Override
     public final <T, R> R accept(KernelVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitNothing(this, state);
+        return visitor.visitNull(this, state);
     }
 
     @Override
     public final String appendToString(String string) {
-        return string + NOTHING_NAME;
+        return string + NULL_NAME;
     }
 
     @Override
     public final String formatValue() {
-        return NOTHING_NAME;
+        return NULL_NAME;
     }
 
     @Override

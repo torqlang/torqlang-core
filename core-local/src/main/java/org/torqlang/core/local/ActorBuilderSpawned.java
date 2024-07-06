@@ -20,6 +20,8 @@ public interface ActorBuilderSpawned {
 
     Ident actorIdent();
 
+    ActorImage actorImage();
+
     Rec actorRec();
 
     ActorRef actorRef();

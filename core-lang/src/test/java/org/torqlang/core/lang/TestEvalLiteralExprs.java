@@ -141,6 +141,24 @@ public class TestEvalLiteralExprs {
     }
 
     @Test
+    public void testNull() throws Exception {
+        String source = """
+            begin
+                null
+            end""";
+        Ident x = Ident.create("x");
+        EvaluatorPerformed e = Evaluator.builder()
+            .addVar(x)
+            .setExprIdent(x)
+            .setSource(source)
+            .perform();
+        assertEquals(source, e.sntcOrExpr().toString());
+        String expected = "$bind(null, x)";
+        assertEquals(expected, e.kernel().toString());
+        assertEquals(Null.SINGLETON, e.varAtName("x").valueOrVarSet());
+    }
+
+    @Test
     public void testStr() throws Exception {
         String source = """
             begin
@@ -156,24 +174,6 @@ public class TestEvalLiteralExprs {
         String expected = "$bind('my-value', x)";
         assertEquals(expected, e.kernel().toString());
         assertEquals(Str.of("my-value"), e.varAtName("x").valueOrVarSet());
-    }
-
-    @Test
-    public void testUnit() throws Exception {
-        String source = """
-            begin
-                nothing
-            end""";
-        Ident x = Ident.create("x");
-        EvaluatorPerformed e = Evaluator.builder()
-            .addVar(x)
-            .setExprIdent(x)
-            .setSource(source)
-            .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
-        String expected = "$bind(nothing, x)";
-        assertEquals(expected, e.kernel().toString());
-        assertEquals(Nothing.SINGLETON, e.varAtName("x").valueOrVarSet());
     }
 
 }

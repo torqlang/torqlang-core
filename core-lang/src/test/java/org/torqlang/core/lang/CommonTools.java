@@ -87,14 +87,14 @@ public class CommonTools {
         return (IntAsPat) value;
     }
 
-    static NothingAsExpr asNothingAsExpr(Object value) {
-        assertInstanceOf(NothingAsExpr.class, value);
-        return (NothingAsExpr) value;
+    static NullAsExpr asNullAsExpr(Object value) {
+        assertInstanceOf(NullAsExpr.class, value);
+        return (NullAsExpr) value;
     }
 
-    static NothingAsPat asNothingAsPat(Object value) {
-        assertInstanceOf(NothingAsPat.class, value);
-        return (NothingAsPat) value;
+    static NullAsPat asNullAsPat(Object value) {
+        assertInstanceOf(NullAsPat.class, value);
+        return (NullAsPat) value;
     }
 
     static SntcOrExpr asSingleExpr(Object value) {
@@ -140,6 +140,14 @@ public class CommonTools {
         assertEquals(end, sourceSpan.end());
     }
 
+    static <T> Boolean getBoolean(T argument, Function<T, Boolean> function) {
+        return getValue(argument, function);
+    }
+
+    static <T, R> R getValue(T argument, Function<T, R> function) {
+        return function.apply(argument);
+    }
+
     // NOTE: This method is duplicated at test org.torqlang.core.local
     public static String stripCircularSpecifics(String kernelString) {
         StringBuilder sb = new StringBuilder();
@@ -165,14 +173,6 @@ public class CommonTools {
             }
         }
         return sb.toString();
-    }
-
-    static <T> Boolean getBoolean(T argument, Function<T, Boolean> function) {
-        return getValue(argument, function);
-    }
-
-    static <T, R> R getValue(T argument, Function<T, R> function) {
-        return function.apply(argument);
     }
 
     @SuppressWarnings("UnnecessaryUnicodeEscape")

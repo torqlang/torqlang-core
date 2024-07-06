@@ -7,14 +7,23 @@
 
 package org.torqlang.core.klvm;
 
-public final class CompleteClosure extends Closure implements Complete {
+import java.util.Map;
 
-    public CompleteClosure(ProcDef procDef, Env capturedEnv) {
-        super(procDef, capturedEnv);
+public final class CompleteClosure extends AbstractClosure implements Complete {
+
+    private CompleteClosure() {
+        super(null, null);
     }
 
-    @Override
-    public final CompleteClosure checkComplete() {
+    public CompleteClosure(ProcDef procDef, Map<Ident, Complete> capturedEnv) {
+        super(procDef, Env.createComplete(capturedEnv));
+    }
+
+    static CompleteClosure instanceForRestore() {
+        return new CompleteClosure();
+    }
+
+    public CompleteClosure checkComplete() {
         return this;
     }
 

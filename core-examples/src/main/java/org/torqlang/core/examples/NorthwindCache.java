@@ -7,25 +7,17 @@
 
 package org.torqlang.core.examples;
 
-import org.torqlang.core.klvm.Complete;
-import org.torqlang.core.lang.JsonParser;
-import org.torqlang.core.lang.ValueTools;
-
-import java.util.List;
-
 import static org.torqlang.core.examples.AbstractExample.readTextFromResource;
 
 public class NorthwindCache {
 
-    private static volatile Complete ordersCache;
+    private static volatile String ordersJsonText;
 
-    public static Complete getOrders() throws Exception {
-        if (ordersCache != null) {
-            return ordersCache;
+    public static String ordersJsonText() throws Exception {
+        if (ordersJsonText != null) {
+            return ordersJsonText;
         }
-        String ordersJsonText = readTextFromResource("/northwind/orders.json");
-        List<?> ordersJsonList = (List<?>) JsonParser.parse(ordersJsonText);
-        return ordersCache = ValueTools.toKernelValue(ordersJsonList);
+        return ordersJsonText = readTextFromResource("/northwind/orders.json");
     }
 
 }

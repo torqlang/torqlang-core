@@ -5,12 +5,11 @@
  * If not, see <http://torqlang.github.io/licensing/torqlang-license-v1_0>.
  */
 
-package org.torqlang.core.klvm;
+package org.torqlang.core.local;
 
-import java.util.IdentityHashMap;
+public final class CaptureImage {
+    public static final CaptureImage SINGLETON = new CaptureImage();
 
-public interface Partial extends Value {
-
-    Complete checkComplete(IdentityHashMap<Partial, Complete> memos) throws WaitVarException;
-
+    private CaptureImage() {
+    }
 }

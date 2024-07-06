@@ -72,7 +72,7 @@ public final class SymbolsAndKeywords {
     static final String IMPORT_VALUE = "import";
     static final String IN_VALUE = "in";
     static final String LOCAL_VALUE = "local";
-    static final String NOTHING_VALUE = "nothing";
+    static final String NULL_VALUE = "null";
     static final String OF_VALUE = "of";
     static final String PROC_VALUE = "proc";
     static final String RETURN_VALUE = "return";
@@ -95,10 +95,10 @@ public final class SymbolsAndKeywords {
         {},
         {DO_VALUE, IF_VALUE, IN_VALUE, OF_VALUE},
         {ACT_VALUE, END_VALUE, EOF_VALUE, FOR_VALUE, TRY_VALUE, VAR_VALUE},
-        {CASE_VALUE, ELSE_VALUE, FUNC_VALUE, PROC_VALUE, SELF_VALUE, SKIP_VALUE, THEN_VALUE, TRUE_VALUE, WHEN_VALUE},
+        {CASE_VALUE, ELSE_VALUE, FUNC_VALUE, NULL_VALUE, PROC_VALUE, SELF_VALUE, SKIP_VALUE, THEN_VALUE, TRUE_VALUE, WHEN_VALUE},
         {ACTOR_VALUE, BEGIN_VALUE, BREAK_VALUE, CATCH_VALUE, FALSE_VALUE, LOCAL_VALUE, SPAWN_VALUE, THROW_VALUE, WHILE_VALUE},
         {ELSEIF_VALUE, IMPORT_VALUE, RETURN_VALUE},
-        {FINALLY_VALUE, NOTHING_VALUE},
+        {FINALLY_VALUE},
         {CONTINUE_VALUE}
     };
 

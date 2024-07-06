@@ -22,11 +22,11 @@ public class TestParserValueExpr {
     public void test() {
         //                                      1         2         3         4         5
         //                            01234567890123456789012345678901234567890123456789012345678
-        Parser p = new Parser("begin a 1 1L 1.0 1.0f 1m false true nothing eof &x 'x' end");
+        Parser p = new Parser("begin a 1 1L 1.0 1.0f 1m false true null eof &x 'x' end");
         SntcOrExpr sox = p.parse();
         assertInstanceOf(BeginLang.class, sox);
         BeginLang beginLang = (BeginLang) sox;
-        assertSourceSpan(beginLang, 0, 58);
+        assertSourceSpan(beginLang, 0, 55);
         List<SntcOrExpr> list = beginLang.body.list;
         assertSourceSpan(list.get(0), 6, 7);
         assertEquals(Ident.create("a"), asIdentAsExpr(list.get(0)).ident);
@@ -44,13 +44,13 @@ public class TestParserValueExpr {
         assertEquals(Bool.FALSE, asBoolAsExpr(list.get(6)).value());
         assertSourceSpan(list.get(7), 31, 35);
         assertEquals(Bool.TRUE, asBoolAsExpr(list.get(7)).value());
-        assertSourceSpan(list.get(8), 36, 43);
-        assertEquals(Nothing.SINGLETON, asNothingAsExpr(list.get(8)).value());
-        assertSourceSpan(list.get(9), 44, 47);
+        assertSourceSpan(list.get(8), 36, 40);
+        assertEquals(Null.SINGLETON, asNullAsExpr(list.get(8)).value());
+        assertSourceSpan(list.get(9), 41, 44);
         assertEquals(Eof.SINGLETON, asEofAsExpr(list.get(9)).value());
-        assertSourceSpan(list.get(10), 48, 50);
+        assertSourceSpan(list.get(10), 45, 47);
         assertEquals(Char.of('x'), asCharAsExpr(list.get(10)).value());
-        assertSourceSpan(list.get(11), 51, 54);
+        assertSourceSpan(list.get(11), 48, 51);
         assertEquals(Str.of("x"), asStrAsExpr(list.get(11)).value());
         String expectedFormat = """
             begin
@@ -62,7 +62,7 @@ public class TestParserValueExpr {
                 1m
                 false
                 true
-                nothing
+                null
                 eof
                 &x
                 'x'
