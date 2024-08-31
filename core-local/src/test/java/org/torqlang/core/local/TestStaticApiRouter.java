@@ -26,9 +26,7 @@ public class TestStaticApiRouter {
 
         ActorImage testActorImage = Actor.builder()
             .setSystem(ActorSystem.defaultSystem())
-            .configure(SOURCE)
-            .spawn()
-            .actorImage();
+            .actorImage(SOURCE);
 
         StaticApiRouter router;
 

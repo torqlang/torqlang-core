@@ -7,6 +7,9 @@
 
 package org.torqlang.core.examples;
 
+import org.eclipse.jetty.server.Request;
+import org.torqlang.core.klvm.CompleteRec;
+import org.torqlang.core.klvm.Rec;
 import org.torqlang.core.local.Actor;
 import org.torqlang.core.local.ActorImage;
 import org.torqlang.core.local.ApiRouter;
@@ -15,6 +18,10 @@ import org.torqlang.core.server.CoreServer;
 import org.torqlang.core.server.EchoHandler;
 
 public class ExampleServer {
+
+    public static CompleteRec contextProvider(Request request) {
+        return Rec.completeRecBuilder().build();
+    }
 
     public static void main(String[] args) throws Exception {
 
@@ -30,6 +37,7 @@ public class ExampleServer {
                     .addRoute("/orders", ordersImage)
                     .addRoute("/orders/{id}", ordersImage)
                     .build())
+                .setContextProvider(ExampleServer::contextProvider)
                 .build(), "/api")
             .build();
         server.start();

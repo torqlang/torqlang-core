@@ -127,6 +127,13 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     }
 
     @Override
+    public final ActorImage actorImage(String source) throws Exception {
+        setSource(source);
+        spawn();
+        return actorImage;
+    }
+
+    @Override
     public final Rec actorRec() {
         return actorRec;
     }
@@ -170,18 +177,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
 
     @Override
     public final ActorBuilderConfigured configure() throws Exception {
-        if (state == State.READY) {
-            parse();
-        }
-        if (state == State.PARSED) {
-            rewrite();
-        }
-        if (state == State.REWRITTEN) {
-            generate();
-        }
-        if (state == State.GENERATED) {
-            construct();
-        }
+        parseRewriteGenerateConstruct();
         if (state != State.CONSTRUCTED) {
             throw new IllegalStateException("Cannot spawn at state: " + state);
         }
@@ -216,15 +212,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
 
     @Override
     public final ActorBuilderConstructed construct() throws Exception {
-        if (state == State.READY) {
-            parse();
-        }
-        if (state == State.PARSED) {
-            rewrite();
-        }
-        if (state == State.REWRITTEN) {
-            generate();
-        }
+        parseRewriteGenerate();
         if (state != State.GENERATED) {
             throw new IllegalStateException("Cannot createActorRec at state: " + state);
         }
@@ -253,12 +241,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
 
     @Override
     public final ActorBuilderGenerated generate() throws Exception {
-        if (state == State.READY) {
-            parse();
-        }
-        if (state == State.PARSED) {
-            rewrite();
-        }
+        parseRewrite();
         if (state != State.REWRITTEN) {
             throw new IllegalStateException("Cannot generate at state: " + state);
         }
@@ -277,6 +260,36 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
         actorSntc = (ActorSntc) p.parse();
         state = State.PARSED;
         return this;
+    }
+
+    private void parseRewrite() {
+        if (state == State.READY) {
+            parse();
+        }
+        if (state == State.PARSED) {
+            rewrite();
+        }
+    }
+
+    private void parseRewriteGenerate() throws Exception {
+        parseRewrite();
+        if (state == State.REWRITTEN) {
+            generate();
+        }
+    }
+
+    private void parseRewriteGenerateConstruct() throws Exception {
+        parseRewriteGenerate();
+        if (state == State.GENERATED) {
+            construct();
+        }
+    }
+
+    private void parseRewriteGenerateConstructConfigure() throws Exception {
+        parseRewriteGenerateConstruct();
+        if (state == State.CONSTRUCTED) {
+            configure();
+        }
     }
 
     @Override
@@ -412,21 +425,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
 
     @Override
     public final ActorBuilderSpawned spawn() throws Exception {
-        if (state == State.READY) {
-            parse();
-        }
-        if (state == State.PARSED) {
-            rewrite();
-        }
-        if (state == State.REWRITTEN) {
-            generate();
-        }
-        if (state == State.GENERATED) {
-            construct();
-        }
-        if (state == State.CONSTRUCTED) {
-            configure();
-        }
+        parseRewriteGenerateConstructConfigure();
         if (state != State.CONFIGURED) {
             throw new IllegalStateException("Cannot spawn at state: " + state);
         }

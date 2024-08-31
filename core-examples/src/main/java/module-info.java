@@ -6,4 +6,7 @@ module org.torqlang.core.examples {
     requires org.torqlang.core.klvm;
     requires org.torqlang.core.util;
 
+    requires org.eclipse.jetty.server;
+
+    exports org.torqlang.core.examples;
 }

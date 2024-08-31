@@ -15,6 +15,9 @@ import org.torqlang.core.lang.ActorSntc;
 import java.util.List;
 
 public interface ActorBuilderInit {
+
+    ActorImage actorImage(String source) throws Exception;
+
     ActorBuilderConfigured configure(String source) throws Exception;
 
     ActorBuilderConstructed construct(String source) throws Exception;

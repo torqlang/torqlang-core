@@ -21,7 +21,7 @@ public class QueryOrders extends AbstractExample {
         actor Orders() in
             import system[ArrayList, FieldIter, ValueIter]
             var orders = ${1}
-            handle ask 'GET'#{'headers': headers, 'path': path, 'query': query} in
+            handle ask 'GET'#{'headers': headers, 'path': path, 'query': query, 'context': context} in
                 func matches_query(order) in
                     for field in FieldIter.new(query) do
                         if order[field.0] != field.1 then
@@ -50,7 +50,7 @@ public class QueryOrders extends AbstractExample {
                         }
                 end
             end
-            handle ask 'POST'#{'headers': headers, 'path': path, 'query': query, 'body': body} in
+            handle ask 'POST'#{'headers': headers, 'path': path, 'query': query, 'body': body, 'context': context} in
                 // For now, just echo the params
                 'POST'#{
                     'headers': headers,
@@ -90,7 +90,8 @@ public class QueryOrders extends AbstractExample {
                 "path", List.of("orders"),
                 "query", Map.of(
                     "ship_city", "Las Vegas"
-                )
+                ),
+                "context", Map.of()
             )
         );
         Object response = RequestClient.builder().sendAndAwaitResponse(actorRef,

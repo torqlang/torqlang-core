@@ -8,10 +8,8 @@
 package org.torqlang.core.server;
 
 import org.eclipse.jetty.server.Request;
-import org.torqlang.core.klvm.CompleteOrIdent;
+import org.torqlang.core.klvm.CompleteRec;
 
-import java.util.List;
-
-public interface ArgsProvider {
-    List<? extends CompleteOrIdent> apply(Request request);
+public interface ContextProvider {
+    CompleteRec apply(Request request);
 }

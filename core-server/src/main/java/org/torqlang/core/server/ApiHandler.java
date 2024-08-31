@@ -34,10 +34,12 @@ public final class ApiHandler extends Handler.Abstract.NonBlocking {
 
     private final ActorSystem system;
     private final ApiRouter router;
+    private final ContextProvider contextProvider;
 
-    public ApiHandler(ActorSystem system, ApiRouter router) {
+    public ApiHandler(ActorSystem system, ApiRouter router, ContextProvider contextProvider) {
         this.system = system;
         this.router = router;
+        this.contextProvider = contextProvider;
     }
 
     public static ApiHandlerBuilder builder() {
@@ -107,6 +109,7 @@ public final class ApiHandler extends Handler.Abstract.NonBlocking {
                     Null.SINGLETON : ValueTools.toKernelValue(new JsonParser(requestText).parse());
                 requestRecBuilder.addField(Str.of("body"), bodyValue);
             }
+            requestRecBuilder.addField(Str.of("context"), contextProvider.apply(request));
             CompleteRec requestRec = requestRecBuilder.build();
             ActorRef responseActor = new ResponseActor(request, response, callback);
             actorRef.send(Envelope.createRequest(requestRec, responseActor, Null.SINGLETON));
